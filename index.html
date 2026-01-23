@@ -23,20 +23,31 @@ body {
     border: 2px solid #3a3a3a;
     border-radius: 10px;
     padding: 25px;
-    width: 360px;
+    width: 380px;
     box-shadow: 0 0 25px rgba(0,0,0,0.8);
 }
 
 h1 {
     text-align: center;
     color: #e6892e;
-    margin-bottom: 20px;
-    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+
+.section {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #333;
+}
+
+.section-title {
+    color: #ff9f1a;
+    font-size: 15px;
+    margin-bottom: 5px;
 }
 
 label {
     display: block;
-    margin-top: 12px;
+    margin-top: 10px;
     font-size: 14px;
     color: #ccc;
 }
@@ -82,30 +93,38 @@ button:hover {
 <div class="container">
     <h1>Rust GP Calculator</h1>
 
-    <label>Mode</label>
-    <select id="mode" onchange="switchMode()">
-        <option value="gp">I want gunpowder</option>
-        <option value="scrap">I have scrap</option>
-    </select>
+    <div class="section">
+        <div class="section-title">Mode</div>
+        <select id="mode" onchange="switchMode()">
+            <option value="gp">I want gunpowder</option>
+            <option value="scrap">I have scrap</option>
+        </select>
+    </div>
 
-    <label>Recycling Zone</label>
-    <select id="zone" onchange="updateGP()">
-        <option value="21">Non-Safe Zone (21 GP)</option>
-        <option value="14">Safe Zone (14 GP)</option>
-    </select>
+    <div class="section">
+        <div class="section-title">Economy Settings</div>
 
-    <label>Gunpowder per Smoke Grenade</label>
-    <input type="number" id="gpPerGrenade" value="21">
+        <label>Smoke Grenade Cost (Scrap)</label>
+        <input type="number" id="scrapPerGrenade" value="3">
 
-    <label>Scrap per Smoke Grenade</label>
-    <input type="number" id="scrapPerGrenade" value="3">
+        <label>Recycling Zone</label>
+        <select id="zone" onchange="updateGP()">
+            <option value="21">Non-Safe Zone (21 GP)</option>
+            <option value="14">Safe Zone (14 GP)</option>
+        </select>
 
-    <div id="gpMode">
+        <label>Gunpowder per Smoke Grenade</label>
+        <input type="number" id="gpPerGrenade" value="21">
+    </div>
+
+    <div class="section" id="gpMode">
+        <div class="section-title">Gunpowder Target</div>
         <label>Gunpowder Wanted</label>
         <input type="number" id="gpWanted" placeholder="e.g. 1000">
     </div>
 
-    <div id="scrapMode" style="display:none;">
+    <div class="section" id="scrapMode" style="display:none;">
+        <div class="section-title">Scrap Input</div>
         <label>Scrap You Have</label>
         <input type="number" id="scrapHave" placeholder="e.g. 588">
     </div>
