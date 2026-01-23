@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Rust Gunpowder Calculator</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+body {
+    font-family: 'Oswald', sans-serif;
+    background: radial-gradient(circle at top, #2a2a2a, #0d0d0d);
+    color: #f2f2f2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    background: linear-gradient(145deg, #2e2e2e, #1a1a1a);
+    border: 2px solid #3a3a3a;
+    border-radius: 10px;
+    padding: 25px;
+    width: 360px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.8);
+}
+
+h1 {
+    text-align: center;
+    color: #e6892e;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+}
+
+label {
+    display: block;
+    margin-top: 12px;
+    font-size: 14px;
+    color: #ccc;
+}
+
+input, select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    background: #141414;
+    color: #fff;
+    border: 1px solid #444;
+    border-radius: 5px;
+}
+
+button {
+    width: 100%;
+    margin-top: 18px;
+    padding: 10px;
+    background: linear-gradient(145deg, #ff9f1a, #e07b00);
+    color: #000;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #ffb347;
+}
+
+.result {
+    margin-top: 15px;
+    background: #101010;
+    border-left: 4px solid #e6892e;
+    padding: 10px;
+    border-radius: 5px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Rust GP Calculator</h1>
+
+    <label>Mode</label>
+    <select id="mode" onchange="switchMode()">
+        <option value="gp">I want gunpowder</option>
+        <option value="scrap">I have scrap</option>
+    </select>
+
+    <label>Recycling Zone</label>
+    <select id="zone" onchange="updateGP()">
+        <option value="21">Non-Safe Zone (21 GP)</option>
+        <option value="14">Safe Zone (14 GP)</option>
+    </select>
+
+    <label>Gunpowder per Smoke Grenade</label>
+    <input type="number" id="gpPerGrenade" value="21">
+
+    <label>Scrap per Smoke Grenade</label>
+    <input type="number" id="scrapPerGrenade" value="3">
+
+    <div id="gpMode">
+        <label>Gunpowder Wanted</label>
+        <input type="number" id="gpWanted" placeholder="e.g. 1000">
+    </div>
+
+    <div id="scrapMode" style="display:none;">
+        <label>Scrap You Have</label>
+        <input type="number" id="scrapHave" placeholder="e.g. 588">
+    </div>
+
+    <button onclick="calculate()">Calculate</button>
+
+    <div class="result" id="result"></div>
+</div>
+
+<script>
+function switchMode() {
+    const mode = document.getElementById("mode").value;
+    document.getElementById("gpMode").style.display = mode === "gp" ? "block" : "none";
+    document.getElementById("scrapMode").style.display = mode === "scrap" ? "block" : "none";
+    document.getElementById("result").innerHTML = "";
+}
+
+function updateGP() {
+    document.getElementById("gpPerGrenade").value =
+        document.getElementById("zone").value;
+}
+
+function calculate() {
+    const mode = document.getElementById("mode").value;
+    const gpPerGrenade = parseInt(document.getElementById("gpPerGrenade").value);
+    const scrapPerGrenade = parseInt(document.getElementById("scrapPerGrenade").value);
+    const result = document.getElementById("result");
+
+    if (mode === "gp") {
+        const gpWanted = parseInt(document.getElementById("gpWanted").value);
+        if (!gpWanted) return;
+
+        const grenades = Math.ceil(gpWanted / gpPerGrenade);
+        const scrap = grenades * scrapPerGrenade;
+
+        result.innerHTML = `
+            <div>Smoke Grenades Needed: <b>${grenades}</b></div>
+            <div>Scrap Needed: <b>${scrap}</b></div>
+        `;
+    } else {
+        const scrapHave = parseInt(document.getElementById("scrapHave").value);
+        if (!scrapHave) return;
+
+        const grenades = Math.floor(scrapHave / scrapPerGrenade);
+        const gp = grenades * gpPerGrenade;
+
+        result.innerHTML = `
+            <div>Smoke Grenades You Can Buy: <b>${grenades}</b></div>
+            <div>Total Gunpowder: <b>${gp}</b></div>
+        `;
+    }
+}
+</script>
+
+</body>
+</html>
