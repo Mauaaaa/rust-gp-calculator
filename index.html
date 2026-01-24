@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <title>Rust Calculator</title>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&display=swap" rel="stylesheet">
-
 <style>
 *{box-sizing:border-box}
 body{
@@ -43,7 +42,6 @@ h1{text-align:center;color:#e6892e;margin-bottom:20px;font-size:34px}
     padding:14px;background:#1a1a1a;cursor:pointer;border-radius:6px;
     border-bottom:4px solid transparent;font-size:18px
 }
-.tab img{width:26px;height:26px}
 .tab.active{border-bottom-color:#e6892e;color:#ffb347}
 
 label{display:block;margin-top:12px;font-size:16px;color:#ccc}
@@ -68,7 +66,6 @@ button{
 .resource img{width:34px;height:34px}
 </style>
 </head>
-
 <body>
 <div class="smoke"></div>
 
@@ -76,31 +73,20 @@ button{
 <h1>Rust Calculator</h1>
 
 <div class="tabs">
-    <div class="tab active" onclick="switchTab('gp')">
-        <img src="https://rustlabs.com/img/items180/scrap.png"> Scrap → GP
-    </div>
-    <div class="tab" onclick="switchTab('exp')">
-        <img src="https://rustlabs.com/img/items180/explosives.png"> Explosives
-    </div>
-    <div class="tab" onclick="switchTab('nodes')">
-        <img src="https://rustlabs.com/img/items180/sulfur.png"> Sulfur Nodes
-    </div>
-    <div class="tab" onclick="switchTab('recycle')">
-        ♻ Recycling
-    </div>
+    <div class="tab active" onclick="switchTab('gp')">🔩 Scrap → GP</div>
+    <div class="tab" onclick="switchTab('exp')">💣 Explosives</div>
+    <div class="tab" onclick="switchTab('nodes')">⛏ Sulfur Nodes</div>
+    <div class="tab" onclick="switchTab('recycle')">♻ Components</div>
 </div>
 
 <!-- SCRAP TO GP -->
 <div id="gpTab">
     <label>Scrap per Smoke Grenade</label>
     <input type="number" id="spg" value="3">
-
     <label>Gunpowder per Grenade</label>
     <input type="number" id="gppg" value="21">
-
     <label>Gunpowder Wanted</label>
     <input type="number" id="gpWant">
-
     <button onclick="calcGP()">Calculate</button>
     <div class="result" id="gpOut"></div>
 </div>
@@ -116,21 +102,18 @@ button{
         <option value="ammo">Explosive Ammo</option>
         <option value="propane">Propane Bomb</option>
     </select>
-
     <label>Amount Wanted</label>
     <input type="number" id="amt" value="1">
-
     <label>Gunpowder Crafting</label>
     <select id="gpMethod">
         <option value="inv">Inventory</option>
         <option value="mix">Mixing Table</option>
     </select>
-
     <button onclick="calcExp()">Calculate</button>
     <div class="result" id="expOut"></div>
 </div>
 
-<!-- NODES -->
+<!-- SULFUR NODES -->
 <div id="nodesTab" style="display:none">
     <label>Sulfur Needed</label>
     <input type="number" id="sulfurNeed">
@@ -138,91 +121,67 @@ button{
     <div class="result" id="nodesOut"></div>
 </div>
 
-<!-- RECYCLING -->
+<!-- COMPONENTS RECYCLING -->
 <div id="recycleTab" style="display:none">
-<label>Recycler Location</label>
-<select id="recycleZone">
-    <option value="safe">Safe Zone</option>
-    <option value="unsafe">Outside Safe Zone</option>
-</select>
+    <label>Recycler Location</label>
+    <select id="recycleZone">
+        <option value="safe">Safe Zone</option>
+        <option value="unsafe">Outside Safe Zone</option>
+    </select>
 
-<div class="section">
-<h3>Components</h3>
-
-<div class="resource">
-    <button onclick="chg('tech',-1)">-</button>
-    <input id="tech" type="number" value="0" style="width:60px">
-    <button onclick="chg('tech',1)">+</button>
-    Tech Trash
-</div>
-
-<div class="resource">
-    <button onclick="chg('pipe',-1)">-</button>
-    <input id="pipe" type="number" value="0" style="width:60px">
-    <button onclick="chg('pipe',1)">+</button>
-    Metal Pipe
-</div>
-
-<div class="resource">
-    <button onclick="chg('gear',-1)">-</button>
-    <input id="gear" type="number" value="0" style="width:60px">
-    <button onclick="chg('gear',1)">+</button>
-    Gears
-</div>
-
-<div class="resource">
-    <button onclick="chg('fuse',-1)">-</button>
-    <input id="fuse" type="number" value="0" style="width:60px">
-    <button onclick="chg('fuse',1)">+</button>
-    Fuse
-</div>
-
-<div class="resource">
-    <button onclick="chg('cloth',-1)">-</button>
-    <input id="cloth" type="number" value="0" style="width:60px">
-    <button onclick="chg('cloth',1)">+</button>
-    Cloth
-</div>
-
-<div class="resource">
-    <button onclick="chg('beancan',-1)">-</button>
-    <input id="beancan" type="number" value="0" style="width:60px">
-    <button onclick="chg('beancan',1)">+</button>
-    Beancan Grenade
-</div>
-
-<div class="resource">
-    <button onclick="chg('exp',-1)">-</button>
-    <input id="exp" type="number" value="0" style="width:60px">
-    <button onclick="chg('exp',1)">+</button>
-    Explosives
-</div>
-
-<div class="resource">
-    <button onclick="chg('ammo',-1)">-</button>
-    <input id="ammo" type="number" value="0" style="width:60px">
-    <button onclick="chg('ammo',1)">+</button>
-    Explosive Ammo
-</div>
-
-<div class="resource">
-    <button onclick="chg('rocket',-1)">-</button>
-    <input id="rocket" type="number" value="0" style="width:60px">
-    <button onclick="chg('rocket',1)">+</button>
-    Rocket
-</div>
-
-<div class="resource">
-    <button onclick="chg('propane',-1)">-</button>
-    <input id="propane" type="number" value="0" style="width:60px">
-    <button onclick="chg('propane',1)">+</button>
-    Propane Bomb
-</div>
-
-<button onclick="calcRecycle()">Calculate Recycling</button>
-<div class="result" id="recycleOut"></div>
-</div>
-
+    <div class="section">
+        <h3>Components</h3>
+        <div class="resource">
+            <button onclick="chg('tech',-1)">-</button>
+            <input id="tech" type="number" value="0" style="width:60px">
+            <button onclick="chg('tech',1)">+</button>
+            Tech Trash
+        </div>
+        <div class="resource">
+            <button onclick="chg('pipe',-1)">-</button>
+            <input id="pipe" type="number" value="0" style="width:60px">
+            <button onclick="chg('pipe',1)">+</button>
+            Metal Pipe
+        </div>
+        <div class="resource">
+            <button onclick="chg('gear',-1)">-</button>
+            <input id="gear" type="number" value="0" style="width:60px">
+            <button onclick="chg('gear',1)">+</button>
+            Gear
+        </div>
+        <div class="resource">
+            <button onclick="chg('fuse',-1)">-</button>
+            <input id="fuse" type="number" value="0" style="width:60px">
+            <button onclick="chg('fuse',1)">+</button>
+            Fuse
+        </div>
+        <div class="resource">
+            <button onclick="chg('beancan',-1)">-</button>
+            <input id="beancan" type="number" value="0" style="width:60px">
+            <button onclick="chg('beancan',1)">+</button>
+            Beancan Grenade
+        </div>
+        <div class="resource">
+            <button onclick="chg('exp',-1)">-</button>
+            <input id="exp" type="number" value="0" style="width:60px">
+            <button onclick="chg('exp',1)">+</button>
+            Explosives
+        </div>
+        <div class="resource">
+            <button onclick="chg('ammo',-1)">-</button>
+            <input id="ammo" type="number" value="0" style="width:60px">
+            <button onclick="chg('ammo',1)">+</button>
+            Explosive Ammo
+        </div>
+        <div class="resource">
+            <button onclick="chg('propane',-1)">-</button>
+            <input id="propane" type="number" value="0" style="width:60px">
+            <button onclick="chg('propane',1)">+</button>
+            Propane Bomb
+        </div>
+        <button onclick="calcRecycle()">Calculate</button>
+        <div class="result" id="recycleOut"></div>
+    </div>
 </div>
 
 <script>
@@ -241,8 +200,8 @@ function toggle(el){el.style.display=el.style.display==='block'?'none':'block'}
 function calcGP(){
     const n=Math.ceil(gpWant.value/gppg.value)
     gpOut.innerHTML=`<div class='section'>
-        <div class='resource'><img src='https://rustlabs.com/img/items180/scrap.png'> Scrap: <b>${n*spg.value}</b></div>
-        <div class='resource'><img src='https://rustlabs.com/img/items180/gunpowder.png'> Gunpowder: <b>${n*gppg.value}</b></div>
+        <div class='resource'>Scrap: <b>${n*spg.value}</b></div>
+        <div class='resource'>Gunpowder: <b>${n*gppg.value}</b></div>
     </div>`
 }
 
@@ -266,43 +225,43 @@ function calcExp(){
     let html=''
 
     html+=`<div class='section'><h3 onclick="toggle(this.nextElementSibling)">Raw Resources</h3><div class='section-content'>`
-    add('https://rustlabs.com/img/items180/sulfur.png','Sulfur',s)
-    add('https://rustlabs.com/img/items180/coal.png','Coal',c)
-    add('https://rustlabs.com/img/items180/cloth.png','Cloth',cloth)
-    add('https://rustlabs.com/img/items180/explosives.png','Tech Trash',tech)
-    add('https://rustlabs.com/img/items180/low_grade_fuel.png','Low Grade',lg)
-    add('https://rustlabs.com/img/items180/metal_fragments.png','Metal Frags',metal)
-    add('https://rustlabs.com/img/items180/rope.png','Rope',rope)
-    add('https://rustlabs.com/img/items180/metal_fragments.png','Metal Pipes',pipes)
-    add('https://rustlabs.com/img/items180/explosives.png','Propane Tank',prop)
+    add('Sulfur',s)
+    add('Coal',c)
+    add('Cloth',cloth)
+    add('Tech Trash',tech)
+    add('Low Grade',lg)
+    add('Metal Frags',metal)
+    add('Rope',rope)
+    add('Metal Pipes',pipes)
+    add('Propane Tank',prop)
     html+='</div></div>'
 
     html+=`<div class='section'><h3 onclick="toggle(this.nextElementSibling)">Crafted Resources</h3><div class='section-content'>`
-    add('https://rustlabs.com/img/items180/gunpowder.png','Gunpowder',gp)
-    add('https://rustlabs.com/img/items180/explosives.png','Explosives',exp)
-    add('https://rustlabs.com/img/items180/explosives.png','Beancans',be)
-    add('https://rustlabs.com/img/items180/small_stash.png','Stashes',stash)
+    add('Gunpowder',gp)
+    add('Explosives',exp)
+    add('Beancans',be)
+    add('Stashes',stash)
     html+='</div></div>'
 
     html+=`<div class='section'><h3 onclick="toggle(this.nextElementSibling)">Gunpowder Craft Guide</h3><div class='section-content'>`
     const gpCrafts = Math.ceil(gp/10)
-    add('https://rustlabs.com/img/items180/gunpowder.png','Gunpowder Crafts (x10)',gpCrafts)
-    add('https://rustlabs.com/img/items180/sulfur.png','Sulfur to use',s)
-    add('https://rustlabs.com/img/items180/coal.png','Coal to use',c)
+    add('Gunpowder Crafts (x10)',gpCrafts)
+    add('Sulfur to use',s)
+    add('Coal to use',c)
     html+='</div></div>'
 
     expOut.innerHTML=html
 
-    function add(img,name,val){if(val>0)html+=`<div class='resource'><img src='${img}'> ${name}: <b>${Math.ceil(val)}</b></div>`}
+    function add(name,val){if(val>0)html+=`<div class='resource'>${name}: <b>${Math.ceil(val)}</b></div>`}
 }
 
 /* NODES */
 function calcNodes(){
     const n=Math.ceil(sulfurNeed.value/300)
-    nodesOut.innerHTML=`<div class='section'><div class='resource'><img src='https://rustlabs.com/img/items180/sulfur.png'> Sulfur Nodes: <b>${n}</b></div></div>`
+    nodesOut.innerHTML=`<div class='section'><div class='resource'>Sulfur Nodes: <b>${n}</b></div></div>`
 }
 
-/* RECYCLING */
+/* COMPONENTS RECYCLING */
 function chg(id,v){
     const el=document.getElementById(id)
     el.value=Math.max(0,+el.value+v)
@@ -311,33 +270,32 @@ function chg(id,v){
 function calcRecycle(){
     const zone=document.getElementById('recycleZone').value==='safe'?1:1.5
 
-    const comps=['tech','pipe','gear','fuse','cloth','beancan','exp','ammo','rocket','propane']
+    const comps=['tech','pipe','gear','fuse','beancan','exp','ammo','propane']
+
     const yields={
-        tech:{scrap:16,metal:0,hqm:1},
-        pipe:{scrap:4,metal:50,hqm:0},
-        gear:{scrap:8,metal:0,hqm:0},
-        fuse:{scrap:16,metal:0,hqm:0},
-        cloth:{scrap:2,metal:0,hqm:0},
-        beancan:{scrap:20,metal:5,hqm:0},
-        exp:{scrap:25,metal:10,hqm:0},
-        ammo:{scrap:15,metal:10,hqm:0},
-        rocket:{scrap:40,metal:20,hqm:0},
-        propane:{scrap:50,metal:0,hqm:0}
+        tech:{scrap:16,hqm:0,sulfur:0},
+        pipe:{scrap:4,hqm:0,sulfur:0},
+        gear:{scrap:8,hqm:0,sulfur:0},
+        fuse:{scrap:16,hqm:0,sulfur:0},
+        beancan:{scrap:20,hqm:0,sulfur:0},
+        exp:{scrap:25,hqm:0,sulfur:10},
+        ammo:{scrap:15,hqm:0,sulfur:5},
+        propane:{scrap:50,hqm:0,sulfur:20}
     }
 
-    let total={scrap:0,metal:0,hqm:0}
+    let total={scrap:0,hqm:0,sulfur:0}
 
     comps.forEach(id=>{
         const n=+document.getElementById(id).value
         total.scrap+=yields[id].scrap*n*zone
-        total.metal+=yields[id].metal*n
         total.hqm+=yields[id].hqm*n
+        total.sulfur+=yields[id].sulfur*n
     })
 
     let html=`<div class="section"><h3>Recycling Totals</h3>`
     if(total.scrap>0) html+=`<div class="resource">Scrap: <b>${Math.floor(total.scrap)}</b></div>`
-    if(total.metal>0) html+=`<div class="resource">Metal Fragments: <b>${total.metal}</b></div>`
-    if(total.hqm>0) html+=`<div class="resource">HQM: <b>${total.hqm}</b></div>`
+    if(total.hqm>0) html+=`<div class="resource">HQM: <b>${Math.floor(total.hqm)}</b></div>`
+    if(total.sulfur>0) html+=`<div class="resource">Sulfur: <b>${Math.floor(total.sulfur)}</b></div>`
     html+='</div>'
 
     recycleOut.innerHTML=html
