@@ -7,132 +7,151 @@
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
-body {
-    font-family: 'Oswald', sans-serif;
-    background: radial-gradient(circle at top, #2b2b2b, #0b0b0b);
-    color: #f2f2f2;
-    margin: 0;
-    height: 100vh;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+:root{
+    --rust:#e6892e;
+    --dark:#0b0b0b;
+    --mid:#1a1a1a;
 }
 
-.smoke {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
+body{
+    font-family:'Oswald',sans-serif;
     background:
-        radial-gradient(circle at 20% 80%, rgba(255,255,255,0.06), transparent 40%),
-        radial-gradient(circle at 80% 30%, rgba(255,255,255,0.05), transparent 45%);
-    animation: drift 30s linear infinite;
+        radial-gradient(circle at top, #2b2b2b, #0b0b0b),
+        url("https://files.facepunch.com/garry/2014/December/05/004.png");
+    background-size:cover;
+    color:#f2f2f2;
+    margin:0;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
 }
 
-@keyframes drift {
-    from { transform: translateY(0); }
-    to { transform: translateY(-200px); }
+.container{
+    width:90vw;
+    max-width:1100px;
+    background:linear-gradient(145deg,#2a2a2a,#141414);
+    border:2px solid #3a3a3a;
+    border-radius:12px;
+    padding:25px;
+    box-shadow:0 0 50px rgba(0,0,0,0.9);
 }
 
-.container {
-    background: linear-gradient(145deg, #2a2a2a, #141414);
-    border: 2px solid #3a3a3a;
-    border-radius: 10px;
-    width: 460px;
-    padding: 20px;
-    box-shadow: 0 0 30px rgba(0,0,0,0.9);
-    position: relative;
-    z-index: 2;
+h1{
+    text-align:center;
+    color:var(--rust);
+    font-size:42px;
+    margin-bottom:20px;
 }
 
-h1 {
-    text-align: center;
-    color: #e6892e;
-    margin: 5px 0 15px;
+.tabs{
+    display:flex;
+    gap:8px;
+    margin-bottom:15px;
 }
 
-.tabs {
-    display: flex;
-    margin-bottom: 10px;
+.tab{
+    flex:1;
+    padding:14px;
+    text-align:center;
+    background:#111;
+    cursor:pointer;
+    font-size:20px;
+    border-bottom:4px solid transparent;
 }
 
-.tab {
-    flex: 1;
-    text-align: center;
-    padding: 8px;
-    background: #1a1a1a;
-    cursor: pointer;
-    border-bottom: 3px solid transparent;
+.tab.active{
+    border-bottom:4px solid var(--rust);
+    color:#ffb347;
 }
 
-.tab.active {
-    border-bottom: 3px solid #e6892e;
-    color: #ffb347;
+label{
+    margin-top:12px;
+    display:block;
+    font-size:18px;
 }
 
-label {
-    display: block;
-    margin-top: 8px;
-    font-size: 14px;
-    color: #ccc;
+input,select{
+    width:100%;
+    padding:10px;
+    font-size:18px;
+    background:#000;
+    color:#fff;
+    border:1px solid #444;
+    border-radius:6px;
 }
 
-input, select {
-    width: 100%;
-    padding: 7px;
-    margin-top: 4px;
-    background: #0f0f0f;
-    color: #fff;
-    border: 1px solid #444;
-    border-radius: 4px;
+button{
+    width:100%;
+    margin-top:20px;
+    padding:14px;
+    font-size:20px;
+    background:linear-gradient(145deg,#ff9f1a,#d87400);
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
 }
 
-button {
-    width: 100%;
-    margin-top: 15px;
-    padding: 10px;
-    background: linear-gradient(145deg, #ff9f1a, #d87400);
-    color: #000;
-    font-weight: 600;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+.result{
+    margin-top:20px;
+    background:#000;
+    padding:15px;
+    border-left:6px solid var(--rust);
 }
 
-.result {
-    margin-top: 12px;
-    background: #0b0b0b;
-    border-left: 4px solid #e6892e;
-    padding: 10px;
-}
-.section-title {
+.section-title{
     color:#ff9f1a;
-    margin-top:10px;
+    font-size:22px;
+    margin-top:15px;
+    margin-bottom:8px;
+}
+
+.item{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:18px;
+}
+
+.item img{
+    width:32px;
+    height:32px;
 }
 </style>
 </head>
 
 <body>
-<div class="smoke"></div>
-
 <div class="container">
 <h1>Rust Calculator</h1>
 
 <div class="tabs">
     <div class="tab active" onclick="switchTab('gp',this)">🔩 Scrap → GP</div>
     <div class="tab" onclick="switchTab('explosives',this)">💣 Explosives</div>
+    <div class="tab" onclick="switchTab('nodes',this)">⛏️ Sulfur Nodes</div>
 </div>
 
-<!-- GP TAB (unchanged logic) -->
+<!-- SCRAP TO GP -->
 <div id="gpTab">
+    <label>Scrap per Smoke Grenade</label>
+    <input type="number" id="spg" value="3">
+
+    <label>GP per Grenade</label>
+    <select id="gppg">
+        <option value="21">Non-Safe (21)</option>
+        <option value="14">Safe Zone (14)</option>
+    </select>
+
     <label>Gunpowder Wanted</label>
-    <input type="number" id="gpWanted">
+    <input type="number" id="gpWant">
+
+    <button onclick="calcGP()">Calculate</button>
+    <div class="result" id="gpResult"></div>
 </div>
 
-<!-- EXPLOSIVES TAB -->
+<!-- EXPLOSIVES -->
 <div id="explosivesTab" style="display:none;">
     <label>Explosive Type</label>
-    <select id="explosiveType">
+    <select id="type">
         <option value="beancan">Beancan Grenade</option>
         <option value="satchel">Satchel Charge</option>
         <option value="c4">C4</option>
@@ -141,100 +160,71 @@ button {
         <option value="propane">Propane Bomb</option>
     </select>
 
-    <label>Amount Wanted</label>
-    <input type="number" id="amount">
+    <label>Amount</label>
+    <input type="number" id="amt">
 
     <label>Gunpowder Crafting</label>
     <select id="gpCraft">
-        <option value="inventory">Inventory (20S / 30C → 10 GP)</option>
-        <option value="mixing">Mixing Table (20S / 20C → 10 GP)</option>
+        <option value="inv">Inventory (20S / 30C)</option>
+        <option value="mix">Mixing Table (20S / 20C)</option>
     </select>
 
-    <button onclick="calculateExplosives()">Calculate</button>
-    <div class="result" id="explosiveResult"></div>
+    <button onclick="calcExplosives()">Calculate</button>
+    <div class="result" id="expResult"></div>
 </div>
+
+<!-- SULFUR NODES -->
+<div id="nodesTab" style="display:none;">
+    <label>Total Sulfur Needed</label>
+    <input type="number" id="sulfurInput">
+
+    <button onclick="calcNodes()">Calculate Nodes</button>
+    <div class="result" id="nodeResult"></div>
+</div>
+
 </div>
 
 <script>
-function switchTab(tab,el){
-    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-    el.classList.add("active");
-    gpTab.style.display = tab==="gp"?"block":"none";
-    explosivesTab.style.display = tab==="explosives"?"block":"none";
-}
-
-const RECIPES = {
-    beancan:{ gp:60, frags:20 },
-    satchel:{ beancan:4, stash:1, rope:1 },
-    stash:{ cloth:10 },
-    c4:{ explosives:20, cloth:5, tech:2 },
-    explosives:{ gp:50, lgf:3, sulfur:10, frags:10 },
-    rocket:{ pipes:2, gp:150, explosives:10 },
-    ammo:{ gp:20, sulfur:10, frags:10 },
-    propane:{ tank:1, gp:450, lgf:20 }
+const IMG = {
+ sulfur:"https://rustlabs.com/img/items180/sulfur.png",
+ coal:"https://rustlabs.com/img/items180/charcoal.png",
+ cloth:"https://rustlabs.com/img/items180/cloth.png",
+ frags:"https://rustlabs.com/img/items180/metal.fragments.png",
+ gp:"https://rustlabs.com/img/items180/gun.powder.png",
+ beancan:"https://rustlabs.com/img/items180/beancan.grenade.png",
+ satchel:"https://rustlabs.com/img/items180/satchel.charge.png",
+ node:"https://rustlabs.com/img/entities/sulfur-ore.png"
 };
 
-function calculateExplosives(){
-    const type = explosiveType.value;
-    const amt = +amount.value;
-    const gpMode = gpCraft.value;
+function switchTab(tab,el){
+ document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+ el.classList.add("active");
+ gpTab.style.display = tab==="gp"?"block":"none";
+ explosivesTab.style.display = tab==="explosives"?"block":"none";
+ nodesTab.style.display = tab==="nodes"?"block":"none";
+}
 
-    let raw = { sulfur:0, coal:0, cloth:0, tech:0, lgf:0, frags:0, rope:0, pipes:0, tank:0 };
-    let crafted = { gp:0, explosives:0, beancan:0, stash:0 };
+function line(img,name,val){
+ if(val<=0) return "";
+ return `<div class="item"><img src="${img}">${name}: <b>${val}</b></div>`;
+}
 
-    function resolve(item,count){
-        const r = RECIPES[item];
-        for(const k in r){
-            const v = r[k]*count;
-            if(k==="gp"){ crafted.gp+=v; }
-            else if(k==="explosives"){ crafted.explosives+=v; resolve("explosives",v); }
-            else if(k==="beancan"){ crafted.beancan+=v; resolve("beancan",v); }
-            else if(k==="stash"){ crafted.stash+=v; resolve("stash",v); }
-            else if(k==="sulfur"){ raw.sulfur+=v; }
-            else if(k==="cloth"){ raw.cloth+=v; }
-            else if(k==="tech"){ raw.tech+=v; }
-            else if(k==="lgf"){ raw.lgf+=v; }
-            else if(k==="frags"){ raw.frags+=v; }
-            else if(k==="rope"){ raw.rope+=v; }
-            else if(k==="pipes"){ raw.pipes+=v; }
-            else if(k==="tank"){ raw.tank+=v; }
-        }
-    }
+function calcGP(){
+ const spgVal=+spg.value;
+ const gppgVal=+gppg.value;
+ const want=+gpWant.value;
+ const gren=Math.ceil(want/gppgVal);
+ gpResult.innerHTML=
+ line(IMG.beancan,"Smoke Grenades",gren)+
+ line(IMG.frags,"Scrap",gren*spgVal);
+}
 
-    resolve(type,amt);
-
-    const gpBatches = Math.ceil(crafted.gp/10);
-    if(gpMode==="inventory"){
-        raw.sulfur += gpBatches*20;
-        raw.coal += gpBatches*30;
-    } else {
-        raw.sulfur += gpBatches*20;
-        raw.coal += gpBatches*20;
-    }
-
-    explosiveResult.innerHTML = `
-    <div class="section-title">🪨 RAW RESOURCES</div>
-    Sulfur: <b>${raw.sulfur}</b><br>
-    Coal: <b>${raw.coal}</b><br>
-    Cloth: <b>${raw.cloth}</b><br>
-    Tech Trash: <b>${raw.tech}</b><br>
-    Low Grade: <b>${raw.lgf}</b><br>
-    Metal Frags: <b>${raw.frags}</b><br>
-    Rope: <b>${raw.rope}</b><br>
-    Metal Pipes: <b>${raw.pipes}</b><br>
-    Propane Tanks: <b>${raw.tank}</b>
-
-    <div class="section-title">⚙ CRAFTED ITEMS</div>
-    Gunpowder: <b>${crafted.gp}</b><br>
-    Explosives: <b>${crafted.explosives}</b><br>
-    Beancans: <b>${crafted.beancan}</b><br>
-    Stashes: <b>${crafted.stash}</b>
-
-    <div class="section-title">🔥 GUNPOWDER GUIDANCE</div>
-    GP Batches: <b>${gpBatches}</b><br>
-    Use Sulfur: <b>${gpBatches*20}</b><br>
-    Use Coal: <b>${gpMode==="inventory"?gpBatches*30:gpBatches*20}</b>
-    `;
+function calcNodes(){
+ const s=+sulfurInput.value;
+ const nodes=Math.ceil(s/300);
+ nodeResult.innerHTML=
+ line(IMG.sulfur,"Sulfur Needed",s)+
+ line(IMG.node,"Sulfur Nodes (300 ea)",nodes);
 }
 </script>
 </body>
