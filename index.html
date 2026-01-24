@@ -196,6 +196,8 @@ function calcExp(){
     html+='</div></div>'
 
     html+=`<div class='section'><h3 onclick="toggle(this.nextElementSibling)">Gunpowder Craft Guide</h3><div class='section-content'>`
+    const gpCrafts = Math.ceil(gp/10)
+    add('https://rustlabs.com/img/items180/gunpowder.png','Gunpowder Crafts (x10)',gpCrafts)
     add('https://rustlabs.com/img/items180/sulfur.png','Sulfur to use',s)
     add('https://rustlabs.com/img/items180/coal.png','Coal to use',c)
     html+='</div></div>'
