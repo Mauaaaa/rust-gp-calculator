@@ -86,7 +86,7 @@ button{
         <img src="https://rustlabs.com/img/items180/sulfur.png"> Sulfur Nodes
     </div>
     <div class="tab" onclick="switchTab('recycle')">
-        <img src="https://rustlabs.com/img/items180/recycler.png"> Recycling
+        ♻ Recycling
     </div>
 </div>
 
@@ -177,9 +177,49 @@ button{
     Fuse
 </div>
 
-<button onclick="calcRecycle()">Calculate Recycling</button>
+<div class="resource">
+    <button onclick="chg('cloth',-1)">-</button>
+    <input id="cloth" type="number" value="0" style="width:60px">
+    <button onclick="chg('cloth',1)">+</button>
+    Cloth
 </div>
 
+<div class="resource">
+    <button onclick="chg('beancan',-1)">-</button>
+    <input id="beancan" type="number" value="0" style="width:60px">
+    <button onclick="chg('beancan',1)">+</button>
+    Beancan Grenade
+</div>
+
+<div class="resource">
+    <button onclick="chg('exp',-1)">-</button>
+    <input id="exp" type="number" value="0" style="width:60px">
+    <button onclick="chg('exp',1)">+</button>
+    Explosives
+</div>
+
+<div class="resource">
+    <button onclick="chg('ammo',-1)">-</button>
+    <input id="ammo" type="number" value="0" style="width:60px">
+    <button onclick="chg('ammo',1)">+</button>
+    Explosive Ammo
+</div>
+
+<div class="resource">
+    <button onclick="chg('rocket',-1)">-</button>
+    <input id="rocket" type="number" value="0" style="width:60px">
+    <button onclick="chg('rocket',1)">+</button>
+    Rocket
+</div>
+
+<div class="resource">
+    <button onclick="chg('propane',-1)">-</button>
+    <input id="propane" type="number" value="0" style="width:60px">
+    <button onclick="chg('propane',1)">+</button>
+    Propane Bomb
+</div>
+
+<button onclick="calcRecycle()">Calculate Recycling</button>
 <div class="result" id="recycleOut"></div>
 </div>
 
@@ -269,29 +309,38 @@ function chg(id,v){
 }
 
 function calcRecycle(){
-    const z=document.getElementById('recycleZone').value==='safe'?1:1.5
+    const zone=document.getElementById('recycleZone').value==='safe'?1:1.5
 
-    const tech=+tech.value
-    const pipe=+pipe.value
-    const gear=+gear.value
-    const fuse=+fuse.value
+    const comps=['tech','pipe','gear','fuse','cloth','beancan','exp','ammo','rocket','propane']
+    const yields={
+        tech:{scrap:16,metal:0,hqm:1},
+        pipe:{scrap:4,metal:50,hqm:0},
+        gear:{scrap:8,metal:0,hqm:0},
+        fuse:{scrap:16,metal:0,hqm:0},
+        cloth:{scrap:2,metal:0,hqm:0},
+        beancan:{scrap:20,metal:5,hqm:0},
+        exp:{scrap:25,metal:10,hqm:0},
+        ammo:{scrap:15,metal:10,hqm:0},
+        rocket:{scrap:40,metal:20,hqm:0},
+        propane:{scrap:50,metal:0,hqm:0}
+    }
 
-    const scrap =
-        (tech*16 + pipe*4 + gear*8 + fuse*16) * z
+    let total={scrap:0,metal:0,hqm:0}
 
-    const metal =
-        pipe*50
+    comps.forEach(id=>{
+        const n=+document.getElementById(id).value
+        total.scrap+=yields[id].scrap*n*zone
+        total.metal+=yields[id].metal*n
+        total.hqm+=yields[id].hqm*n
+    })
 
-    const hqm =
-        tech*1
+    let html=`<div class="section"><h3>Recycling Totals</h3>`
+    if(total.scrap>0) html+=`<div class="resource">Scrap: <b>${Math.floor(total.scrap)}</b></div>`
+    if(total.metal>0) html+=`<div class="resource">Metal Fragments: <b>${total.metal}</b></div>`
+    if(total.hqm>0) html+=`<div class="resource">HQM: <b>${total.hqm}</b></div>`
+    html+='</div>'
 
-    recycleOut.innerHTML=`
-    <div class="section">
-        <h3>Recycling Totals</h3>
-        <div class="resource">Scrap: <b>${Math.floor(scrap)}</b></div>
-        <div class="resource">Metal Fragments: <b>${metal}</b></div>
-        <div class="resource">HQM: <b>${hqm}</b></div>
-    </div>`
+    recycleOut.innerHTML=html
 }
 </script>
 </body>
