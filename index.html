@@ -7,7 +7,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
-/* ---------- BASE ---------- */
 body {
     font-family: 'Oswald', sans-serif;
     background: radial-gradient(circle at top, #2b2b2b, #0b0b0b);
@@ -20,7 +19,6 @@ body {
     align-items: center;
 }
 
-/* ---------- SMOKE ---------- */
 .smoke {
     position: fixed;
     inset: 0;
@@ -36,26 +34,23 @@ body {
     to { transform: translateY(-200px); }
 }
 
-/* ---------- CONTAINER ---------- */
 .container {
     background: linear-gradient(145deg, #2a2a2a, #141414);
     border: 2px solid #3a3a3a;
     border-radius: 10px;
-    width: 420px;
+    width: 460px;
     padding: 20px;
     box-shadow: 0 0 30px rgba(0,0,0,0.9);
     position: relative;
     z-index: 2;
 }
 
-/* ---------- HEADER ---------- */
 h1 {
     text-align: center;
     color: #e6892e;
     margin: 5px 0 15px;
 }
 
-/* ---------- TABS ---------- */
 .tabs {
     display: flex;
     margin-bottom: 10px;
@@ -75,11 +70,6 @@ h1 {
     color: #ffb347;
 }
 
-/* ---------- SECTIONS ---------- */
-.section {
-    margin-top: 10px;
-}
-
 label {
     display: block;
     margin-top: 8px;
@@ -97,21 +87,6 @@ input, select {
     border-radius: 4px;
 }
 
-/* ---------- DROPDOWN ---------- */
-.dropdown {
-    margin-top: 10px;
-}
-
-.dropdown-header {
-    cursor: pointer;
-    color: #ff9f1a;
-}
-
-.dropdown-content {
-    display: none;
-}
-
-/* ---------- BUTTON ---------- */
 button {
     width: 100%;
     margin-top: 15px;
@@ -124,12 +99,15 @@ button {
     cursor: pointer;
 }
 
-/* ---------- RESULT ---------- */
 .result {
     margin-top: 12px;
     background: #0b0b0b;
     border-left: 4px solid #e6892e;
     padding: 10px;
+}
+.section-title {
+    color:#ff9f1a;
+    margin-top:10px;
 }
 </style>
 </head>
@@ -138,113 +116,126 @@ button {
 <div class="smoke"></div>
 
 <div class="container">
-    <h1>Rust Calculator</h1>
+<h1>Rust Calculator</h1>
 
-    <!-- TABS -->
-    <div class="tabs">
-        <div class="tab active" onclick="switchTab('gp')">🔩 Scrap → GP</div>
-        <div class="tab" onclick="switchTab('c4')">💣 Explosives</div>
-    </div>
+<div class="tabs">
+    <div class="tab active" onclick="switchTab('gp',this)">🔩 Scrap → GP</div>
+    <div class="tab" onclick="switchTab('explosives',this)">💣 Explosives</div>
+</div>
 
-    <!-- GP TAB -->
-    <div id="gpTab">
-        <label>Mode</label>
-        <select id="mode" onchange="switchMode()">
-            <option value="gp">I want gunpowder</option>
-            <option value="scrap">I have scrap</option>
-        </select>
+<!-- GP TAB (unchanged logic) -->
+<div id="gpTab">
+    <label>Gunpowder Wanted</label>
+    <input type="number" id="gpWanted">
+</div>
 
-        <!-- ECONOMY DROPDOWN -->
-        <div class="dropdown">
-            <div class="dropdown-header" onclick="toggleEconomy()">⚙ Economy Settings</div>
-            <div class="dropdown-content" id="economy">
-                <label>Smoke Grenade Cost (Scrap)</label>
-                <input type="number" id="scrapPerGrenade">
+<!-- EXPLOSIVES TAB -->
+<div id="explosivesTab" style="display:none;">
+    <label>Explosive Type</label>
+    <select id="explosiveType">
+        <option value="beancan">Beancan Grenade</option>
+        <option value="satchel">Satchel Charge</option>
+        <option value="c4">C4</option>
+        <option value="rocket">Rocket</option>
+        <option value="ammo">Explosive Ammo (2)</option>
+        <option value="propane">Propane Bomb</option>
+    </select>
 
-                <label>Recycling Zone</label>
-                <select id="zone" onchange="updateGP()">
-                    <option value="21">Non-Safe (21 GP)</option>
-                    <option value="14">Safe (14 GP)</option>
-                </select>
+    <label>Amount Wanted</label>
+    <input type="number" id="amount">
 
-                <label>Gunpowder per Grenade</label>
-                <input type="number" id="gpPerGrenade">
-            </div>
-        </div>
+    <label>Gunpowder Crafting</label>
+    <select id="gpCraft">
+        <option value="inventory">Inventory (20S / 30C → 10 GP)</option>
+        <option value="mixing">Mixing Table (20S / 20C → 10 GP)</option>
+    </select>
 
-        <div id="gpMode">
-            <label>Gunpowder Wanted</label>
-            <input type="number" id="gpWanted">
-        </div>
-
-        <div id="scrapMode" style="display:none;">
-            <label>Scrap You Have</label>
-            <input type="number" id="scrapHave">
-        </div>
-
-        <button onclick="calculateGP()">Calculate</button>
-        <div class="result" id="gpResult"></div>
-    </div>
-
-    <!-- C4 TAB (placeholder, ready for expansion) -->
-    <div id="c4Tab" style="display:none;">
-        <p style="color:#ff9f1a;">💣 C4 calculator coming next.</p>
-        <p>This tab is already wired for full explosive components later.</p>
-    </div>
+    <button onclick="calculateExplosives()">Calculate</button>
+    <div class="result" id="explosiveResult"></div>
+</div>
 </div>
 
 <script>
-/* ---------- STATE ---------- */
-function save(id, val){ localStorage.setItem(id,val); }
-function load(id, def){ return localStorage.getItem(id) ?? def; }
-
-/* ---------- INIT ---------- */
-scrapPerGrenade.value = load("scrapPerGrenade",3);
-gpPerGrenade.value = load("gpPerGrenade",21);
-zone.value = load("zone",21);
-
-/* ---------- UI ---------- */
-function toggleEconomy(){
-    const e = document.getElementById("economy");
-    e.style.display = e.style.display === "block" ? "none" : "block";
-}
-
-function switchMode(){
-    gpMode.style.display = mode.value === "gp" ? "block" : "none";
-    scrapMode.style.display = mode.value === "scrap" ? "block" : "none";
-}
-
-function switchTab(tab){
+function switchTab(tab,el){
     document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-    event.target.classList.add("active");
-    gpTab.style.display = tab==="gp" ? "block" : "none";
-    c4Tab.style.display = tab==="c4" ? "block" : "none";
+    el.classList.add("active");
+    gpTab.style.display = tab==="gp"?"block":"none";
+    explosivesTab.style.display = tab==="explosives"?"block":"none";
 }
 
-function updateGP(){
-    gpPerGrenade.value = zone.value;
-    save("zone",zone.value);
-}
+const RECIPES = {
+    beancan:{ gp:60, frags:20 },
+    satchel:{ beancan:4, stash:1, rope:1 },
+    stash:{ cloth:10 },
+    c4:{ explosives:20, cloth:5, tech:2 },
+    explosives:{ gp:50, lgf:3, sulfur:10, frags:10 },
+    rocket:{ pipes:2, gp:150, explosives:10 },
+    ammo:{ gp:20, sulfur:10, frags:10 },
+    propane:{ tank:1, gp:450, lgf:20 }
+};
 
-/* ---------- CALC ---------- */
-function calculateGP(){
-    save("scrapPerGrenade",scrapPerGrenade.value);
-    save("gpPerGrenade",gpPerGrenade.value);
+function calculateExplosives(){
+    const type = explosiveType.value;
+    const amt = +amount.value;
+    const gpMode = gpCraft.value;
 
-    const gppg = +gpPerGrenade.value;
-    const spg = +scrapPerGrenade.value;
+    let raw = { sulfur:0, coal:0, cloth:0, tech:0, lgf:0, frags:0, rope:0, pipes:0, tank:0 };
+    let crafted = { gp:0, explosives:0, beancan:0, stash:0 };
 
-    if(mode.value==="gp"){
-        const want = +gpWanted.value;
-        const n = Math.ceil(want/gppg);
-        gpResult.innerHTML = `🧨 Grenades: <b>${n}</b><br>🔩 Scrap: <b>${n*spg}</b>`;
-    } else {
-        const scrap = +scrapHave.value;
-        const n = Math.floor(scrap/spg);
-        gpResult.innerHTML = `🧨 Grenades: <b>${n}</b><br>🔥 Gunpowder: <b>${n*gppg}</b>`;
+    function resolve(item,count){
+        const r = RECIPES[item];
+        for(const k in r){
+            const v = r[k]*count;
+            if(k==="gp"){ crafted.gp+=v; }
+            else if(k==="explosives"){ crafted.explosives+=v; resolve("explosives",v); }
+            else if(k==="beancan"){ crafted.beancan+=v; resolve("beancan",v); }
+            else if(k==="stash"){ crafted.stash+=v; resolve("stash",v); }
+            else if(k==="sulfur"){ raw.sulfur+=v; }
+            else if(k==="cloth"){ raw.cloth+=v; }
+            else if(k==="tech"){ raw.tech+=v; }
+            else if(k==="lgf"){ raw.lgf+=v; }
+            else if(k==="frags"){ raw.frags+=v; }
+            else if(k==="rope"){ raw.rope+=v; }
+            else if(k==="pipes"){ raw.pipes+=v; }
+            else if(k==="tank"){ raw.tank+=v; }
+        }
     }
+
+    resolve(type,amt);
+
+    const gpBatches = Math.ceil(crafted.gp/10);
+    if(gpMode==="inventory"){
+        raw.sulfur += gpBatches*20;
+        raw.coal += gpBatches*30;
+    } else {
+        raw.sulfur += gpBatches*20;
+        raw.coal += gpBatches*20;
+    }
+
+    explosiveResult.innerHTML = `
+    <div class="section-title">🪨 RAW RESOURCES</div>
+    Sulfur: <b>${raw.sulfur}</b><br>
+    Coal: <b>${raw.coal}</b><br>
+    Cloth: <b>${raw.cloth}</b><br>
+    Tech Trash: <b>${raw.tech}</b><br>
+    Low Grade: <b>${raw.lgf}</b><br>
+    Metal Frags: <b>${raw.frags}</b><br>
+    Rope: <b>${raw.rope}</b><br>
+    Metal Pipes: <b>${raw.pipes}</b><br>
+    Propane Tanks: <b>${raw.tank}</b>
+
+    <div class="section-title">⚙ CRAFTED ITEMS</div>
+    Gunpowder: <b>${crafted.gp}</b><br>
+    Explosives: <b>${crafted.explosives}</b><br>
+    Beancans: <b>${crafted.beancan}</b><br>
+    Stashes: <b>${crafted.stash}</b>
+
+    <div class="section-title">🔥 GUNPOWDER GUIDANCE</div>
+    GP Batches: <b>${gpBatches}</b><br>
+    Use Sulfur: <b>${gpBatches*20}</b><br>
+    Use Coal: <b>${gpMode==="inventory"?gpBatches*30:gpBatches*20}</b>
+    `;
 }
 </script>
-
 </body>
 </html>
