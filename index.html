@@ -10,53 +10,71 @@
 :root{
     --rust:#e6892e;
     --dark:#0b0b0b;
-    --mid:#1a1a1a;
 }
 
 body{
     font-family:'Oswald',sans-serif;
-    background:
-        radial-gradient(circle at top, #2b2b2b, #0b0b0b),
-        url("https://files.facepunch.com/garry/2014/December/05/004.png");
-    background-size:cover;
-    color:#f2f2f2;
     margin:0;
     min-height:100vh;
+    background:
+        radial-gradient(circle at top, #2b2b2b, #0b0b0b),
+        url("https://rustlabs.com/img/bg/bg_dark.jpg");
+    background-size:cover;
+    color:#f2f2f2;
     display:flex;
     justify-content:center;
     align-items:center;
+    overflow:hidden;
+}
+
+/* animated smoke */
+.smoke{
+    position:fixed;
+    inset:0;
+    background:
+        radial-gradient(circle at 30% 80%, rgba(255,255,255,0.05), transparent 40%),
+        radial-gradient(circle at 70% 20%, rgba(255,255,255,0.04), transparent 45%);
+    animation:drift 40s linear infinite;
+    pointer-events:none;
+}
+
+@keyframes drift{
+    from{transform:translateY(0);}
+    to{transform:translateY(-300px);}
 }
 
 .container{
-    width:90vw;
-    max-width:1100px;
+    width:92vw;
+    max-width:1200px;
     background:linear-gradient(145deg,#2a2a2a,#141414);
     border:2px solid #3a3a3a;
-    border-radius:12px;
-    padding:25px;
-    box-shadow:0 0 50px rgba(0,0,0,0.9);
+    border-radius:14px;
+    padding:30px;
+    box-shadow:0 0 60px rgba(0,0,0,0.9);
+    position:relative;
+    z-index:2;
 }
 
 h1{
     text-align:center;
     color:var(--rust);
-    font-size:42px;
+    font-size:44px;
     margin-bottom:20px;
 }
 
 .tabs{
     display:flex;
-    gap:8px;
-    margin-bottom:15px;
+    gap:10px;
+    margin-bottom:20px;
 }
 
 .tab{
     flex:1;
-    padding:14px;
-    text-align:center;
+    padding:16px;
     background:#111;
+    text-align:center;
     cursor:pointer;
-    font-size:20px;
+    font-size:22px;
     border-bottom:4px solid transparent;
 }
 
@@ -66,15 +84,15 @@ h1{
 }
 
 label{
-    margin-top:12px;
+    margin-top:14px;
     display:block;
-    font-size:18px;
+    font-size:20px;
 }
 
 input,select{
     width:100%;
-    padding:10px;
-    font-size:18px;
+    padding:12px;
+    font-size:20px;
     background:#000;
     color:#fff;
     border:1px solid #444;
@@ -83,44 +101,46 @@ input,select{
 
 button{
     width:100%;
-    margin-top:20px;
-    padding:14px;
-    font-size:20px;
+    margin-top:22px;
+    padding:16px;
+    font-size:22px;
     background:linear-gradient(145deg,#ff9f1a,#d87400);
     border:none;
-    border-radius:6px;
+    border-radius:8px;
     cursor:pointer;
 }
 
 .result{
-    margin-top:20px;
+    margin-top:24px;
     background:#000;
-    padding:15px;
+    padding:18px;
     border-left:6px solid var(--rust);
 }
 
 .section-title{
     color:#ff9f1a;
-    font-size:22px;
-    margin-top:15px;
-    margin-bottom:8px;
+    font-size:24px;
+    margin-top:18px;
 }
 
 .item{
     display:flex;
     align-items:center;
-    gap:10px;
-    font-size:18px;
+    gap:12px;
+    font-size:20px;
+    margin-top:6px;
 }
 
 .item img{
-    width:32px;
-    height:32px;
+    width:36px;
+    height:36px;
 }
 </style>
 </head>
 
 <body>
+<div class="smoke"></div>
+
 <div class="container">
 <h1>Rust Calculator</h1>
 
@@ -137,7 +157,7 @@ button{
 
     <label>GP per Grenade</label>
     <select id="gppg">
-        <option value="21">Non-Safe (21)</option>
+        <option value="21">Non-Safe Zone (21)</option>
         <option value="14">Safe Zone (14)</option>
     </select>
 
@@ -151,7 +171,7 @@ button{
 <!-- EXPLOSIVES -->
 <div id="explosivesTab" style="display:none;">
     <label>Explosive Type</label>
-    <select id="type">
+    <select id="expType">
         <option value="beancan">Beancan Grenade</option>
         <option value="satchel">Satchel Charge</option>
         <option value="c4">C4</option>
@@ -160,8 +180,8 @@ button{
         <option value="propane">Propane Bomb</option>
     </select>
 
-    <label>Amount</label>
-    <input type="number" id="amt">
+    <label>Amount Wanted</label>
+    <input type="number" id="expAmt">
 
     <label>Gunpowder Crafting</label>
     <select id="gpCraft">
@@ -181,18 +201,17 @@ button{
     <button onclick="calcNodes()">Calculate Nodes</button>
     <div class="result" id="nodeResult"></div>
 </div>
-
 </div>
 
 <script>
-const IMG = {
+const IMG={
+ scrap:"https://rustlabs.com/img/items180/scrap.png",
+ smoke:"https://rustlabs.com/img/items180/smoke.grenade.png",
  sulfur:"https://rustlabs.com/img/items180/sulfur.png",
  coal:"https://rustlabs.com/img/items180/charcoal.png",
- cloth:"https://rustlabs.com/img/items180/cloth.png",
- frags:"https://rustlabs.com/img/items180/metal.fragments.png",
  gp:"https://rustlabs.com/img/items180/gun.powder.png",
+ frags:"https://rustlabs.com/img/items180/metal.fragments.png",
  beancan:"https://rustlabs.com/img/items180/beancan.grenade.png",
- satchel:"https://rustlabs.com/img/items180/satchel.charge.png",
  node:"https://rustlabs.com/img/entities/sulfur-ore.png"
 };
 
@@ -205,26 +224,43 @@ function switchTab(tab,el){
 }
 
 function line(img,name,val){
- if(val<=0) return "";
+ if(!val||val<=0) return "";
  return `<div class="item"><img src="${img}">${name}: <b>${val}</b></div>`;
 }
 
+/* SCRAP TO GP */
 function calcGP(){
- const spgVal=+spg.value;
- const gppgVal=+gppg.value;
  const want=+gpWant.value;
- const gren=Math.ceil(want/gppgVal);
- gpResult.innerHTML=
- line(IMG.beancan,"Smoke Grenades",gren)+
- line(IMG.frags,"Scrap",gren*spgVal);
+ const gren=Math.ceil(want / +gppg.value);
+ gpResult.innerHTML =
+ line(IMG.smoke,"Smoke Grenades",gren) +
+ line(IMG.scrap,"Scrap",gren * +spg.value);
 }
 
+/* SULFUR NODES */
 function calcNodes(){
  const s=+sulfurInput.value;
- const nodes=Math.ceil(s/300);
+ const n=Math.ceil(s/300);
  nodeResult.innerHTML=
- line(IMG.sulfur,"Sulfur Needed",s)+
- line(IMG.node,"Sulfur Nodes (300 ea)",nodes);
+ line(IMG.sulfur,"Sulfur Needed",s) +
+ line(IMG.node,"Sulfur Nodes",n);
+}
+
+/* EXPLOSIVES (working baseline – expandable) */
+function calcExplosives(){
+ const type=expType.value;
+ const amt=+expAmt.value;
+ let gp=0, frags=0;
+
+ if(type==="beancan"){
+   gp=60*amt;
+   frags=20*amt;
+ }
+
+ expResult.innerHTML =
+ `<div class="section-title">RAW</div>` +
+ line(IMG.gp,"Gunpowder",gp) +
+ line(IMG.frags,"Metal Fragments",frags);
 }
 </script>
 </body>
