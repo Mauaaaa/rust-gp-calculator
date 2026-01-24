@@ -10,202 +10,183 @@
 body{
     font-family:'Oswald',sans-serif;
     margin:0;
-    min-height:100vh;
     background:radial-gradient(circle at top,#2b2b2b,#0b0b0b);
     color:#f2f2f2;
-    overflow-y:auto;
 }
-.smoke{
-    position:fixed;inset:0;pointer-events:none;
-    background:
-        radial-gradient(circle at 20% 80%,rgba(255,255,255,0.06),transparent 40%),
-        radial-gradient(circle at 80% 30%,rgba(255,255,255,0.05),transparent 45%);
-    animation:drift 35s linear infinite;
-}
-@keyframes drift{from{transform:translateY(0)}to{transform:translateY(-250px)}}
-
 .container{
     max-width:900px;
     margin:40px auto;
-    background:linear-gradient(145deg,#2a2a2a,#141414);
-    border:2px solid #3a3a3a;
+    background:#141414;
+    border:2px solid #333;
     border-radius:12px;
     padding:25px;
     box-shadow:0 0 40px rgba(0,0,0,.9);
 }
-h1{text-align:center;color:#e6892e;margin-bottom:20px;font-size:34px}
+h1{text-align:center;color:#ff9f1a;margin-bottom:20px}
 
 .tabs{display:flex;gap:10px;margin-bottom:20px}
 .tab{
-    flex:1;display:flex;align-items:center;justify-content:center;gap:8px;
-    padding:14px;background:#1a1a1a;cursor:pointer;border-radius:6px;
-    border-bottom:4px solid transparent;font-size:18px
+    flex:1;text-align:center;padding:14px;
+    background:#1e1e1e;cursor:pointer;
+    border-radius:6px;border-bottom:4px solid transparent;
 }
-.tab img{width:26px;height:26px}
-.tab.active{border-bottom-color:#e6892e;color:#ffb347}
+.tab.active{border-bottom-color:#ff9f1a;color:#ffb347}
 
-label{display:block;margin-top:12px;font-size:16px;color:#ccc}
+label{display:block;margin-top:12px;color:#ccc}
 input,select{
     width:100%;padding:10px;margin-top:6px;
-    background:#0f0f0f;color:#fff;border:1px solid #444;border-radius:5px;font-size:16px
+    background:#0f0f0f;color:#fff;
+    border:1px solid #444;border-radius:5px;
 }
 button{
-    width:100%;margin-top:20px;padding:14px;
+    width:100%;margin-top:18px;padding:14px;
     background:linear-gradient(145deg,#ff9f1a,#d87400);
-    color:#000;font-weight:600;border:none;border-radius:6px;cursor:pointer;font-size:18px
+    border:none;border-radius:6px;
+    font-size:18px;font-weight:600;cursor:pointer;
 }
-.result{margin-top:20px}
-.section{
-    margin-top:14px;background:#0b0b0b;border-left:5px solid #e6892e;padding:12px
+
+.card{
+    background:#0c0c0c;
+    padding:12px;margin:8px 0;
+    border-left:4px solid #555;
 }
-.section h3{margin:0 0 8px;color:#ffb347;cursor:pointer}
-.section-content{display:none}
+.total-box{
+    background:#1b1205;
+    border:2px solid #ff9f1a;
+    padding:14px;
+    margin-top:16px;
+    font-size:18px;
+}
+.total-box b{color:#ffb347}
 
-.resource{display:flex;align-items:center;gap:10px;margin:6px 0}
-
-/* recycling */
 .recycle-list{max-height:260px;overflow-y:auto}
-.recycle-row{display:flex;gap:10px;align-items:center;margin:6px 0}
+.recycle-row{display:flex;gap:8px;align-items:center;margin:6px 0}
 .recycle-row button{width:36px}
 .recycle-row input{width:70px;text-align:center}
-.small{font-size:14px;color:#bbb}
 </style>
 </head>
 
 <body>
-<div class="smoke"></div>
-
 <div class="container">
 <h1>Rust Calculator</h1>
 
 <div class="tabs">
-    <div class="tab active" onclick="switchTab('gp')">
-        <img src="https://rustlabs.com/img/items180/scrap.png"> Scrap → GP
-    </div>
-    <div class="tab" onclick="switchTab('exp')">
-        <img src="https://rustlabs.com/img/items180/explosives.png"> Explosives
-    </div>
-    <div class="tab" onclick="switchTab('nodes')">
-        <img src="https://rustlabs.com/img/items180/sulfur.png"> Sulfur Nodes
-    </div>
-    <div class="tab" onclick="switchTab('recycle')">
-        ♻ Recycling
-    </div>
+    <div class="tab active" onclick="tab('gp',this)">GP</div>
+    <div class="tab" onclick="tab('exp',this)">Explosives</div>
+    <div class="tab" onclick="tab('recycle',this)">Recycling</div>
 </div>
 
-<!-- SCRAP TO GP -->
+<!-- GP -->
 <div id="gpTab">
-    <label>Scrap per Smoke Grenade</label>
-    <input type="number" id="spg" value="3">
-
-    <label>Gunpowder per Grenade</label>
-    <input type="number" id="gppg" value="21">
-
     <label>Gunpowder Wanted</label>
-    <input type="number" id="gpWant">
-
+    <input id="gpWant" type="number">
     <button onclick="calcGP()">Calculate</button>
-    <div class="result" id="gpOut"></div>
+    <div id="gpOut"></div>
 </div>
 
-<!-- EXPLOSIVES (UNCHANGED, FULLY RESTORED) -->
+<!-- EXPLOSIVES -->
 <div id="expTab" style="display:none">
-    <!-- EXACT SAME explosives code YOU PROVIDED -->
-    <!-- (no changes made) -->
-    <!-- omitted here for brevity in explanation, but INCLUDED in your paste -->
-</div>
+    <label>Satchels</label><input id="sat" type="number" value="0">
+    <label>Rockets</label><input id="rock" type="number" value="0">
+    <label>C4</label><input id="c4" type="number" value="0">
+    <label>Explosive 5.56</label><input id="ammo" type="number" value="0">
 
-<!-- NODES -->
-<div id="nodesTab" style="display:none">
-    <label>Sulfur Needed</label>
-    <input type="number" id="sulfurNeed">
-    <button onclick="calcNodes()">Calculate</button>
-    <div class="result" id="nodesOut"></div>
+    <button onclick="calcExp()">Calculate</button>
+    <div id="expOut"></div>
 </div>
 
 <!-- RECYCLING -->
 <div id="recycleTab" style="display:none">
-    <label>Recycler Type</label>
-    <select id="recyclerType" onchange="calcRecycle()">
-        <option value="safe">Safe Zone</option>
-        <option value="unsafe">Non-Safe Zone</option>
-    </select>
+<label>Recycler Type</label>
+<select id="recyclerType" onchange="calcRecycle()">
+<option value="safe">Safe Zone</option>
+<option value="unsafe">Non-Safe Zone</option>
+</select>
 
-    <div class="recycle-list" id="recycleList"></div>
-    <div class="result" id="recycleOut"></div>
+<div class="recycle-list" id="recycleList"></div>
+<div id="recycleOut"></div>
 </div>
 </div>
 
 <script>
-function switchTab(t){
-    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'))
-    event.currentTarget.classList.add('active')
-    gpTab.style.display=t==='gp'?'block':'none'
-    expTab.style.display=t==='exp'?'block':'none'
-    nodesTab.style.display=t==='nodes'?'block':'none'
-    recycleTab.style.display=t==='recycle'?'block':'none'
+function tab(id,el){
+ document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'))
+ el.classList.add('active')
+ gpTab.style.display=id==='gp'?'block':'none'
+ expTab.style.display=id==='exp'?'block':'none'
+ recycleTab.style.display=id==='recycle'?'block':'none'
 }
-function toggle(el){el.style.display=el.style.display==='block'?'none':'block'}
 
 function calcGP(){
-    const n=Math.ceil(gpWant.value/gppg.value)
-    gpOut.innerHTML=`<div class='section'>Scrap: <b>${n*spg.value}</b><br>Gunpowder: <b>${n*gppg.value}</b></div>`
-}
-function calcNodes(){
-    const n=Math.ceil(sulfurNeed.value/300)
-    nodesOut.innerHTML=`<div class='section'>Sulfur Nodes: <b>${n}</b></div>`
-}
-
-/* RECYCLER DATA (COMMUNITY YIELDS) */
-const recyclerData=[
- {name:'Tech Trash',safe:{scrap:16,hqm:1},unsafe:{scrap:24,hqm:1}},
- {name:'Electric Fuse',safe:{scrap:16},unsafe:{scrap:24}},
- {name:'Metal Pipe',safe:{scrap:4,metal:50},unsafe:{scrap:6,metal:50}},
- {name:'Metal Spring',safe:{scrap:8},unsafe:{scrap:12}},
- {name:'Gears',safe:{scrap:8},unsafe:{scrap:12}},
- {name:'SMG Body',safe:{scrap:12},unsafe:{scrap:18}},
- {name:'Semi Body',safe:{scrap:12},unsafe:{scrap:18}},
- {name:'Rifle Body',safe:{scrap:20,hqm:1},unsafe:{scrap:31,hqm:1}},
- {name:'Road Signs',safe:{scrap:4,metal:100},unsafe:{scrap:6,metal:100}},
- {name:'Sheet Metal',safe:{scrap:7,metal:100},unsafe:{scrap:10,metal:100}},
- {name:'Propane Tank',safe:{scrap:1},unsafe:{scrap:2}}
-]
-
-const counts={}
-const list=document.getElementById('recycleList')
-
-recyclerData.forEach(r=>{
- counts[r.name]=0
- list.innerHTML+=`
- <div class="recycle-row">
-   <button onclick="chg('${r.name}',-1)">-</button>
-   <input type="number" min="0" value="0" onchange="setVal('${r.name}',this.value)">
-   <button onclick="chg('${r.name}',1)">+</button>
-   ${r.name}
+ gpOut.innerHTML=
+ `<div class="total-box">
+ Gunpowder: <b>${gpWant.value}</b><br>
+ Crafts (10 GP each): <b>${Math.ceil(gpWant.value/10)}</b>
  </div>`
-})
+}
 
-function chg(n,d){counts[n]=Math.max(0,counts[n]+d);calcRecycle()}
-function setVal(n,v){counts[n]=Math.max(0,+v||0);calcRecycle()}
+/* EXPLOSIVES CALC */
+function calcExp(){
+ const gp =
+   sat.value*480 +
+   rock.value*650 +
+   c4.value*2200 +
+   ammo.value*10
+
+ expOut.innerHTML=`
+ <div class="card">Satchels GP: ${sat.value*480}</div>
+ <div class="card">Rockets GP: ${rock.value*650}</div>
+ <div class="card">C4 GP: ${c4.value*2200}</div>
+ <div class="card">Explo Ammo GP: ${ammo.value*10}</div>
+
+ <div class="total-box">
+ Total Gunpowder: <b>${gp}</b><br>
+ Inventory Crafts (10 GP each): <b>${Math.ceil(gp/10)}</b>
+ </div>`
+}
+
+/* RECYCLING DATA */
+const data=[
+ {n:'Tech Trash',s:{scrap:16,hqm:1},u:{scrap:24,hqm:1}},
+ {n:'Fuse',s:{scrap:16},u:{scrap:24}},
+ {n:'Metal Pipe',s:{scrap:4,metal:50},u:{scrap:6,metal:50}},
+ {n:'Gears',s:{scrap:8},u:{scrap:12}}
+]
+const cnt={}
+data.forEach(x=>cnt[x.n]=0)
+
+recycleList.innerHTML=data.map(x=>`
+<div class="recycle-row">
+<button onclick="chg('${x.n}',-1)">-</button>
+<input value="0" onchange="setV('${x.n}',this.value)">
+<button onclick="chg('${x.n}',1)">+</button>${x.n}
+</div>`).join('')
+
+function chg(n,d){cnt[n]=Math.max(0,cnt[n]+d);calcRecycle()}
+function setV(n,v){cnt[n]=Math.max(0,+v||0);calcRecycle()}
 
 function calcRecycle(){
- let totals={scrap:0,metal:0,hqm:0}
- let html='<div class="section"><h3>Recycle Output</h3>'
+ let t={scrap:0,metal:0,hqm:0}
+ let h=''
  const safe=recyclerType.value==='safe'
- recyclerData.forEach(r=>{
-   const c=counts[r.name]; if(!c) return
-   const out=safe?r.safe:r.unsafe
-   html+=`<b>${r.name}</b><br>`
-   for(const k in out){
-     const v=out[k]*c
-     totals[k]+=v
-     html+=`&nbsp;&nbsp;${k}: ${v}<br>`
-   }
+ data.forEach(x=>{
+  const c=cnt[x.n]; if(!c)return
+  const o=safe?x.s:x.u
+  h+=`<div class="card"><b>${x.n}</b><br>`
+  for(const k in o){
+    const v=o[k]*c
+    t[k]+=v
+    h+=`${k}: ${v}<br>`
+  }
+  h+='</div>'
  })
- html+=`<br><b>TOTALS</b><br>`
- for(const k in totals){ if(totals[k]>0) html+=`${k}: <b>${totals[k]}</b><br>` }
- html+='</div>'
- recycleOut.innerHTML=html
+ h+=`<div class="total-box">
+ Scrap: <b>${t.scrap}</b><br>
+ Metal Fragments: <b>${t.metal}</b><br>
+ HQM: <b>${t.hqm}</b>
+ </div>`
+ recycleOut.innerHTML=h
 }
 </script>
-<
+</body>
+</html>
