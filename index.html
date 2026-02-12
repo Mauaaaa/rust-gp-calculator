@@ -156,6 +156,17 @@ button:active { transform: scale(0.98); }
 .wire { flex: 1; height: 2px; background: #555; position: relative; }
 .wire::after { content: '⚡'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); font-size: 10px; }
 
+/* Blueprint Visualizer (CSS Grid) */
+.bp-visual {
+    display: flex; justify-content: center; align-items: center;
+    background: #111; height: 150px; border-radius: 8px; margin-bottom: 15px;
+    position: relative; border: 1px solid #333;
+}
+.bp-square { width: 40px; height: 40px; background: #34495e; border: 2px solid #555; display: grid; place-items: center; color: #aaa; font-size: 10px; }
+.bp-tri { width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-bottom: 35px solid #34495e; position: relative; }
+.bp-tri::after { content:''; position:absolute; top:2px; left:-18px; border-left:18px solid transparent; border-right:18px solid transparent; border-bottom:31px solid #2c3e50; }
+.bp-core { background: #e74c3c !important; color: #fff; font-weight: bold; }
+
 /* Gene Grid */
 .gene-row { display: flex; gap: 5px; margin-bottom: 10px; justify-content: center; }
 .gene-input { 
@@ -266,6 +277,7 @@ button:active { transform: scale(0.98); }
                         <option value="pick">Metal Pickaxe</option>
                         <option value="sword">Salvaged Sword</option>
                         <option value="hatchet">Hatchet</option>
+                        <option value="mace">Mace</option>
                     </select>
                 </div>
                 <div>
@@ -298,17 +310,21 @@ button:active { transform: scale(0.98); }
     </div>
 
     <div id="view-footprint" class="view" data-theme="build">
-        <header><h2 style="color:var(--c-build)">Footprint Guide</h2><p class="subtitle">Expansion Logic</p></header>
+        <header><h2 style="color:var(--c-build)">Footprint Guide</h2><p class="subtitle">Visual Expansion Diagrams</p></header>
         <div class="card">
             <h3>🏠 Select Starter</h3>
             <label>Current Base Shape</label>
-            <select id="baseShape">
-                <option value="2x1">Standard 2x1</option>
-                <option value="2x2">Standard 2x2</option>
-                <option value="circle">Hexagon / Circle</option>
+            <select id="baseShape" onchange="calcFootprint()">
+                <option value="2x1">Standard 2x1 (Solo/Duo)</option>
+                <option value="2x2">Standard 2x2 (Group)</option>
+                <option value="1x2">1x2 (Micro Solo)</option>
+                <option value="circle">Hexagon / Circle (Zerg)</option>
             </select>
-            <button class="btn-build" onclick="calcFootprint()">View Expansion</button>
-            <div id="footRes" class="result-box" style="display:none"></div>
+            
+            <button class="btn-build" onclick="calcFootprint()">Analyze Expansion</button>
+            
+            <div id="footRes" class="result-box" style="display:none">
+                </div>
         </div>
     </div>
 
@@ -317,13 +333,14 @@ button:active { transform: scale(0.98); }
         <div class="grid-2">
             <div class="card">
                 <h3>🔔 Smart Alarm</h3>
-                <p style="font-size:13px; color:#aaa; margin-bottom:10px">Sends notification to phone when triggered.</p>
+                <p style="font-size:13px; color:#aaa; margin-bottom:10px">Detects raiders and pushes notification.</p>
                 <div class="circuit-diagram">
                     <span class="node pwr">Battery</span> <div class="wire"></div> <span class="node sw">Switch</span> <div class="wire"></div> <span class="node out">Alarm</span>
                 </div>
                 <ul style="font-size:13px; color:#ccc; margin-left:15px; line-height:1.6">
-                    <li>Requires <b>1 rW</b> power.</li>
-                    <li>Pair with Rust+ app while holding wire tool.</li>
+                    <li><b>Power:</b> 1 rW continuous.</li>
+                    <li><b>Placement:</b> Hidden inside honeycomb or airlock.</li>
+                    <li><b>Tip:</b> Connect to HBHF Sensor for auto-trigger.</li>
                 </ul>
             </div>
             <div class="card">
@@ -333,9 +350,18 @@ button:active { transform: scale(0.98); }
                     <span class="node pwr">Battery</span> <div class="wire"></div> <span class="node sw">Splitter</span> <div class="wire"></div> <span class="node out">3x Turret</span>
                 </div>
                 <ul style="font-size:13px; color:#ccc; margin-left:15px; line-height:1.6">
-                    <li>Requires <b>31 rW</b> minimum.</li>
-                    <li>Each Turret consumes 10 rW.</li>
-                    <li>Use a <b>Large Battery</b> for overnight reliability.</li>
+                    <li><b>Power:</b> 31 rW minimum (10 per turret + 1 splitter).</li>
+                    <li><b>Limit:</b> Max 12 turrets in a 40m radius.</li>
+                    <li><b>Tip:</b> Use a Switch before the Splitter to turn off and save power.</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>💨 Windmill Setup</h3>
+                <p style="font-size:13px; color:#aaa; margin-bottom:10px">Optimal height for max power.</p>
+                <ul style="font-size:13px; color:#ccc; margin-left:15px; line-height:1.6">
+                    <li><b>Height:</b> 8+ floors up = ~100+ rW.</li>
+                    <li><b>Clearance:</b> Ensure no walls block the blades.</li>
+                    <li><b>Root Combine:</b> Connect multiple windmills into one Root Combiner.</li>
                 </ul>
             </div>
         </div>
@@ -502,7 +528,6 @@ function updateEcoRec() {
     const rec = document.getElementById('ecoRec');
     let msg = "Select a target.";
     
-    // Dynamic Recommendation
     if(t === 'wall.wood') msg = "Best: <b>Salvaged Sword</b> (Fastest) or <b>Spears</b> (Cheapest).";
     if(t === 'wall.stone') msg = "Best: <b>7x Metal Pickaxes</b> or <b>1x Jackhammer</b>.";
     if(t === 'wall.metal') msg = "Best: <b>Jackhammers</b> Only. (Spears do 0 dmg).";
@@ -523,28 +548,21 @@ function calcEco() {
     };
     
     // DAMAGE MATRIX (Target -> Tool Damage)
-    // 0 means immune
     const dmgMap = {
         'wall.wood': { spear:10, jack:13, pick:18, sword:24, hatchet:15 },
         'wall.stone': { spear:1.2, jack:45, pick:27, sword:3, hatchet:1 },
         'wall.metal': { spear:0, jack:4, pick:1, sword:0, hatchet:0 },
         'door.wood': { spear:12, jack:18, pick:20, sword:25, hatchet:16 },
-        'door.sheet': { spear:0, jack:0, pick:0, sword:0, hatchet:0 }, // Immune
-        'door.garage': { spear:0, jack:0, pick:0, sword:0, hatchet:0 }  // Immune
+        'door.sheet': { spear:0, jack:0, pick:0, sword:0, hatchet:0 }, 
+        'door.garage': { spear:0, jack:0, pick:0, sword:0, hatchet:0 }
     };
 
-    const toolDurability = {
-        spear: 50, jack: 600, pick: 250, sword: 40, hatchet: 200
-    };
-    const toolNames = {
-        spear: "Wooden Spears", jack: "Jackhammer Refills", pick: "Pickaxes",
-        sword: "Sal. Swords", hatchet: "Hatchets"
-    };
+    const toolDurability = { spear: 50, jack: 600, pick: 250, sword: 40, hatchet: 200, mace:150 };
+    const toolNames = { spear: "Wooden Spears", jack: "Jackhammer Refills", pick: "Pickaxes", sword: "Sal. Swords", hatchet: "Hatchets", mace:"Maces" };
 
-    const targetType = t; // e.g. 'wall.stone'
-    const dmgPerHit = dmgMap[targetType][tool];
+    const dmgPerHit = dmgMap[t][tool];
 
-    if(dmgPerHit <= 0) {
+    if(!dmgPerHit || dmgPerHit <= 0) {
         document.getElementById('ecoRes').style.display = 'block';
         document.getElementById('ecoRes').innerHTML = `<strong style="color:#ff4757">Target is IMMUNE to this tool.</strong>`;
         return;
@@ -563,7 +581,6 @@ function calcEco() {
 
 /* --- LOGIC: FULL COMPARE (UPDATED) --- */
 function calcCompare() {
-    // Defines raw material cost per item
     const getCost = (t, q) => {
         if(t==='rocket') return {s:1400*q, c:1950*q, m:100*q, p:2*q, tech:0, fuel:0};
         if(t==='c4') return {s:2200*q, c:3000*q, m:200*q, p:0, tech:2*q, fuel:60*q};
@@ -574,7 +591,6 @@ function calcCompare() {
     const cA = getCost(document.getElementById('compA').value, +document.getElementById('amtA').value);
     const cB = getCost(document.getElementById('compB').value, +document.getElementById('amtB').value);
     
-    // Build Table
     let html = `<table class="comp-table"><thead><tr><th>Resource</th><th>Opt A</th><th>Opt B</th><th>Difference</th></tr></thead><tbody>`;
     
     const fields = [
@@ -586,7 +602,7 @@ function calcCompare() {
         if(cA[f.key] > 0 || cB[f.key] > 0) {
             const diff = cA[f.key] - cB[f.key];
             const diffStr = diff > 0 ? `+${diff}` : diff;
-            const diffClass = diff > 0 ? 'diff-bad' : 'diff-good'; // Positive diff means A is more expensive
+            const diffClass = diff > 0 ? 'diff-bad' : 'diff-good';
             html += `<tr><td>${f.name}</td><td>${cA[f.key]}</td><td>${cB[f.key]}</td><td class="${diffClass}">${diffStr}</td></tr>`;
         }
     });
@@ -608,7 +624,7 @@ function calcRecycle() {
         smg: {val:+document.getElementById('recSMG').value, scrap:15, hqm:2},
         gear: {val:+document.getElementById('recGear').value, scrap:10, hqm:13},
         spring: {val:+document.getElementById('recSpring').value, scrap:10, hqm:1},
-        sheet: {val:+document.getElementById('recSheet').value, scrap:8, hqm:0}, // Sheet gives metal mostly, ignore for simplified view
+        sheet: {val:+document.getElementById('recSheet').value, scrap:8, hqm:0},
     };
 
     let totalScrap = 0;
@@ -628,8 +644,9 @@ function calcRecycle() {
         else msg = `<div style="margin-top:10px; color:#ff4757">❌ Short by ${target-totalScrap} Scrap.</div>`;
     }
     
-    // Safety warning
-    if(inputs.gear.val > 0) msg += `<div style="font-size:11px; color:#ffa502; margin-top:5px">⚠️ Warning: Gears are valuable for garage doors. Ensure you want to recycle.</div>`;
+    // Safety advice
+    if(inputs.smg.val > 0) msg += `<div style="font-size:11px; color:#ffa502; margin-top:5px">⚠️ Keep SMG Bodies for Tommys.</div>`;
+    if(inputs.spring.val > 0) msg += `<div style="font-size:11px; color:#ffa502; margin-top:5px">⚠️ Keep Springs for Guns.</div>`;
 
     document.getElementById('recRes').style.display='block'; 
     document.getElementById('recRes').innerHTML=`
@@ -639,23 +656,46 @@ function calcRecycle() {
     `;
 }
 
-/* --- LOGIC: OTHER --- */
+/* --- LOGIC: FOOTPRINT (VISUAL) --- */
 function calcFootprint() {
     const s = document.getElementById('baseShape').value;
-    let html = "";
+    const res = document.getElementById('footRes');
+    let title="", visual="", desc="";
+
     if(s === '2x1') {
-        html = `
-        <div class="row"><span>Recommendation</span> <strong>The Bunker</strong></div>
-        <p style="font-size:12px; color:#aaa; margin-top:5px">Add honeycomb triangles to all sides. Upgrade core to armored. Add a roof 'pancake' layer.</p>`;
+        title = "The 2x1 Bunker";
+        visual = `
+            <div class="bp-visual">
+                <div class="bp-square bp-core" style="grid-column:2">Core</div>
+                <div class="bp-square bp-core" style="grid-column:3">Core</div>
+                <div class="bp-tri" style="position:absolute; left:20px;"></div>
+                <div class="bp-tri" style="position:absolute; right:20px;"></div>
+            </div>`;
+        desc = "Add honeycomb triangles to the flat sides. Upgrade core to Armored. Use a roof bunker for cheap entry.";
     } else if(s === '2x2') {
-        html = `
-        <div class="row"><span>Recommendation</span> <strong>Wide Gap</strong></div>
-        <p style="font-size:12px; color:#aaa; margin-top:5px">Build shooting floors on 2nd level with wide gaps. Add external TCs.</p>`;
+        title = "The Wide Gap 2x2";
+        visual = `
+            <div class="bp-visual" style="display:grid; grid-template-columns:1fr 1fr; gap:2px; width:100px;">
+                <div class="bp-square bp-core"></div><div class="bp-square bp-core"></div>
+                <div class="bp-square bp-core"></div><div class="bp-square bp-core"></div>
+            </div>`;
+        desc = "Surround with a layer of honeycomb. On the 2nd floor, extend foundations out to create 'Wide Gaps' for shooting down.";
+    } else if(s === '1x2') {
+        title = "The Solo Pod";
+        visual = `<div class="bp-visual"><div class="bp-square bp-core">Core</div></div>`;
+        desc = "Very tight. Use garage doors for space. Recommended to build a second 1x2 nearby as a flank base.";
     } else {
-        html = `<div class="row"><span>Recommendation</span> <strong>China Wall</strong></div>`;
+        title = "The China Wall";
+        visual = `<div class="bp-visual" style="color:#666;">Complex Layout</div>`;
+        desc = "Circle bases are hard to expand attached. Build free-standing external walls (China Wall) with large gates.";
     }
-    document.getElementById('footRes').style.display = 'block';
-    document.getElementById('footRes').innerHTML = html;
+
+    res.style.display = 'block';
+    res.innerHTML = `
+        <div class="row"><span>Result</span> <strong style="color:#5352ed">${title}</strong></div>
+        ${visual}
+        <p style="font-size:12px; color:#aaa; margin-top:5px; line-height:1.5">${desc}</p>
+    `;
 }
 
 function calcMap() {
