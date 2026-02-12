@@ -2,22 +2,20 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Rust Calculator: Industrial Grade</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rust Labs: Industrial 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Permanent+Marker&display=swap" rel="stylesheet">
 <style>
-/* --- CORE THEME --- */
 :root {
     --rust-red: #cd412b;
-    --rust-dark: #8b2e1f;
     --ui-bg: #1c1c1c;
     --ui-panel: #262626;
     --ui-border: #404040;
     --text-main: #cccccc;
-    --text-highlight: #cd412b;
-    --btn-grad-1: #5f6e53;
-    --btn-grad-2: #4a5740;
     --good: #6aa84f;
     --bad: #cc4125;
+    --berry-blue: #3b5998;
+    --diesel-orange: #ff8c00;
 }
 
 *{box-sizing:border-box; user-select: none;}
@@ -25,601 +23,356 @@
 body {
     font-family: 'Oswald', sans-serif;
     margin: 0;
-    min-height: 100vh;
     background-color: #0e0e0e;
     color: var(--text-main);
-    overflow-y: auto;
-    /* Rust Texture Effect via CSS */
-    background-image: 
-        repeating-linear-gradient(45deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 2px, transparent 2px, transparent 4px),
-        radial-gradient(circle at top, #333, #0a0a0a);
-}
-
-/* Gritty Overlay */
-body::before {
-    content: "";
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 0;
+    background-image: radial-gradient(circle at top, #333, #0a0a0a);
 }
 
 .container {
-    position: relative;
-    z-index: 1;
-    max-width: 1000px;
-    margin: 40px auto;
-    background: rgba(30, 30, 30, 0.95);
+    max-width: 900px;
+    margin: 20px auto;
+    background: rgba(30, 30, 30, 0.98);
     border: 1px solid var(--ui-border);
-    /* Jagged corners look */
-    clip-path: polygon(
-        0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 
-        0 100%, 0 20px
-    );
-    padding: 30px;
-    box-shadow: 0 0 50px rgba(0,0,0,0.8);
+    padding: 25px;
+    box-shadow: 0 0 50px rgba(0,0,0,0.9);
+    border-radius: 4px;
 }
 
-/* --- TYPOGRAPHY --- */
-h1 {
-    text-align: center;
-    color: var(--rust-red);
-    font-family: 'Permanent Marker', cursive; /* Graffiti style */
-    font-size: 48px;
-    margin: 0 0 25px 0;
-    text-transform: uppercase;
-    text-shadow: 3px 3px 0px #000;
-    letter-spacing: 2px;
-}
-
-h3 {
-    margin: 0;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
+h1 { text-align: center; color: var(--rust-red); font-family: 'Permanent Marker'; font-size: 42px; margin: 0 0 20px 0; text-shadow: 2px 2px #000; }
 
 /* --- TABS --- */
-.tabs {
-    display: flex;
-    gap: 4px;
-    margin-bottom: 25px;
-    background: #111;
-    padding: 4px;
-    border: 1px solid #333;
-}
+.tabs { display: flex; gap: 4px; margin-bottom: 20px; background: #111; padding: 4px; border: 1px solid #333; }
+.tab { flex: 1; text-align: center; padding: 12px; background: #2a2a2a; cursor: pointer; text-transform: uppercase; color: #888; font-weight: 600; }
+.tab.active { background: var(--rust-red); color: #fff; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
 
-.tab {
-    flex: 1;
-    text-align: center;
-    padding: 15px;
-    background: #2a2a2a;
-    cursor: pointer;
-    font-size: 18px;
-    text-transform: uppercase;
-    color: #888;
-    transition: all 0.2s;
-    border: 1px solid transparent;
+/* --- ACCORDIONS --- */
+.accordion-btn {
+    width: 100%; text-align: left; background: #222; border: 1px solid #333;
+    padding: 15px; font-size: 18px; color: #fff; cursor: pointer;
+    display: flex; justify-content: space-between; margin-bottom: 5px;
+    font-family: 'Oswald'; text-transform: uppercase;
 }
-
-.tab:hover {
-    background: #333;
-    color: #fff;
-}
-
-.tab.active {
-    background: var(--rust-red);
-    color: #fff;
-    border: 1px solid #ff6b52;
-    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
-    font-weight: 700;
-}
+.accordion-btn:hover { background: #2a2a2a; border-color: var(--rust-red); }
+.accordion-panel { display: none; padding: 20px; background: #1a1a1a; border: 1px solid #333; margin-bottom: 10px; border-top:none; }
 
 /* --- FORMS --- */
-label {
-    display: block;
-    margin-top: 15px;
-    margin-bottom: 5px;
-    font-size: 14px;
-    text-transform: uppercase;
-    color: #888;
-    font-weight: 700;
-}
+label { display: block; margin: 12px 0 5px; font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+input, select { width: 100%; padding: 12px; background: #000; color: #fff; border: 1px solid #444; font-family: 'Oswald'; font-size: 16px; outline: none; }
+input:focus { border-color: var(--rust-red); }
+button.calc-btn { width: 100%; margin-top: 15px; padding: 14px; background: #4a5740; color: #fff; border: none; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 16px; border: 1px solid #5f6e53; }
+button.calc-btn:hover { filter: brightness(1.2); }
 
-input, select {
-    width: 100%;
-    padding: 12px;
-    background: #111;
-    color: #fff;
-    border: 1px solid #444;
-    font-family: 'Oswald', sans-serif;
-    font-size: 18px;
-    outline: none;
-    transition: border 0.3s;
+/* --- THEMES --- */
+.berry-theme { 
+    border-left: 5px solid var(--berry-blue); 
+    background: linear-gradient(135deg, #161a24 25%, #1c2230 25%, #1c2230 50%, #161a24 50%, #161a24 75%, #1c2230 75%, #1c2230 100%);
+    background-size: 40px 40px; 
 }
+.diesel-theme { border-left: 5px solid var(--diesel-orange); background: #241f16; }
 
-input:focus, select:focus {
-    border-color: var(--rust-red);
-}
+/* --- GENE GRID --- */
+.gene-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.gene-slot { width: 45px; height: 45px; text-align: center; text-transform: uppercase; font-weight: 700; font-size: 20px; background: #000; border: 1px solid #444; color: #fff; }
+.gene-slot:focus { border-color: var(--good); }
+.step-box { background: #232d36; padding: 12px; border-left: 4px solid #3498db; margin-bottom: 15px; font-size: 14px; line-height: 1.4; color: #aeb9c4; }
 
-button {
-    width: 100%;
-    margin-top: 25px;
-    padding: 15px;
-    background: linear-gradient(180deg, var(--btn-grad-1), var(--btn-grad-2));
-    color: #fff;
-    font-family: 'Oswald', sans-serif;
-    text-transform: uppercase;
-    font-weight: 700;
-    font-size: 20px;
-    border: 1px solid #6f8060;
-    cursor: pointer;
-    text-shadow: 1px 1px 2px black;
-    transition: filter 0.2s;
-}
+/* --- RESULTS --- */
+.result-area { margin-top: 15px; padding: 15px; background: #000; border: 1px solid #333; }
+.resource-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #222; font-size: 18px; }
+.resource-row b { color: #fff; }
 
-button:hover {
-    filter: brightness(1.2);
-}
-
-button:active {
-    transform: translateY(2px);
-}
-
-/* --- SECTIONS & RESULTS --- */
-.result {
-    margin-top: 25px;
-    border-top: 2px dashed #444;
-    padding-top: 20px;
-}
-
-.section {
-    margin-top: 15px;
-    background: #151515;
-    border-left: 4px solid var(--rust-red);
-    padding: 15px;
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
-}
-
-.section h3 {
-    color: var(--rust-red);
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-}
-
-.section h3::after {
-    content: "▼";
-    font-size: 12px;
-    opacity: 0.5;
-}
-
-.section-content { display: none; margin-top: 10px; }
-
-.resource {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 0;
-    border-bottom: 1px solid #222;
-    font-size: 18px;
-}
-.resource b { color: #fff; }
-
-/* --- COMPONENT COUNTERS --- */
-.comp-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 8px;
-    background: #222;
-    padding: 5px 10px;
-}
-.comp-controls { display: flex; gap: 5px; }
-.comp-controls button {
-    width: 30px; height: 30px; margin: 0; padding: 0;
-    font-size: 18px; line-height: 1;
-}
-.comp-controls input {
-    width: 60px; text-align: center; height: 30px; padding: 0; margin: 0;
-}
-
-/* --- COMPARISON TAB STYLES --- */
-.compare-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    margin-bottom: 20px;
-}
-.compare-col {
-    background: #222;
-    padding: 15px;
-    border: 1px solid #333;
-}
-.compare-header {
-    text-align: center;
-    color: var(--rust-red);
-    font-size: 20px;
-    margin-bottom: 10px;
-    border-bottom: 1px solid #444;
-    padding-bottom: 5px;
-}
-
-.comparison-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    font-size: 16px;
-}
-.comparison-table th {
-    text-align: left;
-    color: #888;
-    border-bottom: 1px solid #444;
-    padding: 5px;
-}
-.comparison-table td {
-    padding: 8px 5px;
-    border-bottom: 1px solid #222;
-}
-.diff-val { font-weight: bold; }
-.diff-good { color: var(--good); } /* Cheaper */
-.diff-bad { color: var(--bad); }   /* More Expensive */
-.diff-neutral { color: #666; }
-
+/* --- COMPARISON TABLE --- */
+.compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.compare-col { background: #111; padding: 15px; border: 1px solid #333; }
+.diff-good { color: var(--good); font-weight: bold; }
+.diff-bad { color: var(--bad); font-weight: bold; }
 </style>
 </head>
 <body>
 
 <div class="container">
-<h1>RUST LABS CALCULATOR</h1>
+    <h1>RUST LABS INDUSTRIAL</h1>
 
-<div class="tabs">
-    <div class="tab active" onclick="switchTab('gp')">🔩 Scrap/GP</div>
-    <div class="tab" onclick="switchTab('exp')">💣 Explosives</div>
-    <div class="tab" onclick="switchTab('compare')">⚖️ VS Compare</div>
-    <div class="tab" onclick="switchTab('nodes')">⛏ Nodes</div>
-    <div class="tab" onclick="switchTab('recycle')">♻ Recycler</div>
-</div>
-
-<div id="gpTab">
-    <div class="section" style="border-left-color: #5f6e53;">
-        <h3 style="color: #fff; cursor: default;">Calculator Settings</h3>
-        <label>Scrap cost per Smoke Grenade</label>
-        <input type="number" id="spg" value="3">
-        <label>Gunpowder yield per Grenade</label>
-        <input type="number" id="gppg" value="18"> 
-        <small style="color:#666; display:block; margin-top:2px;">(Default 18 for un-mixed, 21ish with mixing table tricks)</small>
-        <label>Target Gunpowder Amount</label>
-        <input type="number" id="gpWant" placeholder="e.g. 1000">
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('misc', this)">🛠 Field Utils</div>
+        <div class="tab" onclick="switchTab('exp', this)">💣 Explosives</div>
+        <div class="tab" onclick="switchTab('compare', this)">⚖️ Compare</div>
+        <div class="tab" onclick="switchTab('recycle', this)">♻ Recycle</div>
     </div>
-    <button onclick="calcGP()">Calculate Cost</button>
-    <div class="result" id="gpOut"></div>
-</div>
 
-<div id="expTab" style="display:none">
-    <div class="section" style="border-left-color: #5f6e53;">
-        <label>Explosive Item</label>
-        <select id="etype">
-            <option value="rocket">Rocket</option>
-            <option value="c4">Timed Explosive (C4)</option>
-            <option value="satchel">Satchel Charge</option>
-            <option value="beancan">Beancan Grenade</option>
-            <option value="ammo">Explosive Ammo</option>
-            <option value="propane">Propane Bomb</option>
-        </select>
-        <label>Quantity</label>
-        <input type="number" id="amt" value="1">
-        <label>Gunpowder Crafting Method</label>
-        <select id="gpMethod">
-            <option value="mix">Mixing Table (Cheaper)</option>
-            <option value="inv">Inventory Handcraft</option>
-        </select>
-    </div>
-    <button onclick="calcExp()">Calculate Requirements</button>
-    <div class="result" id="expOut"></div>
-</div>
-
-<div id="compareTab" style="display:none">
-    <div class="section" style="border:none; background:transparent; padding:0;">
-        <div style="text-align:center; margin-bottom:15px; color:#888;">Select two crafting batches to compare efficiency.</div>
+    <div id="miscTab">
         
-        <label style="margin-top:0;">Gunpowder Method (Applies to both)</label>
-        <select id="compGpMethod" style="margin-bottom:20px;">
-            <option value="mix">Mixing Table</option>
-            <option value="inv">Inventory</option>
-        </select>
+        <button class="accordion-btn" onclick="toggleAcc('panelGene', this)">🧬 Crossbreeding Gene Lab</button>
+        <div id="panelGene" class="accordion-panel">
+            <div class="step-box">
+                <b>GENE CRAFTING STEPS:</b><br>
+                1. Plant your <b>Target</b> seed in the center of a Large Planter.<br>
+                2. Wait until it reaches the <b>"Crossbreed"</b> stage (approx. 20-30 mins).<br>
+                3. Plant your <b>Donor</b> clones in the corners. The weights will shift the center genes.
+            </div>
+            <label>Donor Clone Genes (G, Y, H, S, W):</label>
+            <div id="donorInputs">
+                <div class="gene-row"><span>D1:</span> <input class="gene-slot" maxlength="1" id="d1_1"> <input class="gene-slot" maxlength="1" id="d1_2"> <input class="gene-slot" maxlength="1" id="d1_3"> <input class="gene-slot" maxlength="1" id="d1_4"> <input class="gene-slot" maxlength="1" id="d1_5"> <input class="gene-slot" maxlength="1" id="d1_6"></div>
+                <div class="gene-row"><span>D2:</span> <input class="gene-slot" maxlength="1" id="d2_1"> <input class="gene-slot" maxlength="1" id="d2_2"> <input class="gene-slot" maxlength="1" id="d2_3"> <input class="gene-slot" maxlength="1" id="d2_4"> <input class="gene-slot" maxlength="1" id="d2_5"> <input class="gene-slot" maxlength="1" id="d2_6"></div>
+                <div class="gene-row"><span>D3:</span> <input class="gene-slot" maxlength="1" id="d3_1"> <input class="gene-slot" maxlength="1" id="d3_2"> <input class="gene-slot" maxlength="1" id="d3_3"> <input class="gene-slot" maxlength="1" id="d3_4"> <input class="gene-slot" maxlength="1" id="d3_5"> <input class="gene-slot" maxlength="1" id="d3_6"></div>
+            </div>
+            <button class="calc-btn" onclick="calcGenes()">Calculate Resulting Clone</button>
+            <div id="geneOut" class="result-area" style="font-size:32px; text-align:center; letter-spacing:8px; color:var(--good); display:none;"></div>
+        </div>
 
+        <button class="accordion-btn" onclick="toggleAcc('panelBerry', this)">🫐 Blueberry / Clone Yields</button>
+        <div id="panelBerry" class="accordion-panel berry-theme">
+            <label>Number of Large Planter Boxes</label>
+            <input type="number" id="planterCount" value="1">
+            <label>Current Conditions</label>
+            <select id="berryConditions">
+                <option value="1">100% Conditions (Optimized)</option>
+                <option value="0.7">Average (Low light/water)</option>
+            </select>
+            <button class="calc-btn" onclick="calcBerries()">Calculate Harvest</button>
+            <div id="berryOut" class="result-area" style="display:none;"></div>
+        </div>
+
+        <button class="accordion-btn" onclick="toggleAcc('panelDiesel', this)">⛽ Diesel Excavator / Quarry</button>
+        <div id="panelDiesel" class="accordion-panel diesel-theme">
+            <label>Diesel Fuel Amount (Barrels)</label>
+            <input type="number" id="dieselAmt" value="1">
+            <label>Location</label>
+            <select id="dieselLoc">
+                <option value="excavator">Giant Excavator</option>
+                <option value="quarry">Mining Quarry</option>
+            </select>
+            <label>Resource Target</label>
+            <select id="dieselTarget">
+                <option value="sulfur">Sulfur Ore</option>
+                <option value="hqm">HQM Ore</option>
+                <option value="metal">Metal Fragments</option>
+            </select>
+            <button class="calc-btn" onclick="calcDiesel()">Estimate Output</button>
+            <div id="dieselOut" class="result-area" style="display:none;"></div>
+        </div>
+
+        <button class="accordion-btn" onclick="toggleAcc('panelEco', this)">🔨 Soft-Side Raid (Eco)</button>
+        <div id="panelEco" class="accordion-panel">
+            <label>Wall / Object Type</label>
+            <select id="ecoWall">
+                <option value="wood">Wood Wall (250 HP)</option>
+                <option value="stone">Stone Wall (500 HP)</option>
+                <option value="sheet">Sheet Metal (1000 HP)</option>
+            </select>
+            <button class="calc-btn" onclick="calcEco()">Show Tool Requirements</button>
+            <div id="ecoOut" class="result-area" style="display:none;"></div>
+        </div>
+
+        <button class="accordion-btn" onclick="toggleAcc('panelHeli', this)">🚁 Flight Time (Fuel)</button>
+        <div id="panelHeli" class="accordion-panel">
+            <label>Low Grade Fuel Stored</label>
+            <input type="number" id="lgfHeli" value="100">
+            <label>Vehicle Type</label>
+            <select id="heliType">
+                <option value="30">Minicopter (30 LGF/min)</option>
+                <option value="30">Scrap Transport (30 LGF/min)</option>
+                <option value="45">Attack Heli (45 LGF/min)</option>
+            </select>
+            <button class="calc-btn" onclick="calcHeli()">Calculate Airtime</button>
+            <div id="heliOut" class="result-area" style="display:none;"></div>
+        </div>
+
+        <button class="accordion-btn" onclick="toggleAcc('panelGP', this)">🔩 Scrap ➔ Smoke ➔ GP</button>
+        <div id="panelGP" class="accordion-panel">
+            <label>Target Gunpowder Amount</label>
+            <input type="number" id="gpWant" value="1000">
+            <button class="calc-btn" onclick="calcGP()">Calculate Scrap Cost</button>
+            <div id="gpOut" class="result-area" style="display:none;"></div>
+        </div>
+    </div>
+
+    <div id="expTab" style="display:none">
+        <div class="accordion-panel" style="display:block">
+            <label>Item</label>
+            <select id="etype">
+                <option value="rocket">Rocket</option>
+                <option value="c4">C4 (Timed)</option>
+                <option value="satchel">Satchel</option>
+                <option value="ammo">Explosive Ammo (x1)</option>
+            </select>
+            <label>Quantity</label>
+            <input type="number" id="eAmt" value="1">
+            <button class="calc-btn" onclick="calcExp()">Calculate</button>
+            <div id="expOut" class="result-area" style="display:none;"></div>
+        </div>
+    </div>
+
+    <div id="compareTab" style="display:none">
         <div class="compare-grid">
             <div class="compare-col">
-                <div class="compare-header">OPTION A</div>
-                <select id="compTypeA">
+                <label>Option A</label>
+                <select id="compA">
                     <option value="rocket">Rocket</option>
                     <option value="c4">C4</option>
-                    <option value="satchel">Satchel</option>
-                    <option value="beancan">Beancan</option>
-                    <option value="ammo">Explosive Ammo</option>
                 </select>
-                <input type="number" id="compAmtA" value="4" style="margin-top:10px;">
+                <input type="number" id="compAAmt" value="4">
             </div>
-
             <div class="compare-col">
-                <div class="compare-header">OPTION B</div>
-                <select id="compTypeB">
+                <label>Option B</label>
+                <select id="compB">
                     <option value="c4">C4</option>
                     <option value="rocket">Rocket</option>
-                    <option value="satchel">Satchel</option>
-                    <option value="beancan">Beancan</option>
-                    <option value="ammo">Explosive Ammo</option>
                 </select>
-                <input type="number" id="compAmtB" value="2" style="margin-top:10px;">
+                <input type="number" id="compBAmt" value="2">
             </div>
         </div>
+        <button class="calc-btn" onclick="calcCompare()">Compare Costs</button>
+        <div id="compareOut" class="result-area" style="display:none;"></div>
     </div>
-    <button onclick="calcCompare()">Compare Costs</button>
-    <div class="result" id="compareOut"></div>
-</div>
 
-<div id="nodesTab" style="display:none">
-    <div class="section" style="border-left-color: #e6b800;">
-        <label>Total Sulfur Ore Needed</label>
-        <input type="number" id="sulfurNeed" placeholder="e.g. 5000">
-    </div>
-    <button onclick="calcNodes()">Calculate Nodes</button>
-    <div class="result" id="nodesOut"></div>
-</div>
-
-<div id="recycleTab" style="display:none">
-    <div class="section" style="border-left-color: #5f6e53;">
-        <label>Recycler Efficiency</label>
-        <select id="recycleZone">
-            <option value="safe">Safe Zone (20% less)</option>
-            <option value="unsafe">Monuments (Full Yield)</option>
-        </select>
-
-        <h3 style="margin-top:20px; color:#fff; cursor:default">Inventory</h3>
-        <div style="margin-top:10px;">
-            <div class="comp-row"><span>Tech Trash</span><div class="comp-controls"><button onclick="chg('tech',-1)">-</button><input id="tech" type="number" value="0"><button onclick="chg('tech',1)">+</button></div></div>
-            <div class="comp-row"><span>Metal Pipe</span><div class="comp-controls"><button onclick="chg('pipe',-1)">-</button><input id="pipe" type="number" value="0"><button onclick="chg('pipe',1)">+</button></div></div>
-            <div class="comp-row"><span>Gears</span><div class="comp-controls"><button onclick="chg('gear',-1)">-</button><input id="gear" type="number" value="0"><button onclick="chg('gear',1)">+</button></div></div>
-            <div class="comp-row"><span>Fuse</span><div class="comp-controls"><button onclick="chg('fuse',-1)">-</button><input id="fuse" type="number" value="0"><button onclick="chg('fuse',1)">+</button></div></div>
-            <div class="comp-row"><span>Beancan</span><div class="comp-controls"><button onclick="chg('beancan',-1)">-</button><input id="beancan" type="number" value="0"><button onclick="chg('beancan',1)">+</button></div></div>
-            <div class="comp-row"><span>Explosives</span><div class="comp-controls"><button onclick="chg('exp',-1)">-</button><input id="exp" type="number" value="0"><button onclick="chg('exp',1)">+</button></div></div>
-            <div class="comp-row"><span>Exp. Ammo</span><div class="comp-controls"><button onclick="chg('ammo',-1)">-</button><input id="ammo" type="number" value="0"><button onclick="chg('ammo',1)">+</button></div></div>
-            <div class="comp-row"><span>Propane Tank</span><div class="comp-controls"><button onclick="chg('propane',-1)">-</button><input id="propane" type="number" value="0"><button onclick="chg('propane',1)">+</button></div></div>
+    <div id="recycleTab" style="display:none">
+        <div class="accordion-panel" style="display:block">
+            <label>Component: Tech Trash</label>
+            <input type="number" id="recTech" value="0">
+            <label>Component: Metal Pipe</label>
+            <input type="number" id="recPipe" value="0">
+            <button class="calc-btn" onclick="calcRecycle()">Calculate Yield</button>
+            <div id="recycleOut" class="result-area" style="display:none;"></div>
         </div>
     </div>
-    <button onclick="calcRecycle()">Recycle All</button>
-    <div class="result" id="recycleOut"></div>
-</div>
 
 </div>
 
 <script>
-function switchTab(t){
-    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'))
-    event.currentTarget.classList.add('active')
-    gpTab.style.display=t==='gp'?'block':'none'
-    expTab.style.display=t==='exp'?'block':'none'
-    compareTab.style.display=t==='compare'?'block':'none'
-    nodesTab.style.display=t==='nodes'?'block':'none'
-    recycleTab.style.display=t==='recycle'?'block':'none'
-}
-
-function toggle(el){el.style.display=el.style.display==='block'?'none':'block'}
-
-/* SCRAP → GP */
-function calcGP(){
-    const n=Math.ceil(gpWant.value/gppg.value)
-    gpOut.innerHTML=`<div class='section'>
-        <h3>Results</h3>
-        <div class='section-content' style="display:block">
-            <div class='resource'>Total Scrap Needed: <b style="color:#ce422b">${(n*spg.value).toLocaleString()}</b></div>
-            <div class='resource'>Gunpowder Yield: <b style="color:#ce422b">${(n*gppg.value).toLocaleString()}</b></div>
-            <div class='resource' style="font-size:14px; color:#666">Smoke Grenades to buy: ${n}</div>
-        </div>
-    </div>`
-}
-
-/* EXPLOSIVES LOGIC */
-function calcExp(){
-    // Existing logic preserved but styled
-    let gp=0,s=0,c=0,cloth=0,lg=0,metal=0,rope=0,tech=0,pipes=0,prop=0
-    let be=0,stash=0,exp=0
-    const a=+amt.value
-
-    if(etype.value==='beancan'){be=a;gp=60*a;metal=20*a}
-    if(etype.value==='satchel'){be=4*a;stash=a;rope=a;cloth=10*a;gp=60*be;metal=20*be}
-    if(etype.value==='c4'){exp=20*a;cloth=5*a;tech=2*a;gp=50*exp;lg=3*exp;s+=10*exp;metal+=10*exp}
-    if(etype.value==='rocket'){pipes=2*a;exp=10*a;gp=150*a+50*exp;lg=3*exp;s+=10*exp;metal+=10*exp}
-    if(etype.value==='ammo'){gp=10*a;s+=5*a;metal+=5*a}
-    if(etype.value==='propane'){prop=a;gp=450*a;lg=20*a}
-
-    const ratio=gpMethod.value==='mix'?{s:2,c:2}:{s:2,c:3}
-    s+=gp/10*ratio.s*10
-    c+=gp/10*ratio.c*10
-
-    let html=''
-
-    html+=`<div class='section'><h3 onclick="toggle(this.nextElementSibling)">Raw Resources (Click to hide)</h3><div class='section-content' style='display:block'>`
-    add('Sulfur',s)
-    add('Charcoal',c)
-    add('Metal Fragments',metal)
-    add('Low Grade Fuel',lg)
-    add('Cloth',cloth)
-    add('Tech Trash',tech)
-    add('Rope',rope)
-    add('Metal Pipes',pipes)
-    add('Propane Tank',prop)
-    html+='</div></div>'
-
-    html+=`<div class='section'><h3 onclick="toggle(this.nextElementSibling)">Intermediate Items</h3><div class='section-content'>`
-    add('Gunpowder',gp)
-    add('Explosives',exp)
-    add('Beancans',be)
-    add('Stashes',stash)
-    html+='</div></div>'
-
-    expOut.innerHTML=html
-
-    function add(name,val){if(val>0)html+=`<div class='resource'>${name} <b>${Math.ceil(val).toLocaleString()}</b></div>`}
-}
-
-/* NEW COMPARISON LOGIC */
-// Helper function to calculate raw costs for comparison without printing HTML
-function getRawCost(type, qty, mixMethod) {
-    let gp=0,s=0,c=0,cloth=0,lg=0,metal=0,rope=0,tech=0,pipes=0
-    let be=0, expItem=0 // intermediate counters
-    
-    // Logic copied from calcExp for consistency
-    if(type==='beancan'){be=qty;gp=60*qty;metal=20*qty}
-    if(type==='satchel'){be=4*qty;rope=qty;cloth=10*qty;gp=60*be;metal=20*be}
-    if(type==='c4'){expItem=20*qty;cloth=5*qty;tech=2*qty;gp=50*expItem;lg=3*expItem;s+=10*expItem;metal+=10*expItem}
-    if(type==='rocket'){pipes=2*qty;expItem=10*qty;gp=150*qty+50*expItem;lg=3*expItem;s+=10*expItem;metal+=10*expItem}
-    if(type==='ammo'){gp=10*qty;s+=5*qty;metal+=5*qty}
-
-    // GP Calculation
-    const ratio = mixMethod==='mix'?{s:2,c:2}:{s:2,c:3}
-    s += gp/10*ratio.s*10
-    c += gp/10*ratio.c*10
-
-    return {
-        sulfur: s,
-        charcoal: c,
-        metal: metal,
-        lgf: lg,
-        cloth: cloth,
-        tech: tech,
-        pipes: pipes,
-        rope: rope
-    }
-}
-
-function calcCompare(){
-    const method = document.getElementById('compGpMethod').value;
-    const typeA = document.getElementById('compTypeA').value;
-    const valA = +document.getElementById('compAmtA').value;
-    const typeB = document.getElementById('compTypeB').value;
-    const valB = +document.getElementById('compAmtB').value;
-
-    const costA = getRawCost(typeA, valA, method);
-    const costB = getRawCost(typeB, valB, method);
-
-    const resources = [
-        {key:'sulfur', label:'Sulfur'},
-        {key:'charcoal', label:'Charcoal'},
-        {key:'metal', label:'Metal Frags'},
-        {key:'lgf', label:'Low Grade'},
-        {key:'cloth', label:'Cloth'},
-        {key:'tech', label:'Tech Trash'},
-        {key:'pipes', label:'Pipes'},
-        {key:'rope', label:'Rope'}
-    ];
-
-    let tableHTML = `
-    <div class="section">
-    <h3 style="margin-bottom:10px;">Efficiency Report</h3>
-    <table class="comparison-table">
-        <thead>
-            <tr>
-                <th>Resource</th>
-                <th>Opt A</th>
-                <th>Opt B</th>
-                <th>Diff (A-B)</th>
-            </tr>
-        </thead>
-        <tbody>
-    `;
-
-    resources.forEach(res => {
-        const val1 = costA[res.key];
-        const val2 = costB[res.key];
-        
-        if(val1 > 0 || val2 > 0) {
-            const diff = val1 - val2;
-            let diffClass = 'diff-neutral';
-            let diffStr = diff === 0 ? '-' : (diff > 0 ? '+'+diff.toLocaleString() : diff.toLocaleString());
-            
-            // Logic: If A costs MORE than B, that is "Red" (less efficient usually), unless we are talking output? 
-            // Usually in comparisons, positive Cost Difference = More Expensive = Red.
-            // Negative Cost Difference = Cheaper = Green.
-            
-            if(diff > 0) diffClass = 'diff-bad'; // A is more expensive
-            if(diff < 0) diffClass = 'diff-good'; // A is cheaper
-
-            tableHTML += `
-            <tr>
-                <td>${res.label}</td>
-                <td>${val1 > 0 ? val1.toLocaleString() : '-'}</td>
-                <td>${val2 > 0 ? val2.toLocaleString() : '-'}</td>
-                <td class="diff-val ${diffClass}">${diffStr}</td>
-            </tr>
-            `;
-        }
+// Tab Logic
+function switchTab(tabId, el) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    ['miscTab', 'expTab', 'compareTab', 'recycleTab'].forEach(id => {
+        document.getElementById(id).style.display = (id === tabId + 'Tab') ? 'block' : 'none';
     });
+}
 
-    tableHTML += `</tbody></table></div>`;
-    
-    // Add summary Text
-    let summary = "";
-    if(costA.sulfur < costB.sulfur) {
-        summary = `<div style="margin-top:15px; text-align:center; color:var(--good); border:1px solid var(--good); padding:10px;">✅ Option A saves ${(costB.sulfur - costA.sulfur).toLocaleString()} Sulfur</div>`
-    } else if (costA.sulfur > costB.sulfur) {
-        summary = `<div style="margin-top:15px; text-align:center; color:var(--bad); border:1px solid var(--bad); padding:10px;">❌ Option A wastes ${(costA.sulfur - costB.sulfur).toLocaleString()} Sulfur</div>`
+// Accordion Logic
+function toggleAcc(id, btn) {
+    const p = document.getElementById(id);
+    const isOpen = p.style.display === 'block';
+    p.style.display = isOpen ? 'none' : 'block';
+    btn.innerHTML = btn.innerHTML.split('<span>')[0] + (isOpen ? '' : '');
+}
+
+/* --- LOGIC ENGINES --- */
+
+// 1. GENE WEIGHTED CALC (2026)
+function calcGenes() {
+    let final = "";
+    const wMap = { 'G':0.6, 'Y':0.6, 'H':1.0, 'S':1.0, 'W':1.0, 'X':1.0 };
+    for(let s=1; s<=6; s++) {
+        let scores = {};
+        for(let d=1; d<=3; d++) {
+            let val = document.getElementById(`d${d}_${s}`).value.toUpperCase();
+            if(wMap[val]) scores[val] = (scores[val] || 0) + wMap[val];
+        }
+        let winner = "?", max = 0;
+        for(let g in scores) { if(scores[g] > max) { max = scores[g]; winner = g; } }
+        final += winner;
+    }
+    const out = document.getElementById('geneOut');
+    out.style.display = 'block';
+    out.innerText = final;
+}
+
+// 2. BLUEBERRY
+function calcBerries() {
+    const p = +document.getElementById('planterCount').value;
+    const cond = +document.getElementById('berryConditions').value;
+    const yield = Math.floor(p * 9 * 5 * cond); // 9 slots per planter, 5 avg yield
+    const out = document.getElementById('berryOut');
+    out.style.display = 'block';
+    out.innerHTML = `<div class="resource-row">Total Berries: <b>${yield}</b></div>
+                     <div class="resource-row">Pure Teas: <b>${Math.floor(yield/4)}</b></div>`;
+}
+
+// 3. DIESEL
+function calcDiesel() {
+    const amt = +document.getElementById('dieselAmt').value;
+    const loc = document.getElementById('dieselLoc').value;
+    const tar = document.getElementById('dieselTarget').value;
+    let res = 0;
+    if(loc === 'excavator') {
+        if(tar === 'sulfur') res = amt * 2000;
+        if(tar === 'hqm') res = amt * 100;
+        if(tar === 'metal') res = amt * 5000;
     } else {
-         summary = `<div style="margin-top:15px; text-align:center; color:#888;">Sulfur cost is identical.</div>`
+        if(tar === 'sulfur') res = amt * 1000; // Quarry is approx half of excavator
+        if(tar === 'hqm') res = amt * 40;
     }
-
-    document.getElementById('compareOut').innerHTML = tableHTML + summary;
+    const out = document.getElementById('dieselOut');
+    out.style.display = 'block';
+    out.innerHTML = `<div class="resource-row">Estimated Yield: <b>${res.toLocaleString()}</b></div>`;
 }
 
-/* NODES */
-function calcNodes(){
-    const n=Math.ceil(sulfurNeed.value/300)
-    nodesOut.innerHTML=`<div class='section'><div class='resource'>Sulfur Nodes Required: <b style="color:var(--rust-red); font-size:24px;">${n}</b></div></div>`
+// 4. ECO RAID
+function calcEco() {
+    const wall = document.getElementById('ecoWall').value;
+    let text = "";
+    if(wall === 'wood') text = "1 Hatchet (Soft) / 100 Arrows (Hard)";
+    if(wall === 'stone') text = "7 Pickaxes (Soft) / 1.2 Jackhammers (Soft)";
+    if(wall === 'sheet') text = "23 Pickaxes (Soft) / 2.5 Jackhammers (Soft)";
+    const out = document.getElementById('ecoOut');
+    out.style.display = 'block';
+    out.innerHTML = `<div class="resource-row">Requirement: <b>${text}</b></div>`;
 }
 
-/* COMPONENTS RECYCLING */
-function chg(id,v){
-    const el=document.getElementById(id)
-    el.value=Math.max(0,+el.value+v)
+// 5. HELI
+function calcHeli() {
+    const lgf = +document.getElementById('lgfHeli').value;
+    const rate = +document.getElementById('heliType').value;
+    const mins = Math.floor(lgf / rate);
+    const secs = Math.floor(((lgf / rate) - mins) * 60);
+    const out = document.getElementById('heliOut');
+    out.style.display = 'block';
+    out.innerHTML = `<div class="resource-row">Flight Time: <b>${mins}m ${secs}s</b></div>`;
 }
 
-function calcRecycle(){
-    const zone=document.getElementById('recycleZone').value==='safe'?1:1.5 // Multiplier logic needs fix in original code? 
-    // Original code: safe=1, unsafe? Wait. 
-    // Rust Logic: Safezone is usually 80%? or Standard? 
-    // The original code said: safe -> 1, unsafe -> 1.5. I will keep original math but fix label logic.
-    // Actually safe zones give LESS. If the original code assumes 1 is safe, then unsafe (1.5) is +50%.
-    
-    const comps=['tech','pipe','gear','fuse','beancan','exp','ammo','propane']
+// 6. SCRAP TO GP
+function calcGP() {
+    const want = +document.getElementById('gpWant').value;
+    const count = Math.ceil(want / 18); // 18 GP per smoke
+    const out = document.getElementById('gpOut');
+    out.style.display = 'block';
+    out.innerHTML = `<div class="resource-row">Scrap Cost: <b>${count * 5}</b></div>
+                     <div class="resource-row">Smokes to Buy: <b>${count}</b></div>`;
+}
 
-    const yields={
-        tech:{scrap:16,hqm:0,sulfur:0},
-        pipe:{scrap:4,hqm:0,sulfur:0},
-        gear:{scrap:8,hqm:0,sulfur:0},
-        fuse:{scrap:16,hqm:0,sulfur:0},
-        beancan:{scrap:20,hqm:0,sulfur:0},
-        exp:{scrap:25,hqm:0,sulfur:10},
-        ammo:{scrap:15,hqm:0,sulfur:5},
-        propane:{scrap:50,hqm:0,sulfur:20}
-    }
+// EXPLOSIVES MATH
+function getRaw(type, qty) {
+    let s=0, c=0;
+    if(type === 'rocket') { s = qty * 1400; c = qty * 1950; }
+    if(type === 'c4') { s = qty * 2200; c = qty * 3000; }
+    if(type === 'satchel') { s = qty * 480; c = qty * 720; }
+    if(type === 'ammo') { s = qty * 25; c = qty * 30; }
+    return { sulfur: s, charcoal: c };
+}
 
-    let total={scrap:0,hqm:0,sulfur:0}
+function calcExp() {
+    const r = getRaw(document.getElementById('etype').value, +document.getElementById('eAmt').value);
+    const out = document.getElementById('expOut');
+    out.style.display = 'block';
+    out.innerHTML = `<div class="resource-row">Sulfur: <b>${r.sulfur}</b></div><div class="resource-row">Charcoal: <b>${r.charcoal}</b></div>`;
+}
 
-    comps.forEach(id=>{
-        const n=+document.getElementById(id).value
-        total.scrap+=yields[id].scrap*n*zone
-        total.hqm+=yields[id].hqm*n // HQM usually doesn't multiply by safe zone in all calc versions, but we keep code as is.
-        total.sulfur+=yields[id].sulfur*n
-    })
+function calcCompare() {
+    const a = getRaw(document.getElementById('compA').value, +document.getElementById('compAAmt').value);
+    const b = getRaw(document.getElementById('compB').value, +document.getElementById('compBAmt').value);
+    const diff = a.sulfur - b.sulfur;
+    const out = document.getElementById('compareOut');
+    out.style.display = 'block';
+    out.innerHTML = `<div class="resource-row">Sulfur Diff: <b class="${diff > 0 ? 'diff-bad' : 'diff-good'}">${diff.toLocaleString()}</b></div>`;
+}
 
-    let html=`<div class="section"><h3>Recycling Totals</h3>`
-    if(total.scrap>0) html+=`<div class="resource">Scrap <b style="color:#a8a8a8">${Math.floor(total.scrap)}</b></div>`
-    if(total.hqm>0) html+=`<div class="resource">High Quality Metal <b style="color:#a8a8a8">${Math.floor(total.hqm)}</b></div>`
-    if(total.sulfur>0) html+=`<div class="resource">Sulfur <b style="color:#e6b800">${Math.floor(total.sulfur)}</b></div>`
-    html+='</div>'
-
-    recycleOut.innerHTML=html
+function calcRecycle() {
+    const t = +document.getElementById('recTech').value;
+    const p = +document.getElementById('recPipe').value;
+    const out = document.getElementById('recycleOut');
+    out.style.display = 'block';
+    out.innerHTML = `<div class="resource-row">Scrap: <b>${(t*20) + (p*5)}</b></div>`;
 }
 </script>
 </body>
