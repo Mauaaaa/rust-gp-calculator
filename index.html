@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rust Labs: Command Center v1.4</title>
+<title>Rust Labs: Command Center v1.5</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
 <style>
 /* --- CORE VARIABLES --- */
@@ -15,6 +15,7 @@
     
     /* Theme Colors */
     --c-raid: #ff4757;   /* Combat Red */
+    --c-build: #5352ed;  /* Blueprint Blue */
     --c-farm: #2ed573;   /* Nature Green */
     --c-ind: #ffa502;    /* Hazmat Orange */
     --c-text: #e0e0e0;
@@ -63,6 +64,7 @@ body {
 
 /* Active Theme Colors */
 .nav-item.active[data-theme="raid"] { border-color: var(--c-raid); color: var(--c-raid); background: rgba(255, 71, 87, 0.1); }
+.nav-item.active[data-theme="build"] { border-color: var(--c-build); color: var(--c-build); background: rgba(83, 82, 237, 0.1); }
 .nav-item.active[data-theme="farm"] { border-color: var(--c-farm); color: var(--c-farm); background: rgba(46, 213, 115, 0.1); }
 .nav-item.active[data-theme="ind"] { border-color: var(--c-ind); color: var(--c-ind); background: rgba(255, 165, 2, 0.1); }
 
@@ -89,6 +91,7 @@ h2 { font-family: 'Oswald'; font-size: 32px; text-transform: uppercase; margin-b
 
 /* Theme Accents for Cards */
 .view[data-theme="raid"] .card { border-top: 4px solid var(--c-raid); }
+.view[data-theme="build"] .card { border-top: 4px solid var(--c-build); }
 .view[data-theme="farm"] .card { border-top: 4px solid var(--c-farm); }
 .view[data-theme="ind"] .card { border-top: 4px solid var(--c-ind); }
 
@@ -115,6 +118,7 @@ button:active { transform: scale(0.98); }
 
 /* Theme Buttons */
 .btn-raid { background: var(--c-raid); box-shadow: 0 4px 15px rgba(255, 71, 87, 0.2); }
+.btn-build { background: var(--c-build); box-shadow: 0 4px 15px rgba(83, 82, 237, 0.2); }
 .btn-farm { background: var(--c-farm); box-shadow: 0 4px 15px rgba(46, 213, 115, 0.2); }
 .btn-ind { background: var(--c-ind); box-shadow: 0 4px 15px rgba(255, 165, 2, 0.2); }
 
@@ -140,6 +144,21 @@ button:active { transform: scale(0.98); }
     display: flex; align-items: center; gap: 10px;
 }
 .eco-rec i { font-style: normal; font-size: 16px; }
+
+/* Base Design Cards */
+.base-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+.base-card { background: #111; border: 1px solid #333; border-radius: 8px; overflow: hidden; }
+.base-video { height: 160px; background: #000; display: flex; align-items: center; justify-content: center; position: relative; }
+.base-video::after { content: '▶'; font-size: 40px; color: rgba(255,255,255,0.5); }
+.base-info { padding: 20px; }
+.base-title { font-family: 'Oswald'; font-size: 20px; color: #fff; margin-bottom: 5px; }
+.base-stats { display: flex; gap: 10px; margin-bottom: 15px; font-size: 11px; color: #888; }
+.stat-box { background: #222; padding: 4px 8px; border-radius: 4px; border: 1px solid #333; }
+.pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px; }
+.pro-list { color: var(--c-farm); list-style: none; padding: 0; }
+.con-list { color: var(--c-raid); list-style: none; padding: 0; }
+.pro-list li::before { content:'+ '; font-weight:bold; }
+.con-list li::before { content:'- '; font-weight:bold; }
 
 /* Gene Grid */
 .gene-row { display: flex; gap: 5px; margin-bottom: 10px; justify-content: center; }
@@ -171,7 +190,7 @@ button:active { transform: scale(0.98); }
 
 <nav class="sidebar">
     <div class="brand">☢ Rust<span>Labs</span></div>
-    <div class="version">Version 1.4</div>
+    <div class="version">Version 1.5</div>
 
     <div class="nav-header">Combat</div>
     <div class="nav-item active" data-theme="raid" onclick="setView('craft')">💣 Crafting Calc</div>
@@ -179,11 +198,15 @@ button:active { transform: scale(0.98); }
     <div class="nav-item" data-theme="raid" onclick="setView('eco')">🔨 Eco Raiding</div>
     <div class="nav-item" data-theme="raid" onclick="setView('compare')">⚖️ Full Compare</div>
 
+    <div class="nav-header">Construction</div>
+    <div class="nav-item" data-theme="build" onclick="setView('library')">🏰 Base Library</div>
+
     <div class="nav-header">Nature</div>
     <div class="nav-item" data-theme="farm" onclick="setView('gene')">🧬 Gene Lab</div>
     <div class="nav-item" data-theme="farm" onclick="setView('nodes')">⛏ Sulfur Nodes</div>
 
     <div class="nav-header">Industry</div>
+    <div class="nav-item" data-theme="ind" onclick="setView('smelt')">🔥 Smelting</div>
     <div class="nav-item" data-theme="ind" onclick="setView('recycle')">♻ Smart Recycler</div>
     <div class="nav-item" data-theme="ind" onclick="setView('diesel')">⛽ Diesel/Fuel</div>
     <div class="nav-item" data-theme="ind" onclick="setView('flight')">🚁 Flight Logistics</div>
@@ -315,6 +338,81 @@ button:active { transform: scale(0.98); }
         </div>
         <button class="btn-raid" onclick="calcCompare()">Full Breakdown</button>
         <div id="compRes" class="result-box" style="display:none"></div>
+    </div>
+
+    <div id="view-library" class="view" data-theme="build">
+        <header><h2 style="color:var(--c-build)">Base Library</h2><p class="subtitle">Standard Meta Builds (2026)</p></header>
+        <div class="base-grid">
+            
+            <div class="base-card">
+                <div class="base-video">Youtube Video</div>
+                <div class="base-info">
+                    <div class="base-title">The Standard 2x1</div>
+                    <div class="base-stats">
+                        <span class="stat-box">Build: ~3k Stone</span>
+                        <span class="stat-box">Upkeep: ~500 Stone</span>
+                    </div>
+                    <div class="pros-cons">
+                        <ul class="pro-list"><li>Cheap</li><li>Fast to build</li><li>Easy to hide</li></ul>
+                        <ul class="con-list"><li>Weak Defense</li><li>Low Storage</li></ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="base-card">
+                <div class="base-video">Youtube Video</div>
+                <div class="base-info">
+                    <div class="base-title">Honeycombed 2x2</div>
+                    <div class="base-stats">
+                        <span class="stat-box">Build: ~12k Stone</span>
+                        <span class="stat-box">Upkeep: ~2k Stone</span>
+                    </div>
+                    <div class="pros-cons">
+                        <ul class="pro-list"><li>Good Space</li><li>12-16 Rocket Raid</li><li>Roof Access</li></ul>
+                        <ul class="con-list"><li>Generic</li><li>Target for clans</li></ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="base-card">
+                <div class="base-video">Youtube Video</div>
+                <div class="base-info">
+                    <div class="base-title">The Mini-Fort Bunker</div>
+                    <div class="base-stats">
+                        <span class="stat-box">Build: ~15k Stone</span>
+                        <span class="stat-box">Upkeep: ~3k Stone</span>
+                    </div>
+                    <div class="pros-cons">
+                        <ul class="pro-list"><li>24+ Rocket Raid</li><li>Pixel Gaps</li><li>Offline Protection</li></ul>
+                        <ul class="con-list"><li>Complex Build</li><li>High HQM Cost</li></ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="view-smelt" class="view" data-theme="ind">
+        <header><h2 style="color:var(--c-ind)">Smelting Calculator</h2></header>
+        <div class="card">
+            <h3>🔥 Wood Required</h3>
+            <div class="grid-2">
+                <div>
+                    <label>Sulfur Ore</label><input type="number" id="smeltSulfur" value="0">
+                    <label>Metal Ore</label><input type="number" id="smeltMetal" value="0">
+                    <label>HQM Ore</label><input type="number" id="smeltHQM" value="0">
+                </div>
+                <div>
+                    <label>Furnace Type</label>
+                    <select id="furnaceType">
+                        <option value="small">Small Furnace</option>
+                        <option value="large">Large Furnace</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn-ind" onclick="calcSmelt()">Calculate Wood</button>
+            <div id="smeltRes" class="result-box" style="display:none"></div>
+        </div>
     </div>
 
     <div id="view-gene" class="view" data-theme="farm">
@@ -462,7 +560,7 @@ function calcRaid() {
         'wall.armored': { rocket: 8, c4: 3, satchel: 19, ammo: 400 },
         'wall.ext_stone': { rocket: 4, c4: 2, satchel: 9, ammo: 200 },
         'wall.ext_wood': { rocket: 2, c4: 1, satchel: 4, ammo: 72 },
-        'door.sheet': { rocket: 1, c4: 1, satchel: 2, ammo: 26 }, // 1 rocket does 350dmg vs 250hp, but sometimes splash. Safe bet is 1.
+        'door.sheet': { rocket: 1, c4: 1, satchel: 2, ammo: 26 }, 
         'door.garage': { rocket: 2, c4: 1, satchel: 5, ammo: 60 },
         'door.armored': { rocket: 3, c4: 1, satchel: 8, ammo: 100 },
         'window.reinforced': { rocket: 2, c4: 1, satchel: 5, ammo: 50 }
@@ -478,7 +576,6 @@ function calcRaid() {
     document.getElementById('raidRes').innerHTML = `
         <div class="row"><span>Required</span> <strong style="font-size:18px; color:#ff4757">${totalAmmo} ${ammo.toUpperCase()}s</strong></div>
         <div class="row"><span>Total Sulfur Cost</span> <strong>${totalSulfur.toLocaleString()}</strong></div>
-        <p style="font-size:11px; color:#666; margin-top:5px;">Calculation works for any side (Splash damage may vary).</p>
     `;
 }
 
@@ -500,8 +597,6 @@ function calcEco() {
     const tool = document.getElementById('ecoTool').value;
     const qty = +document.getElementById('ecoCount').value;
 
-    // Hardcoded Meta Table (Quantities per 1 wall)
-    // -1 means impossible/immune
     const meta = {
         'wall.wood': { spear: 2, jack: 0.1, pick: 1, sword: 1, hatchet: 1.5 },
         'wall.stone': { spear: 23, jack: 1.2, pick: 7, sword: 80, hatchet: 99 },
@@ -528,7 +623,7 @@ function calcEco() {
     `;
 }
 
-/* --- LOGIC: COMPARE --- */
+/* --- 4. COMPARE --- */
 function calcCompare() {
     const getCost = (t, q) => {
         if(t==='rocket') return {s:1400*q, c:1950*q, m:100*q, p:2*q, tech:0, fuel:30*q};
@@ -541,7 +636,6 @@ function calcCompare() {
     const cB = getCost(document.getElementById('compB').value, +document.getElementById('amtB').value);
     
     let html = `<table class="comp-table"><thead><tr><th>Resource</th><th>Opt A</th><th>Opt B</th><th>Diff</th></tr></thead><tbody>`;
-    
     const fields = [
         {key:'s', name:'Sulfur'}, {key:'c', name:'Charcoal'}, {key:'m', name:'Metal Frags'}, 
         {key:'fuel', name:'Low Grade'}, {key:'p', name:'Pipes'}, {key:'tech', name:'Tech Trash'}
@@ -559,6 +653,27 @@ function calcCompare() {
     html += `</tbody></table>`;
     document.getElementById('compRes').style.display = 'block';
     document.getElementById('compRes').innerHTML = html;
+}
+
+/* --- 5. SMELTING (NEW) --- */
+function calcSmelt() {
+    const s = +document.getElementById('smeltSulfur').value;
+    const m = +document.getElementById('smeltMetal').value;
+    const h = +document.getElementById('smeltHQM').value;
+    
+    // Ratios: 1000 Wood = 600 Ore Smelted (approx 1.67 Wood per Ore)
+    const totalOre = s + m + h;
+    const woodNeeded = Math.ceil(totalOre * 1.67);
+    const charcoal = Math.floor(woodNeeded * 0.75);
+    const timeSec = Math.ceil(totalOre * 2); // 2 seconds per ore
+    const mins = Math.floor(timeSec / 60);
+
+    document.getElementById('smeltRes').style.display='block';
+    document.getElementById('smeltRes').innerHTML=`
+        <div class="row"><span>Wood Needed</span> <strong style="color:#ffa502">${woodNeeded.toLocaleString()}</strong></div>
+        <div class="row"><span>Charcoal Output</span> <strong>${charcoal.toLocaleString()}</strong></div>
+        <div class="row"><span>Time (Single Furnace)</span> <strong>${mins} Mins</strong></div>
+    `;
 }
 
 /* --- LOGIC: RECYCLER --- */
