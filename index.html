@@ -266,7 +266,6 @@ button:active { transform: scale(0.98); }
                         <option value="pick">Metal Pickaxe</option>
                         <option value="sword">Salvaged Sword</option>
                         <option value="hatchet">Hatchet</option>
-                        <option value="mace">Mace</option>
                     </select>
                 </div>
                 <div>
@@ -497,16 +496,18 @@ function calcRaid() {
     `;
 }
 
-/* --- LOGIC: ECO RAID --- */
+/* --- LOGIC: ECO RAID (FIXED) --- */
 function updateEcoRec() {
     const t = document.getElementById('ecoTarget').value;
     const rec = document.getElementById('ecoRec');
     let msg = "Select a target.";
     
-    if(t.includes('wood')) msg = "Recommended: <b>Hatchet</b> or <b>Swords</b>.";
-    if(t.includes('stone')) msg = "Recommended: <b>Jackhammer</b> or <b>Spears</b>.";
-    if(t.includes('metal')) msg = "Recommended: <b>Jackhammer</b> only.";
-    if(t.includes('door')) msg = "Eco raiding doors is inefficient. Use explosives.";
+    // Dynamic Recommendation
+    if(t === 'wall.wood') msg = "Best: <b>Salvaged Sword</b> (Fastest) or <b>Spears</b> (Cheapest).";
+    if(t === 'wall.stone') msg = "Best: <b>7x Metal Pickaxes</b> or <b>1x Jackhammer</b>.";
+    if(t === 'wall.metal') msg = "Best: <b>Jackhammers</b> Only. (Spears do 0 dmg).";
+    if(t === 'door.wood') msg = "Best: <b>19x Wooden Spears</b> or <b>Swords</b>.";
+    if(t.includes('door') && !t.includes('wood')) msg = "Warning: Metal Doors are immune to Eco Raiding.";
     
     rec.innerHTML = `<i>💡</i> <span>${msg}</span>`;
 }
@@ -520,29 +521,43 @@ function calcEco() {
         'wall.wood': 250, 'wall.stone': 500, 'wall.metal': 1000,
         'door.wood': 200, 'door.sheet': 250, 'door.garage': 600
     };
-    const toolStats = {
-        spear: {d:10, dur:50, name:"Spears"},
-        jack: {d:45, dur:600, name:"Refills"},
-        pick: {d:27, dur:250, name:"Pickaxes"},
-        sword: {d:24, dur:40, name:"Swords"},
-        hatchet: {d:15, dur:200, name:"Hatchets"},
-        mace: {d:5, dur:150, name:"Maces"}
+    
+    // DAMAGE MATRIX (Target -> Tool Damage)
+    // 0 means immune
+    const dmgMap = {
+        'wall.wood': { spear:10, jack:13, pick:18, sword:24, hatchet:15 },
+        'wall.stone': { spear:1.2, jack:45, pick:27, sword:3, hatchet:1 },
+        'wall.metal': { spear:0, jack:4, pick:1, sword:0, hatchet:0 },
+        'door.wood': { spear:12, jack:18, pick:20, sword:25, hatchet:16 },
+        'door.sheet': { spear:0, jack:0, pick:0, sword:0, hatchet:0 }, // Immune
+        'door.garage': { spear:0, jack:0, pick:0, sword:0, hatchet:0 }  // Immune
     };
 
-    if(!hpMap[t]) {
+    const toolDurability = {
+        spear: 50, jack: 600, pick: 250, sword: 40, hatchet: 200
+    };
+    const toolNames = {
+        spear: "Wooden Spears", jack: "Jackhammer Refills", pick: "Pickaxes",
+        sword: "Sal. Swords", hatchet: "Hatchets"
+    };
+
+    const targetType = t; // e.g. 'wall.stone'
+    const dmgPerHit = dmgMap[targetType][tool];
+
+    if(dmgPerHit <= 0) {
         document.getElementById('ecoRes').style.display = 'block';
-        document.getElementById('ecoRes').innerHTML = "<strong>Target too strong for eco tools.</strong>";
+        document.getElementById('ecoRes').innerHTML = `<strong style="color:#ff4757">Target is IMMUNE to this tool.</strong>`;
         return;
     }
 
     const totalHP = hpMap[t] * qty;
-    const hits = Math.ceil(totalHP / toolStats[tool].d);
-    const tools = (hits / toolStats[tool].dur).toFixed(1);
+    const hits = Math.ceil(totalHP / dmgPerHit);
+    const toolsNeeded = (hits / toolDurability[tool]).toFixed(1);
 
     document.getElementById('ecoRes').style.display = 'block';
     document.getElementById('ecoRes').innerHTML = `
         <div class="row"><span>Total Hits</span> <strong>${hits.toLocaleString()}</strong></div>
-        <div class="row"><span>${toolStats[tool].name} Needed</span> <strong style="color:#ff4757">${tools}</strong></div>
+        <div class="row"><span>${toolNames[tool]} Needed</span> <strong style="color:#ff4757">${toolsNeeded}</strong></div>
     `;
 }
 
