@@ -8,8 +8,8 @@
 <style>
 /* --- CORE VARIABLES --- */
 :root {
-    --bg-dark: #0f0f0f;
-    --bg-sidebar: #050505;
+    --bg-dark: #101010;
+    --bg-sidebar: #080808;
     --bg-panel: #1a1a1a;
     --border: #333;
     
@@ -129,13 +129,6 @@ button:active { transform: scale(0.98); }
 .row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; color: #ccc; }
 .row strong { color: #fff; }
 
-/* Comparison Table */
-.comp-table { width: 100%; border-collapse: collapse; font-size: 14px; color: #ccc; }
-.comp-table th { text-align: left; padding-bottom: 10px; color: #666; font-size: 12px; text-transform: uppercase; }
-.comp-table td { padding: 8px 0; border-bottom: 1px solid #222; }
-.diff-good { color: var(--c-farm); font-weight: bold; }
-.diff-bad { color: var(--c-raid); font-weight: bold; }
-
 /* Eco Recommendation Banner */
 .eco-rec {
     background: rgba(255, 255, 255, 0.05); border-left: 3px solid #fff;
@@ -150,22 +143,31 @@ button:active { transform: scale(0.98); }
     font-size: 12px; font-weight: bold; color: #000;
 }
 .node { padding: 5px 10px; border-radius: 4px; }
-.node.pwr { background: #e74c3c; color: #fff; } /* Power Source */
-.node.sw { background: #3498db; color: #fff; }  /* Switch */
-.node.out { background: #f1c40f; }              /* Output */
+.node.pwr { background: #e74c3c; color: #fff; } 
+.node.sw { background: #3498db; color: #fff; }  
+.node.out { background: #f1c40f; }              
 .wire { flex: 1; height: 2px; background: #555; position: relative; }
 .wire::after { content: '⚡'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); font-size: 10px; }
 
-/* Blueprint Visualizer (CSS Grid) */
-.bp-visual {
-    display: flex; justify-content: center; align-items: center;
-    background: #111; height: 150px; border-radius: 8px; margin-bottom: 15px;
-    position: relative; border: 1px solid #333;
+/* Blueprints (Visual Grid) */
+.bp-container {
+    background: #111; padding: 20px; border-radius: 8px; border: 1px solid #333;
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
 }
-.bp-square { width: 40px; height: 40px; background: #34495e; border: 2px solid #555; display: grid; place-items: center; color: #aaa; font-size: 10px; }
-.bp-tri { width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-bottom: 35px solid #34495e; position: relative; }
-.bp-tri::after { content:''; position:absolute; top:2px; left:-18px; border-left:18px solid transparent; border-right:18px solid transparent; border-bottom:31px solid #2c3e50; }
-.bp-core { background: #e74c3c !important; color: #fff; font-weight: bold; }
+.bp-grid {
+    display: grid; grid-template-columns: repeat(4, 40px); grid-template-rows: repeat(4, 40px); gap: 2px;
+}
+.bp-cell {
+    width: 40px; height: 40px; border-radius: 2px; display: grid; place-items: center;
+    font-size: 9px; font-weight: bold; color: rgba(255,255,255,0.5); text-transform: uppercase;
+}
+.cell-core { background: #5352ed; color: #fff; border: 1px solid #7070ff; }
+.cell-honey { background: #34495e; color: #ccc; border: 1px dashed #555; }
+.cell-air { background: #27ae60; color: #fff; border: 1px solid #2ecc71; }
+.cell-empty { background: transparent; }
+
+.bp-legend { display: flex; gap: 15px; font-size: 12px; color: #888; margin-top: 10px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; }
 
 /* Gene Grid */
 .gene-row { display: flex; gap: 5px; margin-bottom: 10px; justify-content: center; }
@@ -173,6 +175,14 @@ button:active { transform: scale(0.98); }
     width: 40px; height: 40px; text-align: center; font-weight: 800; font-size: 18px; 
     text-transform: uppercase; background: #111; border: 1px solid #444; color: #fff; border-radius: 4px;
 }
+
+/* Toggle Switch */
+.toggle-row { display: flex; gap: 10px; align-items: center; margin-bottom: 15px; }
+.toggle-btn {
+    flex: 1; padding: 8px; background: #222; border: 1px solid #444; color: #888;
+    text-align: center; cursor: pointer; font-size: 12px; font-weight: bold; border-radius: 4px;
+}
+.toggle-btn.active { background: #e74c3c; color: #fff; border-color: #ff6b6b; }
 
 /* Mobile */
 @media (max-width: 768px) {
@@ -215,7 +225,7 @@ button:active { transform: scale(0.98); }
 <main class="main">
 
     <div id="view-raid" class="view active" data-theme="raid">
-        <header><h2 style="color:var(--c-raid)">Explosives Calculator</h2><p class="subtitle">Updated for 2026 Mix Tables</p></header>
+        <header><h2 style="color:var(--c-raid)">Explosives Calculator</h2><p class="subtitle">Accurate 2026 Mix & Craft Costs</p></header>
         <div class="card">
             <h3>💥 Raid Cost</h3>
             <div class="grid-2">
@@ -250,49 +260,47 @@ button:active { transform: scale(0.98); }
     </div>
 
     <div id="view-eco" class="view" data-theme="raid">
-        <header><h2 style="color:var(--c-raid)">Eco Raiding</h2><p class="subtitle">Soft-Side & Door Breaking</p></header>
+        <header><h2 style="color:var(--c-raid)">Eco Raiding</h2><p class="subtitle">Soft-Side & Tool Calculation</p></header>
         <div class="card">
             <h3>🔨 Durability Math</h3>
             
             <label>Target Structure</label>
             <select id="ecoTarget" onchange="updateEcoRec()">
-                <option value="wall.wood">Wood Wall (Soft)</option>
-                <option value="wall.stone">Stone Wall (Soft)</option>
-                <option value="wall.metal">Metal Wall (Soft)</option>
+                <option value="wall.wood">Wood Wall (Soft Side)</option>
+                <option value="wall.stone">Stone Wall (Soft Side)</option>
+                <option value="wall.metal">Metal Wall (Soft Side)</option>
                 <option value="door.wood">Wood Door</option>
                 <option value="door.sheet">Sheet Metal Door</option>
-                <option value="door.garage">Garage Door</option>
             </select>
 
-            <div id="ecoRec" class="eco-rec">
-                <i>💡</i> <span>Select a target to see the best tool.</span>
+            <div id="ecoRec" class="eco-rec"><i>💡</i> <span>Select a target.</span></div>
+
+            <div class="toggle-row">
+                <div class="toggle-btn active" id="modeFresh" onclick="setEcoMode('fresh')">Fresh Tools (Crafting)</div>
+                <div class="toggle-btn" id="modeRefill" onclick="setEcoMode('refill')">Refills (Repair Bench)</div>
             </div>
 
             <div class="grid-2">
                 <div>
-                    <label>Tool Selection</label>
+                    <label>Tool</label>
                     <select id="ecoTool">
                         <option value="spear">Wooden Spear</option>
                         <option value="jack">Jackhammer</option>
                         <option value="pick">Metal Pickaxe</option>
                         <option value="sword">Salvaged Sword</option>
                         <option value="hatchet">Hatchet</option>
-                        <option value="mace">Mace</option>
                     </select>
                 </div>
-                <div>
-                    <label>Count</label>
-                    <input type="number" id="ecoCount" value="1">
-                </div>
+                <div><label>Wall Count</label><input type="number" id="ecoCount" value="1"></div>
             </div>
 
-            <button class="btn-raid" onclick="calcEco()">Calculate Tools</button>
+            <button class="btn-raid" onclick="calcEco()">Calculate</button>
             <div id="ecoRes" class="result-box" style="display:none"></div>
         </div>
     </div>
 
     <div id="view-compare" class="view" data-theme="raid">
-        <header><h2 style="color:var(--c-raid)">Detailed Comparison</h2><p class="subtitle">Sulfur, Charcoal, Components & Time</p></header>
+        <header><h2 style="color:var(--c-raid)">Resource Comparison</h2></header>
         <div class="grid-2">
             <div class="card">
                 <h3>Option A</h3>
@@ -310,20 +318,17 @@ button:active { transform: scale(0.98); }
     </div>
 
     <div id="view-footprint" class="view" data-theme="build">
-        <header><h2 style="color:var(--c-build)">Footprint Guide</h2><p class="subtitle">Visual Expansion Diagrams</p></header>
+        <header><h2 style="color:var(--c-build)">Footprint Guide</h2><p class="subtitle">Expansion Logic</p></header>
         <div class="card">
             <h3>🏠 Select Starter</h3>
             <label>Current Base Shape</label>
-            <select id="baseShape" onchange="calcFootprint()">
-                <option value="2x1">Standard 2x1 (Solo/Duo)</option>
-                <option value="2x2">Standard 2x2 (Group)</option>
-                <option value="1x2">1x2 (Micro Solo)</option>
-                <option value="circle">Hexagon / Circle (Zerg)</option>
+            <select id="baseShape" onchange="renderFootprint()">
+                <option value="2x1">Standard 2x1</option>
+                <option value="2x2">Standard 2x2</option>
+                <option value="1x1">1x1 Solo</option>
             </select>
             
-            <button class="btn-build" onclick="calcFootprint()">Analyze Expansion</button>
-            
-            <div id="footRes" class="result-box" style="display:none">
+            <div id="footprintContainer" style="margin-top:20px;">
                 </div>
         </div>
     </div>
@@ -333,35 +338,18 @@ button:active { transform: scale(0.98); }
         <div class="grid-2">
             <div class="card">
                 <h3>🔔 Smart Alarm</h3>
-                <p style="font-size:13px; color:#aaa; margin-bottom:10px">Detects raiders and pushes notification.</p>
-                <div class="circuit-diagram">
-                    <span class="node pwr">Battery</span> <div class="wire"></div> <span class="node sw">Switch</span> <div class="wire"></div> <span class="node out">Alarm</span>
-                </div>
+                <div class="circuit-diagram"><span class="node pwr">Battery</span> <div class="wire"></div> <span class="node sw">Switch</span> <div class="wire"></div> <span class="node out">Alarm</span></div>
                 <ul style="font-size:13px; color:#ccc; margin-left:15px; line-height:1.6">
                     <li><b>Power:</b> 1 rW continuous.</li>
-                    <li><b>Placement:</b> Hidden inside honeycomb or airlock.</li>
-                    <li><b>Tip:</b> Connect to HBHF Sensor for auto-trigger.</li>
+                    <li><b>Placement:</b> Inside airlock.</li>
                 </ul>
             </div>
             <div class="card">
                 <h3>🔫 3-Turret Pod</h3>
-                <p style="font-size:13px; color:#aaa; margin-bottom:10px">Standard external defense pod.</p>
-                <div class="circuit-diagram">
-                    <span class="node pwr">Battery</span> <div class="wire"></div> <span class="node sw">Splitter</span> <div class="wire"></div> <span class="node out">3x Turret</span>
-                </div>
+                <div class="circuit-diagram"><span class="node pwr">Battery</span> <div class="wire"></div> <span class="node sw">Splitter</span> <div class="wire"></div> <span class="node out">3x Turret</span></div>
                 <ul style="font-size:13px; color:#ccc; margin-left:15px; line-height:1.6">
-                    <li><b>Power:</b> 31 rW minimum (10 per turret + 1 splitter).</li>
-                    <li><b>Limit:</b> Max 12 turrets in a 40m radius.</li>
-                    <li><b>Tip:</b> Use a Switch before the Splitter to turn off and save power.</li>
-                </ul>
-            </div>
-            <div class="card">
-                <h3>💨 Windmill Setup</h3>
-                <p style="font-size:13px; color:#aaa; margin-bottom:10px">Optimal height for max power.</p>
-                <ul style="font-size:13px; color:#ccc; margin-left:15px; line-height:1.6">
-                    <li><b>Height:</b> 8+ floors up = ~100+ rW.</li>
-                    <li><b>Clearance:</b> Ensure no walls block the blades.</li>
-                    <li><b>Root Combine:</b> Connect multiple windmills into one Root Combiner.</li>
+                    <li><b>Power:</b> 31 rW minimum.</li>
+                    <li><b>Limit:</b> Max 12 turrets/40m.</li>
                 </ul>
             </div>
         </div>
@@ -381,7 +369,7 @@ button:active { transform: scale(0.98); }
     </div>
 
     <div id="view-gene" class="view" data-theme="farm">
-        <header><h2 style="color:var(--c-farm)">Gene Laboratory</h2><p class="subtitle">Bad genes are dominant (Weight 1.0)</p></header>
+        <header><h2 style="color:var(--c-farm)">Gene Laboratory</h2></header>
         <div class="card">
             <h3>🧬 Crossbreeder</h3>
             <label>Donor 1</label><div class="gene-row"><input class="gene-input" id="d1_1" maxlength="1"><input class="gene-input" id="d1_2" maxlength="1"><input class="gene-input" id="d1_3" maxlength="1"><input class="gene-input" id="d1_4" maxlength="1"><input class="gene-input" id="d1_5" maxlength="1"><input class="gene-input" id="d1_6" maxlength="1"></div>
@@ -413,7 +401,7 @@ button:active { transform: scale(0.98); }
     </div>
 
     <div id="view-recycle" class="view" data-theme="ind">
-        <header><h2 style="color:var(--c-ind)">Smart Recycler</h2><p class="subtitle">Scrap Calculator & Advisory</p></header>
+        <header><h2 style="color:var(--c-ind)">Smart Recycler</h2></header>
         <div class="grid-2">
             <div class="card">
                 <h3>Inventory</h3>
@@ -427,10 +415,7 @@ button:active { transform: scale(0.98); }
             <div class="card">
                 <h3>Settings</h3>
                 <label>Location</label>
-                <select id="recZone">
-                    <option value="unsafe">Monument (100% Yield)</option>
-                    <option value="safe">Safe Zone (80% Yield)</option>
-                </select>
+                <select id="recZone"><option value="unsafe">Monument (100% Yield)</option><option value="safe">Safe Zone (80% Yield)</option></select>
                 <label>Target (Optional)</label>
                 <input type="number" id="recTarget" placeholder="I need 500 Scrap...">
                 <button class="btn-ind" onclick="calcRecycle()">Analyze Recycle</button>
@@ -477,12 +462,23 @@ button:active { transform: scale(0.98); }
 </main>
 
 <script>
+/* --- GLOBAL STATE --- */
+let ecoMode = 'fresh'; // 'fresh' or 'refill'
+
 /* --- UI NAVIGATION --- */
 function setView(id) {
     document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
     document.getElementById('view-'+id).classList.add('active');
     document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
     document.querySelectorAll(`.nav-item[onclick="setView('${id}')"]`).forEach(e => e.classList.add('active'));
+    
+    if(id === 'footprint') renderFootprint();
+}
+
+function setEcoMode(mode) {
+    ecoMode = mode;
+    document.getElementById('modeFresh').classList.toggle('active', mode === 'fresh');
+    document.getElementById('modeRefill').classList.toggle('active', mode === 'refill');
 }
 
 /* --- LOGIC: RAID --- */
@@ -492,33 +488,37 @@ function calcRaid() {
     const q = +document.getElementById('raidQty').value;
     const m = document.getElementById('raidMethod').value;
     
-    // HP Values
+    // HP & Damage
     const hp = {
         'wall.stone': 500, 'wall.metal': 1000, 'wall.armored': 2000,
         'door.sheet': 250, 'door.garage': 600, 'door.armored': 1000
     };
-    // Dmg Values
     const dmg = { rocket: 350, c4: 2750, satchel: 435, ammo: 12 }; 
-    // Cost (Sulfur/Charcoal/Frags)
-    const cost = {
-        rocket: {s:1400, c:1950, f:100}, c4: {s:2200, c:3000, f:200},
-        satchel: {s:480, c:720, f:80}, ammo: {s:25, c:30, f:10}
+    
+    const getCostPerItem = (type) => {
+        if(type==='rocket') return {s:1400, c:1950, f:100, p:2, tech:0, fuel:30};
+        if(type==='c4') return {s:2200, c:3000, f:200, p:0, tech:2, fuel:60};
+        if(type==='satchel') return {s:480, c:720, f:80, p:0, tech:0, fuel:0};
+        if(type==='ammo') return {s:25, c:30, f:10, p:0, tech:0, fuel:0};
     };
 
     const hits = Math.ceil(hp[t] / dmg[a]);
     const totalAmmo = hits * q;
-    let s = cost[a].s * totalAmmo;
-    let c = cost[a].c * totalAmmo;
-    let f = cost[a].f * totalAmmo;
+    const baseCost = getCostPerItem(a);
+    
+    let s = baseCost.s * totalAmmo;
+    let c = baseCost.c * totalAmmo;
+    let f = baseCost.f * totalAmmo;
 
-    if(m === 'mix') c = c * 0.7; // Mixing table discount
+    if(m === 'mix') c = c * 0.7; // Mixing table reduces charcoal need
 
     document.getElementById('raidRes').style.display = 'block';
     document.getElementById('raidRes').innerHTML = `
         <div class="row"><span>Total Ammo</span> <strong>${totalAmmo} ${a.toUpperCase()}s</strong></div>
         <div class="row"><span>Sulfur</span> <strong style="color:#ff4757">${s.toLocaleString()}</strong></div>
         <div class="row"><span>Charcoal</span> <strong>${Math.floor(c).toLocaleString()}</strong></div>
-        <div class="row"><span>Frags</span> <strong>${f.toLocaleString()}</strong></div>
+        <div class="row"><span>Metal Frags</span> <strong>${f.toLocaleString()}</strong></div>
+        ${baseCost.p > 0 ? `<div class="row"><span>Pipes</span> <strong>${baseCost.p * totalAmmo}</strong></div>` : ''}
     `;
 }
 
@@ -526,14 +526,12 @@ function calcRaid() {
 function updateEcoRec() {
     const t = document.getElementById('ecoTarget').value;
     const rec = document.getElementById('ecoRec');
-    let msg = "Select a target.";
-    
-    if(t === 'wall.wood') msg = "Best: <b>Salvaged Sword</b> (Fastest) or <b>Spears</b> (Cheapest).";
-    if(t === 'wall.stone') msg = "Best: <b>7x Metal Pickaxes</b> or <b>1x Jackhammer</b>.";
-    if(t === 'wall.metal') msg = "Best: <b>Jackhammers</b> Only. (Spears do 0 dmg).";
-    if(t === 'door.wood') msg = "Best: <b>19x Wooden Spears</b> or <b>Swords</b>.";
-    if(t.includes('door') && !t.includes('wood')) msg = "Warning: Metal Doors are immune to Eco Raiding.";
-    
+    let msg = "";
+    if(t==='wall.wood') msg = "Best: <b>1x Sword</b> or <b>2x Spears</b>.";
+    if(t==='wall.stone') msg = "Best: <b>7x Pickaxes</b> or <b>1.2x Jackhammers</b>.";
+    if(t==='wall.metal') msg = "Best: <b>Jackhammers Only</b> (Picks are too slow).";
+    if(t==='door.wood') msg = "Best: <b>19x Spears</b>.";
+    if(t==='door.sheet') msg = "Explosives only. Eco is impossible.";
     rec.innerHTML = `<i>💡</i> <span>${msg}</span>`;
 }
 
@@ -542,47 +540,90 @@ function calcEco() {
     const tool = document.getElementById('ecoTool').value;
     const qty = +document.getElementById('ecoCount').value;
 
-    const hpMap = {
-        'wall.wood': 250, 'wall.stone': 500, 'wall.metal': 1000,
-        'door.wood': 200, 'door.sheet': 250, 'door.garage': 600
-    };
-    
-    // DAMAGE MATRIX (Target -> Tool Damage)
-    const dmgMap = {
-        'wall.wood': { spear:10, jack:13, pick:18, sword:24, hatchet:15 },
-        'wall.stone': { spear:1.2, jack:45, pick:27, sword:3, hatchet:1 },
-        'wall.metal': { spear:0, jack:4, pick:1, sword:0, hatchet:0 },
-        'door.wood': { spear:12, jack:18, pick:20, sword:25, hatchet:16 },
-        'door.sheet': { spear:0, jack:0, pick:0, sword:0, hatchet:0 }, 
-        'door.garage': { spear:0, jack:0, pick:0, sword:0, hatchet:0 }
+    // Hardcoded Meta Table (Quantities per 1 wall)
+    // -1 means impossible/immune
+    const meta = {
+        'wall.wood': { spear: 2, jack: 0.1, pick: 1, sword: 1, hatchet: 1.5 },
+        'wall.stone': { spear: 23, jack: 1.2, pick: 7, sword: 80, hatchet: 99 },
+        'wall.metal': { spear: -1, jack: 13, pick: 50, sword: -1, hatchet: -1 },
+        'door.wood': { spear: 19, jack: 0.5, pick: 2, sword: 2, hatchet: 4 },
+        'door.sheet': { spear: -1, jack: -1, pick: -1, sword: -1, hatchet: -1 },
     };
 
-    const toolDurability = { spear: 50, jack: 600, pick: 250, sword: 40, hatchet: 200, mace:150 };
-    const toolNames = { spear: "Wooden Spears", jack: "Jackhammer Refills", pick: "Pickaxes", sword: "Sal. Swords", hatchet: "Hatchets", mace:"Maces" };
+    const countPerWall = meta[t][tool];
 
-    const dmgPerHit = dmgMap[t][tool];
-
-    if(!dmgPerHit || dmgPerHit <= 0) {
+    if(countPerWall === -1 || countPerWall > 100) {
         document.getElementById('ecoRes').style.display = 'block';
-        document.getElementById('ecoRes').innerHTML = `<strong style="color:#ff4757">Target is IMMUNE to this tool.</strong>`;
+        document.getElementById('ecoRes').innerHTML = `<strong style="color:#ff4757">NOT VIABLE / IMMUNE</strong>`;
         return;
     }
 
-    const totalHP = hpMap[t] * qty;
-    const hits = Math.ceil(totalHP / dmgPerHit);
-    const toolsNeeded = (hits / toolDurability[tool]).toFixed(1);
+    const totalNeeded = (countPerWall * qty).toFixed(1);
+    const label = ecoMode === 'fresh' ? 'New Tools' : 'Refills (Repair Bench)';
 
     document.getElementById('ecoRes').style.display = 'block';
     document.getElementById('ecoRes').innerHTML = `
-        <div class="row"><span>Total Hits</span> <strong>${hits.toLocaleString()}</strong></div>
-        <div class="row"><span>${toolNames[tool]} Needed</span> <strong style="color:#ff4757">${toolsNeeded}</strong></div>
+        <div class="row"><span>Quantity</span> <strong style="color:#ff4757">${totalNeeded} ${label}</strong></div>
+        <div style="font-size:12px; color:#666; margin-top:5px;">Based on Soft Side Durability Meta</div>
     `;
 }
 
-/* --- LOGIC: FULL COMPARE (UPDATED) --- */
+/* --- LOGIC: FOOTPRINT (VISUALS) --- */
+function renderFootprint() {
+    const s = document.getElementById('baseShape').value;
+    const c = document.getElementById('footprintContainer');
+    let title="", visual="", desc="";
+    
+    // CSS Grid Visuals
+    const core = `<div class="bp-cell cell-core">CORE</div>`;
+    const honey = `<div class="bp-cell cell-honey">HNY</div>`;
+    const air = `<div class="bp-cell cell-air">AIR</div>`;
+    const empty = `<div class="bp-cell cell-empty"></div>`;
+
+    if(s === '2x1') {
+        title = "2x1 Bunker Expansion";
+        visual = `
+            <div class="bp-grid" style="grid-template-columns: repeat(4, 40px);">
+                ${empty}${honey}${honey}${empty}
+                ${honey}${core}${core}${air}
+                ${empty}${honey}${honey}${empty}
+            </div>
+        `;
+        desc = "1. Build 2x1 Core (Blue).<br>2. Add Triangle Honeycomb (Grey).<br>3. Add Triangle Airlock (Green).<br>4. Upgrade core to Armored.";
+    } else if(s === '2x2') {
+        title = "2x2 Wide Gap";
+        visual = `
+            <div class="bp-grid" style="grid-template-columns: repeat(4, 40px);">
+                ${honey}${honey}${honey}${honey}
+                ${honey}${core}${core}${honey}
+                ${honey}${core}${core}${honey}
+                ${honey}${air}${air}${honey}
+            </div>
+        `;
+        desc = "1. Build 2x2 Core.<br>2. Full layer of Honeycomb.<br>3. Double door airlock.<br>4. On Floor 2, extend out for wide-gap peaks.";
+    } else if (s === '1x1') {
+        title = "1x1 Starter";
+        visual = `
+            <div class="bp-grid" style="grid-template-columns: repeat(3, 40px);">
+                ${empty}${empty}${empty}
+                ${empty}${core}${air}
+                ${empty}${empty}${empty}
+            </div>
+        `;
+        desc = "Extremely cheap. Core + Triangle Airlock. Use for farming or flank base only.";
+    }
+
+    c.innerHTML = `
+        <div class="row"><span>Layout</span> <strong style="color:#5352ed">${title}</strong></div>
+        <div class="bp-container">${visual} <div class="bp-legend"><span class="dot" style="background:#5352ed"></span>Core <span class="dot" style="background:#34495e"></span>Honeycomb <span class="dot" style="background:#27ae60"></span>Airlock</div></div>
+        <p style="font-size:12px; color:#aaa; margin-top:5px; line-height:1.5">${desc}</p>
+    `;
+}
+
+/* --- LOGIC: COMPARE --- */
 function calcCompare() {
     const getCost = (t, q) => {
-        if(t==='rocket') return {s:1400*q, c:1950*q, m:100*q, p:2*q, tech:0, fuel:0};
+        if(t==='rocket') return {s:1400*q, c:1950*q, m:100*q, p:2*q, tech:0, fuel:30*q};
         if(t==='c4') return {s:2200*q, c:3000*q, m:200*q, p:0, tech:2*q, fuel:60*q};
         if(t==='satchel') return {s:480*q, c:720*q, m:80*q, p:0, tech:0, fuel:0};
         return {s:0,c:0,m:0,p:0,tech:0,fuel:0};
@@ -591,7 +632,7 @@ function calcCompare() {
     const cA = getCost(document.getElementById('compA').value, +document.getElementById('amtA').value);
     const cB = getCost(document.getElementById('compB').value, +document.getElementById('amtB').value);
     
-    let html = `<table class="comp-table"><thead><tr><th>Resource</th><th>Opt A</th><th>Opt B</th><th>Difference</th></tr></thead><tbody>`;
+    let html = `<table class="comp-table"><thead><tr><th>Resource</th><th>Opt A</th><th>Opt B</th><th>Diff</th></tr></thead><tbody>`;
     
     const fields = [
         {key:'s', name:'Sulfur'}, {key:'c', name:'Charcoal'}, {key:'m', name:'Metal Frags'}, 
@@ -612,7 +653,7 @@ function calcCompare() {
     document.getElementById('compRes').innerHTML = html;
 }
 
-/* --- LOGIC: RECYCLER (UPDATED) --- */
+/* --- LOGIC: RECYCLER --- */
 function calcRecycle() {
     const zone = document.getElementById('recZone').value;
     const mult = zone==='safe' ? 0.8 : 1.0;
@@ -627,9 +668,7 @@ function calcRecycle() {
         sheet: {val:+document.getElementById('recSheet').value, scrap:8, hqm:0},
     };
 
-    let totalScrap = 0;
-    let totalHQM = 0;
-
+    let totalScrap = 0, totalHQM = 0;
     for (const key in inputs) {
         totalScrap += inputs[key].val * inputs[key].scrap;
         totalHQM += inputs[key].val * inputs[key].hqm;
@@ -640,61 +679,17 @@ function calcRecycle() {
 
     let msg = "";
     if(target > 0) {
-        if(totalScrap >= target) msg = `<div style="margin-top:10px; color:#2ed573">✅ You meet your goal! (+${totalScrap-target} surplus)</div>`;
+        if(totalScrap >= target) msg = `<div style="margin-top:10px; color:#2ed573">✅ Goal Met! (+${totalScrap-target} surplus)</div>`;
         else msg = `<div style="margin-top:10px; color:#ff4757">❌ Short by ${target-totalScrap} Scrap.</div>`;
     }
     
-    // Safety advice
-    if(inputs.smg.val > 0) msg += `<div style="font-size:11px; color:#ffa502; margin-top:5px">⚠️ Keep SMG Bodies for Tommys.</div>`;
-    if(inputs.spring.val > 0) msg += `<div style="font-size:11px; color:#ffa502; margin-top:5px">⚠️ Keep Springs for Guns.</div>`;
+    if(inputs.gear.val > 0) msg += `<div style="font-size:11px; color:#ffa502; margin-top:5px">⚠️ Warning: Gears needed for Garage Doors.</div>`;
 
     document.getElementById('recRes').style.display='block'; 
     document.getElementById('recRes').innerHTML=`
         <div class="row"><span>Total Scrap</span> <strong style="color:#ffa502">${totalScrap}</strong></div>
         <div class="row"><span>Total HQM</span> <strong>${totalHQM}</strong></div>
         ${msg}
-    `;
-}
-
-/* --- LOGIC: FOOTPRINT (VISUAL) --- */
-function calcFootprint() {
-    const s = document.getElementById('baseShape').value;
-    const res = document.getElementById('footRes');
-    let title="", visual="", desc="";
-
-    if(s === '2x1') {
-        title = "The 2x1 Bunker";
-        visual = `
-            <div class="bp-visual">
-                <div class="bp-square bp-core" style="grid-column:2">Core</div>
-                <div class="bp-square bp-core" style="grid-column:3">Core</div>
-                <div class="bp-tri" style="position:absolute; left:20px;"></div>
-                <div class="bp-tri" style="position:absolute; right:20px;"></div>
-            </div>`;
-        desc = "Add honeycomb triangles to the flat sides. Upgrade core to Armored. Use a roof bunker for cheap entry.";
-    } else if(s === '2x2') {
-        title = "The Wide Gap 2x2";
-        visual = `
-            <div class="bp-visual" style="display:grid; grid-template-columns:1fr 1fr; gap:2px; width:100px;">
-                <div class="bp-square bp-core"></div><div class="bp-square bp-core"></div>
-                <div class="bp-square bp-core"></div><div class="bp-square bp-core"></div>
-            </div>`;
-        desc = "Surround with a layer of honeycomb. On the 2nd floor, extend foundations out to create 'Wide Gaps' for shooting down.";
-    } else if(s === '1x2') {
-        title = "The Solo Pod";
-        visual = `<div class="bp-visual"><div class="bp-square bp-core">Core</div></div>`;
-        desc = "Very tight. Use garage doors for space. Recommended to build a second 1x2 nearby as a flank base.";
-    } else {
-        title = "The China Wall";
-        visual = `<div class="bp-visual" style="color:#666;">Complex Layout</div>`;
-        desc = "Circle bases are hard to expand attached. Build free-standing external walls (China Wall) with large gates.";
-    }
-
-    res.style.display = 'block';
-    res.innerHTML = `
-        <div class="row"><span>Result</span> <strong style="color:#5352ed">${title}</strong></div>
-        ${visual}
-        <p style="font-size:12px; color:#aaa; margin-top:5px; line-height:1.5">${desc}</p>
     `;
 }
 
@@ -747,6 +742,7 @@ function calcScrapGP() {
 
 // Init
 updateEcoRec();
+renderFootprint();
 </script>
 </body>
 </html>
