@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Rust Labs: Command Center v1.9</title>
+<title>Rust Labs: Command Center v2.0</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
 <style>
 /* --- CORE VARIABLES --- */
@@ -26,9 +26,9 @@ body {
     font-family: 'Inter', sans-serif;
     background: var(--bg-dark);
     color: var(--c-text);
-    height: 100vh;
+    min-height: 100vh;
     width: 100vw;
-    overflow: hidden;
+    overflow-x: hidden;
 }
 
 /* --- LOGO COMPONENT --- */
@@ -46,7 +46,7 @@ body {
     background: #111;
 }
 
-/* --- SIDEBAR (PC ONLY) --- */
+/* --- SIDEBAR (PC) --- */
 .sidebar {
     position: fixed;
     left: 0; top: 0; bottom: 0;
@@ -57,6 +57,7 @@ body {
     flex-direction: column;
     padding: 20px;
     z-index: 100;
+    overflow-y: auto;
 }
 
 .brand-text { font-family: 'Oswald'; font-size: 22px; text-transform: uppercase; letter-spacing: 1px; }
@@ -84,22 +85,23 @@ body {
     justify-content: space-around;
     align-items: center;
     padding-bottom: env(safe-area-inset-bottom);
+    overflow-x: auto;
 }
 .mobile-item {
     display: flex; flex-direction: column; align-items: center;
-    color: #555; font-size: 10px; font-weight: 700; text-transform: uppercase;
+    color: #555; font-size: 9px; font-weight: 700; text-transform: uppercase;
+    min-width: 60px;
 }
 .mobile-item.active { color: var(--c-raid); }
 
 /* --- MAIN CONTAINER --- */
 .content-wrapper {
     margin-left: var(--nav-w);
-    height: 100vh;
-    overflow-y: auto;
+    min-height: 100vh;
     padding: 40px;
 }
 
-.view { display: none; width: 100%; max-width: 800px; margin: 0 auto; animation: fadeUp 0.3s ease; }
+.view { display: none; width: 100%; max-width: 900px; margin: 0 auto; padding-bottom: 100px; animation: fadeUp 0.3s ease; }
 .view.active { display: block; }
 @keyframes fadeUp { from {opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);} }
 
@@ -120,25 +122,32 @@ button {
 }
 .btn-raid { background: var(--c-raid); }
 .btn-ind { background: var(--c-ind); }
+.btn-farm { background: var(--c-farm); }
 
 .result-box { margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.4); border-radius: 10px; border: 1px dashed #333; }
 .res-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
+.res-row b { color: var(--c-ind); }
 
-/* --- VIDEO LIBRARY --- */
-.video-card { background: #111; border-radius: 12px; overflow: hidden; margin-bottom: 20px; border: 1px solid #222; }
-.video-container { position: relative; padding-bottom: 56.25%; height: 0; }
-.video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-.video-info { padding: 15px; }
+/* --- BASE LIBRARY --- */
+.base-card { background: #111; border: 1px solid #222; border-radius: 16px; overflow: hidden; margin-bottom: 30px; }
+.video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; background: #000; }
+.video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+.base-content { padding: 25px; }
+.base-title { font-family: 'Oswald'; font-size: 24px; color: #fff; margin-bottom: 10px; }
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+.stat-item { background: #1a1a1a; padding: 10px; border-radius: 8px; border: 1px solid #333; }
+.stat-item small { font-size: 10px; color: #666; text-transform: uppercase; display: block; }
+.stat-item div { font-size: 13px; font-weight: 600; color: #ddd; }
 
 /* --- PATCH MODAL --- */
 .modal {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
     z-index: 2000; display: flex; align-items: center; justify-content: center;
     opacity: 0; pointer-events: none; transition: 0.3s;
 }
 .modal.active { opacity: 1; pointer-events: all; }
-.modal-inner { background: #111; width: 90%; max-width: 500px; border-radius: 20px; padding: 30px; border: 1px solid #333; }
-.patch-list { max-height: 250px; overflow-y: auto; margin: 20px 0; }
+.modal-inner { background: #111; width: 90%; max-width: 500px; border-radius: 20px; padding: 30px; border: 1px solid #333; box-shadow: 0 0 50px #000; }
+.patch-list { max-height: 300px; overflow-y: auto; margin: 20px 0; }
 .patch-note { border-left: 2px solid var(--c-raid); padding-left: 15px; margin-bottom: 15px; }
 .close-btn { background: #fff; color: #000; font-weight: 900; }
 
@@ -146,18 +155,18 @@ button {
 @media (max-width: 800px) {
     .sidebar { display: none; }
     .mobile-nav { display: flex; }
-    .content-wrapper { margin-left: 0; padding: 20px 20px 100px 20px; }
+    .content-wrapper { margin-left: 0; padding: 20px; }
     .grid-2 { grid-template-columns: 1fr; }
-    h2 { font-size: 24px; }
+    h2 { font-size: 26px; }
 }
 
 /* Toggle Switch */
 .toggle-row { display: flex; gap: 10px; align-items: center; margin-bottom: 15px; }
 .toggle-btn {
-    flex: 1; padding: 8px; background: #222; border: 1px solid #444; color: #888;
-    text-align: center; cursor: pointer; font-size: 12px; font-weight: bold; border-radius: 4px;
+    flex: 1; padding: 12px; background: #222; border: 1px solid #444; color: #888;
+    text-align: center; cursor: pointer; font-size: 12px; font-weight: bold; border-radius: 8px;
 }
-.toggle-btn.active { background: #e74c3c; color: #fff; border-color: #ff6b6b; }
+.toggle-btn.active { background: var(--c-raid); color: #fff; border-color: #ff6b6b; }
 </style>
 </head>
 <body>
@@ -166,41 +175,50 @@ button {
     <div class="modal-inner">
         <div class="logo-box">
             <div class="logo-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff4757" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff4757" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
             </div>
-            <div class="brand-text">VERSION <span>1.9</span></div>
+            <div class="brand-text">VERSION <span>2.0</span></div>
         </div>
         <div class="patch-list">
             <div class="patch-note">
-                <div style="font-weight:800">v1.9 - Mobile Overhaul</div>
-                <div style="font-size:12px; color:#888;">Fixed broken mobile UI. Sidebar now hides on small screens and is replaced by a professional bottom navigation bar. Adjusted touch targets.</div>
+                <div style="font-weight:800">v2.0 - Stability & Media</div>
+                <div style="font-size:12px; color:#888;">Fixed Mobile Scrolling. Fixed YouTube player formatting. Re-integrated missing Smelting, Diesel, and Flight tabs. Added Base Build/Upkeep costs.</div>
             </div>
             <div class="patch-note" style="opacity:0.5">
-                <div style="font-weight:800">v1.8</div>
-                <div style="font-size:12px; color:#888;">Custom SVG Logo integration. Improved dashboard layout.</div>
+                <div style="font-weight:800">v1.9</div>
+                <div style="font-size:12px; color:#888;">Mobile Bottom-Bar navigation added. Sidebar hidden on phones.</div>
             </div>
         </div>
-        <button class="close-btn" onclick="toggleModal(false)">Acknowledge</button>
+        <button class="close-btn" onclick="toggleModal(false)">Launch System</button>
     </div>
 </div>
 
 <nav class="sidebar">
     <div class="logo-box">
         <div class="logo-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff4757" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff4757" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
         </div>
         <div class="brand-text">RUST <span>LABS</span></div>
     </div>
     
-    <div class="nav-header">Combat</div>
+    <div class="nav-header">Combat Ops</div>
     <div class="nav-item active" onclick="switchView('craft')">💎 Crafting</div>
     <div class="nav-item" onclick="switchView('raid')">💥 Raiding</div>
-    <div class="nav-item" onclick="switchView('eco')">🔨 Eco</div>
+    <div class="nav-item" onclick="switchView('eco')">🔨 Eco Raid</div>
+    <div class="nav-item" onclick="switchView('compare')">⚖️ Comparison</div>
 
-    <div class="nav-header">Utility</div>
-    <div class="nav-item" onclick="switchView('lib')">🏰 Library</div>
-    <div class="nav-item" onclick="switchView('recycle')">♻ Recycle</div>
-    <div class="nav-item" onclick="switchView('smelt')">🔥 Smelt</div>
+    <div class="nav-header">Engineering</div>
+    <div class="nav-item" onclick="switchView('lib')">🏰 Base Library</div>
+    <div class="nav-item" onclick="switchView('smelt')">🔥 Smelting</div>
+    <div class="nav-item" onclick="switchView('recycle')">♻ Recycler</div>
+
+    <div class="nav-header">Resources</div>
+    <div class="nav-item" onclick="switchView('diesel')">⛽ Diesel</div>
+    <div class="nav-item" onclick="switchView('nodes')">⛏ Nodes</div>
+    <div class="nav-item" onclick="switchView('scrapgp')">🔩 Scrap GP</div>
+    
+    <div class="nav-header">Bio</div>
+    <div class="nav-item" onclick="switchView('gene')">🧬 Gene Lab</div>
 </nav>
 
 <nav class="mobile-nav">
@@ -208,19 +226,21 @@ button {
     <div class="mobile-item" id="m-raid" onclick="switchView('raid')"><span>💥</span>Raid</div>
     <div class="mobile-item" id="m-eco" onclick="switchView('eco')"><span>🔨</span>Eco</div>
     <div class="mobile-item" id="m-lib" onclick="switchView('lib')"><span>🏰</span>Base</div>
-    <div class="mobile-item" id="m-recycle" onclick="switchView('recycle')"><span>♻</span>Recy</div>
+    <div class="mobile-item" id="m-more" onclick="switchView('smelt')"><span>🔥</span>Ind</div>
 </nav>
 
 <div class="content-wrapper">
     
     <section id="view-craft" class="view active">
-        <h2>Crafting Calc</h2>
+        <h2>Crafting Calculator</h2>
         <div class="card">
-            <label>Item</label>
-            <select id="cItem"><option value="rocket">Rocket</option><option value="c4">C4</option></select>
+            <label>Explosive Type</label>
+            <select id="cItem"><option value="rocket">Rocket</option><option value="c4">C4</option><option value="ammo">Explosive Ammo</option></select>
             <label>Quantity</label>
             <input type="number" id="cQty" value="1">
-            <button class="btn-raid" onclick="doCraft()">Calculate Resources</button>
+            <label>GP Method</label>
+            <select id="cMethod"><option value="mix">Mixing Table</option><option value="inv">Inventory</option></select>
+            <button class="btn-raid" onclick="doCraft()">Analyze Cost</button>
             <div id="cRes" class="result-box" style="display:none"></div>
         </div>
     </section>
@@ -228,13 +248,14 @@ button {
     <section id="view-raid" class="view">
         <h2>Explosive Raids</h2>
         <div class="card">
-            <label>Target</label>
+            <label>Target Structure</label>
             <select id="rTar">
                 <option value="stone">Stone Wall</option>
                 <option value="metal">Metal Wall</option>
                 <option value="armored">Armored Wall</option>
+                <option value="garage">Garage Door</option>
             </select>
-            <label>Ammo</label>
+            <label>Ammo Type</label>
             <select id="rAmmo"><option value="rocket">Rocket</option><option value="c4">C4</option></select>
             <button class="btn-raid" onclick="doRaid()">Calculate Boom</button>
             <div id="rRes" class="result-box" style="display:none"></div>
@@ -258,14 +279,46 @@ button {
     </section>
 
     <section id="view-lib" class="view">
-        <h2>Base Designs</h2>
-        <div class="video-card">
-            <div class="video-container"><iframe src="https://www.youtube.com/embed/YpXj0l8nOto"></iframe></div>
-            <div class="video-info"><b>The Frustration</b> - Evil Wurst</div>
+        <h2>Meta Base Library</h2>
+        
+        <div class="base-card">
+            <div class="video-wrapper">
+                <iframe src="https://www.youtube.com/embed/YpXj0l8nOto" allowfullscreen></iframe>
+            </div>
+            <div class="base-content">
+                <div class="base-title">The Frustration (Evil Wurst)</div>
+                <div class="stat-grid">
+                    <div class="stat-item"><small>Build Cost</small><div>35k Stone / 12k Frags</div></div>
+                    <div class="stat-item"><small>Upkeep (24h)</small><div>4.5k Stone / 1.2k Frags</div></div>
+                    <div class="stat-item"><small>Raid Cost</small><div>24+ Rockets (Core)</div></div>
+                    <div class="stat-item"><small>Features</small><div>Bunker / Anti-Grief</div></div>
+                </div>
+            </div>
         </div>
-        <div class="video-card">
-            <div class="video-container"><iframe src="https://www.youtube.com/embed/5F_fB9T3uI8"></iframe></div>
-            <div class="video-info"><b>The Anvil</b> - Heavy Bunker</div>
+
+        <div class="base-card">
+            <div class="video-wrapper">
+                <iframe src="https://www.youtube.com/embed/S2qY8R-xO6U" allowfullscreen></iframe>
+            </div>
+            <div class="base-content">
+                <div class="base-title">The Anvil (Heavy Solo Bunker)</div>
+                <div class="stat-grid">
+                    <div class="stat-item"><small>Build Cost</small><div>22k Metal / 400 HQM</div></div>
+                    <div class="stat-item"><small>Upkeep (24h)</small><div>3.5k Metal / 60 HQM</div></div>
+                    <div class="stat-item"><small>Raid Cost</small><div>15 Rockets (Min)</div></div>
+                    <div class="stat-item"><small>Features</small><div>Pixel Gap / Stability Bunker</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="view-smelt" class="view">
+        <h2>Smelting</h2>
+        <div class="card">
+            <label>Sulfur Ore</label><input type="number" id="sSul" value="0">
+            <label>Metal Ore</label><input type="number" id="sMet" value="0">
+            <button class="btn-ind" onclick="doSmelt()">Calculate Smelt</button>
+            <div id="sRes" class="result-box" style="display:none"></div>
         </div>
     </section>
 
@@ -273,19 +326,29 @@ button {
         <h2>Recycler</h2>
         <div class="card">
             <label>Tech Trash</label><input type="number" id="reTech" value="0">
-            <button class="btn-ind" onclick="doRecycle()">Analyze</button>
+            <label>Gears</label><input type="number" id="reGear" value="0">
+            <button class="btn-ind" onclick="doRecycle()">Calculate Scrap</button>
             <div id="reRes" class="result-box" style="display:none"></div>
         </div>
     </section>
 
-    <section id="view-smelt" class="view">
-        <h2>Smelting</h2>
+    <section id="view-diesel" class="view">
+        <h2>Diesel</h2>
         <div class="card">
-            <label>Metal Ore</label><input type="number" id="sMet" value="0">
-            <button class="btn-ind" onclick="doSmelt()">Calculate</button>
-            <div id="sRes" class="result-box" style="display:none"></div>
+            <label>Diesel Barrels</label><input type="number" id="dBar" value="1">
+            <button class="btn-ind" onclick="doDiesel()">Calculate Diesel</button>
+            <div id="dRes" class="result-box" style="display:none"></div>
         </div>
-    </div>
+    </section>
+
+    <section id="view-nodes" class="view">
+        <h2>Sulfur Nodes</h2>
+        <div class="card">
+            <label>Sulfur Needed</label><input type="number" id="nNeed" value="0">
+            <button class="btn-farm" onclick="doNodes()">Calculate Nodes</button>
+            <div id="nRes" class="result-box" style="display:none"></div>
+        </div>
+    </section>
 
 </div>
 
@@ -297,43 +360,41 @@ function setEMode(m) {
     document.getElementById('eRefill').classList.toggle('active', m==='refill');
 }
 
-function toggleModal(show) {
-    document.getElementById('patchModal').classList.toggle('active', show);
-}
+function toggleModal(show) { document.getElementById('patchModal').classList.toggle('active', show); }
 
 function switchView(id) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.getElementById('view-'+id).classList.add('active');
+    const target = document.getElementById('view-'+id);
+    if(target) target.classList.add('active');
     
-    // Sidebar active
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    const sideItem = Array.from(document.querySelectorAll('.nav-item')).find(n => n.onclick.toString().includes(id));
-    if(sideItem) sideItem.classList.add('active');
-
-    // Mobile nav active
-    document.querySelectorAll('.mobile-item').forEach(m => m.classList.remove('active'));
-    const mobItem = document.getElementById('m-'+id);
-    if(mobItem) mobItem.classList.add('active');
+    document.querySelectorAll('.nav-item, .mobile-item').forEach(n => n.classList.remove('active'));
+    const sideNav = Array.from(document.querySelectorAll('.nav-item')).find(n => n.onclick.toString().includes(id));
+    if(sideNav) sideNav.classList.add('active');
+    
+    const mobNav = document.getElementById('m-'+id);
+    if(mobNav) mobNav.classList.add('active');
+    
+    window.scrollTo(0,0);
 }
 
-/* LOGIC */
+/* LOGIC ENGINES */
 function doCraft() {
     const q = +document.getElementById('cQty').value;
     const i = document.getElementById('cItem').value;
+    const m = document.getElementById('cMethod').value;
     let s = (i==='rocket')?1400:2200;
+    let c = (i==='rocket')?1950:3000;
+    if(m==='mix') c *= 0.7;
     document.getElementById('cRes').style.display='block';
-    document.getElementById('cRes').innerHTML = `<div class="res-row"><span>Sulfur</span><b>${(s*q).toLocaleString()}</b></div>`;
+    document.getElementById('cRes').innerHTML = `<div class="res-row"><span>Sulfur</span><b>${(s*q).toLocaleString()}</b></div><div class="res-row"><span>Charcoal</span><b>${Math.floor(c*q).toLocaleString()}</b></div>`;
 }
 
 function doRaid() {
     const t = document.getElementById('rTar').value;
     const a = document.getElementById('rAmmo').value;
-    let n = 0;
-    if(t==='stone') n = (a==='rocket')?2:1;
-    if(t==='metal') n = (a==='rocket')?4:2;
-    if(t==='armored') n = (a==='rocket')?8:3;
+    let n = (t==='stone')?(a==='rocket'?2:1):(t==='metal')?(a==='rocket'?4:2):(t==='garage')?(a==='rocket'?2:1):8;
     document.getElementById('rRes').style.display='block';
-    document.getElementById('rRes').innerHTML = `<div class="res-row"><span>Needed</span><b>${n} ${a.toUpperCase()}s</b></div>`;
+    document.getElementById('rRes').innerHTML = `<div class="res-row"><span>Ammo Required</span><b>${n} ${a.toUpperCase()}s</b></div>`;
 }
 
 function doEco() {
@@ -341,19 +402,34 @@ function doEco() {
     const tl = document.getElementById('eTool').value;
     let n = (t==='stone')?(tl==='spear'?23:1.2):(tl==='spear'?2:0.1);
     document.getElementById('eRes').style.display='block';
-    document.getElementById('eRes').innerHTML = `<div class="res-row"><span>Qty</span><b>${n} ${eMode}</b></div>`;
+    document.getElementById('eRes').innerHTML = `<div class="res-row"><span>Required</span><b>${n} ${eMode}</b></div>`;
+}
+
+function doSmelt() {
+    const s = +document.getElementById('sSul').value;
+    const m = +document.getElementById('sMet').value;
+    const wood = Math.ceil((s+m)*1.6);
+    document.getElementById('sRes').style.display='block';
+    document.getElementById('sRes').innerHTML = `<div class="res-row"><span>Wood Needed</span><b>${wood.toLocaleString()}</b></div>`;
 }
 
 function doRecycle() {
     const t = +document.getElementById('reTech').value;
+    const g = +document.getElementById('reGear').value;
     document.getElementById('reRes').style.display='block';
-    document.getElementById('reRes').innerHTML = `<div class="res-row"><span>Scrap</span><b>${t*20}</b></div>`;
+    document.getElementById('reRes').innerHTML = `<div class="res-row"><span>Total Scrap</span><b>${(t*20)+(g*10)}</b></div>`;
 }
 
-function doSmelt() {
-    const m = +document.getElementById('sMet').value;
-    document.getElementById('sRes').style.display='block';
-    document.getElementById('sRes').innerHTML = `<div class="res-row"><span>Wood</span><b>${Math.ceil(m*1.6)}</b></div>`;
+function doDiesel() {
+    const b = +document.getElementById('dBar').value;
+    document.getElementById('dRes').style.display='block';
+    document.getElementById('dRes').innerHTML = `<div class="res-row"><span>Sulfur Ore</span><b>${b*2000}</b></div>`;
+}
+
+function doNodes() {
+    const n = +document.getElementById('nNeed').value;
+    document.getElementById('nRes').style.display='block';
+    document.getElementById('nRes').innerHTML = `<div class="res-row"><span>Nodes Needed</span><b>${Math.ceil(n/300)}</b></div>`;
 }
 </script>
 </body>
