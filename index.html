@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rust Labs: Command Center v1.5</title>
+<title>Rust Labs: Command Center v1.6</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
 <style>
 /* --- CORE VARIABLES --- */
@@ -42,12 +42,18 @@ body {
 }
 
 .brand {
-    font-family: 'Oswald', sans-serif; font-size: 24px; color: #fff;
-    text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px;
-    display: flex; align-items: center; gap: 10px;
+    font-family: 'Oswald', sans-serif; font-size: 22px; color: #fff;
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;
+    display: flex; align-items: center; gap: 12px;
 }
 .brand span { color: var(--c-raid); }
-.version { font-size: 10px; color: #666; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px; }
+.version { 
+    font-size: 10px; color: #666; margin-bottom: 25px; 
+    text-transform: uppercase; letter-spacing: 1px; padding-left: 48px; 
+}
+
+/* LOGO SVG STYLING */
+.logo-svg { width: 36px; height: 36px; fill: none; stroke: var(--c-raid); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 .nav-header {
     font-size: 11px; font-weight: 800; text-transform: uppercase;
@@ -175,6 +181,44 @@ button:active { transform: scale(0.98); }
 }
 .toggle-btn.active { background: #e74c3c; color: #fff; border-color: #ff6b6b; }
 
+/* --- PATCH NOTES MODAL --- */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
+    z-index: 999; display: flex; justify-content: center; align-items: center;
+    opacity: 0; pointer-events: none; transition: 0.3s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+
+.patch-modal {
+    background: #111; width: 600px; max-width: 90%; max-height: 80vh;
+    border: 1px solid #333; border-radius: 12px; display: flex; flex-direction: column;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+}
+
+.patch-header {
+    padding: 25px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center;
+    background: radial-gradient(circle at top right, #1a1a1a, #111);
+}
+.patch-title h3 { font-family: 'Oswald'; font-size: 24px; color: #fff; margin: 0; text-transform: uppercase; }
+.patch-title span { color: var(--c-raid); font-size: 12px; letter-spacing: 2px; }
+
+.patch-body { padding: 25px; overflow-y: auto; }
+.update-block { margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px dashed #333; }
+.update-ver { font-size: 14px; font-weight: 800; color: #fff; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+.tag-new { background: var(--c-raid); color: #fff; font-size: 9px; padding: 2px 6px; border-radius: 4px; }
+.update-list { list-style: none; padding: 0; margin: 0; font-size: 13px; color: #aaa; line-height: 1.6; }
+.update-list li { margin-bottom: 5px; position: relative; padding-left: 15px; }
+.update-list li::before { content: '•'; color: var(--c-ind); position: absolute; left: 0; }
+
+.patch-footer { padding: 20px; border-top: 1px solid #222; text-align: right; }
+.btn-close {
+    background: #fff; color: #000; padding: 12px 30px; font-weight: 800;
+    text-transform: uppercase; border-radius: 6px; border: none; cursor: pointer;
+    transition: 0.2s; font-size: 14px;
+}
+.btn-close:hover { transform: scale(1.02); box-shadow: 0 0 15px rgba(255,255,255,0.2); }
+
 /* Mobile */
 @media (max-width: 768px) {
     body { flex-direction: column; height: auto; overflow: visible; }
@@ -188,9 +232,71 @@ button:active { transform: scale(0.98); }
 </head>
 <body>
 
+<div id="patchModal" class="modal-overlay open">
+    <div class="patch-modal">
+        <div class="patch-header">
+            <div class="brand">
+                <svg class="logo-svg" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zm0 9l2-10 2 10m-4 0l-2-10-2 10m4 0v10l-10-5 10-5zm0 0v10l10-5-10-5z"></path></svg>
+                <div class="patch-title">
+                    <h3>Command Center</h3>
+                    <span>Update Log</span>
+                </div>
+            </div>
+        </div>
+        <div class="patch-body">
+            <div class="update-block">
+                <div class="update-ver">v1.6 <span class="tag-new">LATEST</span></div>
+                <ul class="update-list">
+                    <li>Added Patch Notes System (Startup Popup).</li>
+                    <li>Designed Custom Vector Logo.</li>
+                    <li>Implemented Version History tracking.</li>
+                    <li>Added "Smelting Calculator" to Industry Tab.</li>
+                    <li>Added "Base Design Library" with 2026 Meta builds.</li>
+                </ul>
+            </div>
+            <div class="update-block">
+                <div class="update-ver" style="opacity:0.7">v1.5</div>
+                <ul class="update-list">
+                    <li>Fixed Raid Math: Now uses Hardcoded Lookup Tables for 100% accuracy.</li>
+                    <li>Added "Explosive Raids" tab separate from Crafting.</li>
+                    <li>Added High External Walls to Raid targets.</li>
+                </ul>
+            </div>
+            <div class="update-block">
+                <div class="update-ver" style="opacity:0.7">v1.4</div>
+                <ul class="update-list">
+                    <li>Code Cleanup: Removed non-math sections.</li>
+                    <li>Fixed Eco Raid: Spears now do 0 dmg to Metal/Armored.</li>
+                    <li>Added "Fresh vs Refill" toggle for Eco Raiding.</li>
+                </ul>
+            </div>
+            <div class="update-block">
+                <div class="update-ver" style="opacity:0.7">v1.3</div>
+                <ul class="update-list">
+                    <li>Overhauled Visual Footprint Guide (CSS Grid).</li>
+                    <li>Added Smart Recycler "Keep vs Scrap" logic.</li>
+                </ul>
+            </div>
+        </div>
+        <div class="patch-footer">
+            <button class="btn-close" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+</div>
+
 <nav class="sidebar">
-    <div class="brand">☢ Rust<span>Labs</span></div>
-    <div class="version">Version 1.5</div>
+    <div class="brand">
+        <svg class="logo-svg" viewBox="0 0 100 100">
+            <path d="M50 5 L93.3 30 V80 L50 105 L6.7 80 V30 Z" fill="none" stroke="#ff4757" stroke-width="4"/>
+            <circle cx="50" cy="55" r="15" fill="none" stroke="#e0e0e0" stroke-width="3"/>
+            <line x1="50" y1="20" x2="50" y2="40" stroke="#e0e0e0" stroke-width="3"/>
+            <line x1="50" y1="70" x2="50" y2="90" stroke="#e0e0e0" stroke-width="3"/>
+            <line x1="15" y1="55" x2="35" y2="55" stroke="#e0e0e0" stroke-width="3"/>
+            <line x1="65" y1="55" x2="85" y2="55" stroke="#e0e0e0" stroke-width="3"/>
+        </svg>
+        RUST<span>LABS</span>
+    </div>
+    <div class="version">Version 1.6</div>
 
     <div class="nav-header">Combat</div>
     <div class="nav-item active" data-theme="raid" onclick="setView('craft')">💣 Crafting Calc</div>
@@ -211,6 +317,10 @@ button:active { transform: scale(0.98); }
     <div class="nav-item" data-theme="ind" onclick="setView('diesel')">⛽ Diesel/Fuel</div>
     <div class="nav-item" data-theme="ind" onclick="setView('flight')">🚁 Flight Logistics</div>
     <div class="nav-item" data-theme="ind" onclick="setView('scrapgp')">🔩 Scrap to GP</div>
+    
+    <div style="margin-top:auto; padding-top:20px; border-top:1px solid #222;">
+        <div class="nav-item" onclick="openModal()" style="font-size:11px; opacity:0.6;">📜 View Patch Notes</div>
+    </div>
 </nav>
 
 <main class="main">
@@ -515,6 +625,9 @@ function setEcoMode(mode) {
     document.getElementById('modeRefill').classList.toggle('active', mode === 'refill');
 }
 
+function closeModal() { document.getElementById('patchModal').classList.remove('open'); }
+function openModal() { document.getElementById('patchModal').classList.add('open'); }
+
 /* --- 1. CRAFTING CALCULATOR (RESOURCES) --- */
 function calcCraft() {
     const type = document.getElementById('craftItem').value;
@@ -597,6 +710,8 @@ function calcEco() {
     const tool = document.getElementById('ecoTool').value;
     const qty = +document.getElementById('ecoCount').value;
 
+    // Hardcoded Meta Table (Quantities per 1 wall)
+    // -1 means impossible/immune
     const meta = {
         'wall.wood': { spear: 2, jack: 0.1, pick: 1, sword: 1, hatchet: 1.5 },
         'wall.stone': { spear: 23, jack: 1.2, pick: 7, sword: 80, hatchet: 99 },
