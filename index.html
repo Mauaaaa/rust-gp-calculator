@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rust Labs: Command Center v1.2</title>
+<title>Rust Labs: Command Center v1.4</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
 <style>
 /* --- CORE VARIABLES --- */
@@ -15,7 +15,6 @@
     
     /* Theme Colors */
     --c-raid: #ff4757;   /* Combat Red */
-    --c-build: #5352ed;  /* Blueprint Blue */
     --c-farm: #2ed573;   /* Nature Green */
     --c-ind: #ffa502;    /* Hazmat Orange */
     --c-text: #e0e0e0;
@@ -64,7 +63,6 @@ body {
 
 /* Active Theme Colors */
 .nav-item.active[data-theme="raid"] { border-color: var(--c-raid); color: var(--c-raid); background: rgba(255, 71, 87, 0.1); }
-.nav-item.active[data-theme="build"] { border-color: var(--c-build); color: var(--c-build); background: rgba(83, 82, 237, 0.1); }
 .nav-item.active[data-theme="farm"] { border-color: var(--c-farm); color: var(--c-farm); background: rgba(46, 213, 115, 0.1); }
 .nav-item.active[data-theme="ind"] { border-color: var(--c-ind); color: var(--c-ind); background: rgba(255, 165, 2, 0.1); }
 
@@ -91,7 +89,6 @@ h2 { font-family: 'Oswald'; font-size: 32px; text-transform: uppercase; margin-b
 
 /* Theme Accents for Cards */
 .view[data-theme="raid"] .card { border-top: 4px solid var(--c-raid); }
-.view[data-theme="build"] .card { border-top: 4px solid var(--c-build); }
 .view[data-theme="farm"] .card { border-top: 4px solid var(--c-farm); }
 .view[data-theme="ind"] .card { border-top: 4px solid var(--c-ind); }
 
@@ -118,7 +115,6 @@ button:active { transform: scale(0.98); }
 
 /* Theme Buttons */
 .btn-raid { background: var(--c-raid); box-shadow: 0 4px 15px rgba(255, 71, 87, 0.2); }
-.btn-build { background: var(--c-build); box-shadow: 0 4px 15px rgba(83, 82, 237, 0.2); }
 .btn-farm { background: var(--c-farm); box-shadow: 0 4px 15px rgba(46, 213, 115, 0.2); }
 .btn-ind { background: var(--c-ind); box-shadow: 0 4px 15px rgba(255, 165, 2, 0.2); }
 
@@ -144,40 +140,6 @@ button:active { transform: scale(0.98); }
     display: flex; align-items: center; gap: 10px;
 }
 .eco-rec i { font-style: normal; font-size: 16px; }
-
-/* Visual Tutorials (CSS Diagrams) */
-.circuit-diagram {
-    display: flex; align-items: center; gap: 5px; margin: 15px 0;
-    font-size: 12px; font-weight: bold; color: #000;
-}
-.node { padding: 5px 10px; border-radius: 4px; }
-.node.pwr { background: #e74c3c; color: #fff; } 
-.node.sw { background: #3498db; color: #fff; }  
-.node.out { background: #f1c40f; }              
-.wire { flex: 1; height: 2px; background: #555; position: relative; }
-.wire::after { content: '⚡'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); font-size: 10px; }
-
-/* Blueprints (Visual Grid - Updated Logic) */
-.bp-container {
-    background: #111; padding: 20px; border-radius: 8px; border: 1px solid #333;
-    display: flex; flex-direction: column; align-items: center; gap: 10px;
-}
-.bp-grid {
-    display: grid; gap: 4px; /* Space between blocks */
-}
-.bp-cell {
-    width: 50px; height: 50px; border-radius: 4px; display: grid; place-items: center;
-    font-size: 9px; font-weight: bold; text-transform: uppercase; position: relative;
-}
-/* Visual Types */
-.cell-core { background: #5352ed; color: #fff; border: 2px solid #fff; }
-.cell-honey { background: #7f8c8d; color: #000; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); width: 50px; height: 40px; margin-top: 5px; } /* Triangle approx */
-.cell-honey-sq { background: #7f8c8d; color: #000; }
-.cell-air { background: #2ecc71; color: #000; border: 1px dashed #fff; }
-.cell-empty { background: transparent; }
-
-.bp-legend { display: flex; gap: 15px; font-size: 12px; color: #888; margin-top: 10px; }
-.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; }
 
 /* Gene Grid */
 .gene-row { display: flex; gap: 5px; margin-bottom: 10px; justify-content: center; }
@@ -209,7 +171,7 @@ button:active { transform: scale(0.98); }
 
 <nav class="sidebar">
     <div class="brand">☢ Rust<span>Labs</span></div>
-    <div class="version">Version 1.2</div>
+    <div class="version">Version 1.4</div>
 
     <div class="nav-header">Combat</div>
     <div class="nav-item active" data-theme="raid" onclick="setView('craft')">💣 Crafting Calc</div>
@@ -217,14 +179,8 @@ button:active { transform: scale(0.98); }
     <div class="nav-item" data-theme="raid" onclick="setView('eco')">🔨 Eco Raiding</div>
     <div class="nav-item" data-theme="raid" onclick="setView('compare')">⚖️ Full Compare</div>
 
-    <div class="nav-header">Construction</div>
-    <div class="nav-item" data-theme="build" onclick="setView('footprint')">📐 Footprint Guide</div>
-    <div class="nav-item" data-theme="build" onclick="setView('defense')">⚡ Defense/Alarms</div>
-    <div class="nav-item" data-theme="build" onclick="setView('map')">🗺️ Map Analyst</div>
-
     <div class="nav-header">Nature</div>
     <div class="nav-item" data-theme="farm" onclick="setView('gene')">🧬 Gene Lab</div>
-    <div class="nav-item" data-theme="farm" onclick="setView('berry')">🫐 Farm Yields</div>
     <div class="nav-item" data-theme="farm" onclick="setView('nodes')">⛏ Sulfur Nodes</div>
 
     <div class="nav-header">Industry</div>
@@ -277,6 +233,8 @@ button:active { transform: scale(0.98); }
                         <option value="wall.stone">Stone Wall</option>
                         <option value="wall.metal">Sheet Metal Wall</option>
                         <option value="wall.armored">Armored Wall</option>
+                        <option value="wall.ext_stone">High Ext. Stone Wall</option>
+                        <option value="wall.ext_wood">High Ext. Wood Wall</option>
                         <option value="door.sheet">Sheet Metal Door</option>
                         <option value="door.garage">Garage Door</option>
                         <option value="door.armored">Armored Door</option>
@@ -359,57 +317,6 @@ button:active { transform: scale(0.98); }
         <div id="compRes" class="result-box" style="display:none"></div>
     </div>
 
-    <div id="view-footprint" class="view" data-theme="build">
-        <header><h2 style="color:var(--c-build)">Footprint Guide</h2><p class="subtitle">Visual Expansion Diagrams</p></header>
-        <div class="card">
-            <h3>🏠 Select Starter</h3>
-            <label>Current Base Shape</label>
-            <select id="baseShape" onchange="renderFootprint()">
-                <option value="2x1">Standard 2x1 (Solo/Duo)</option>
-                <option value="2x2">Standard 2x2 (Group)</option>
-                <option value="1x1">1x1 Solo</option>
-            </select>
-            
-            <div id="footprintContainer" style="margin-top:20px;">
-                </div>
-        </div>
-    </div>
-
-    <div id="view-defense" class="view" data-theme="build">
-        <header><h2 style="color:var(--c-build)">Defense & Circuits</h2></header>
-        <div class="grid-2">
-            <div class="card">
-                <h3>🔔 Smart Alarm</h3>
-                <div class="circuit-diagram"><span class="node pwr">Battery</span> <div class="wire"></div> <span class="node sw">Switch</span> <div class="wire"></div> <span class="node out">Alarm</span></div>
-                <ul style="font-size:13px; color:#ccc; margin-left:15px; line-height:1.6">
-                    <li><b>Power:</b> 1 rW continuous.</li>
-                    <li><b>Placement:</b> Inside airlock.</li>
-                </ul>
-            </div>
-            <div class="card">
-                <h3>🔫 3-Turret Pod</h3>
-                <div class="circuit-diagram"><span class="node pwr">Battery</span> <div class="wire"></div> <span class="node sw">Splitter</span> <div class="wire"></div> <span class="node out">3x Turret</span></div>
-                <ul style="font-size:13px; color:#ccc; margin-left:15px; line-height:1.6">
-                    <li><b>Power:</b> 31 rW minimum.</li>
-                    <li><b>Limit:</b> Max 12 turrets/40m.</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <div id="view-map" class="view" data-theme="build">
-        <header><h2 style="color:var(--c-build)">Map Analyst</h2></header>
-        <div class="card">
-            <h3>🗺️ Location Logic</h3>
-            <div class="grid-2">
-                <div><label>Group</label><select id="mapSize"><option value="solo">Solo/Duo</option><option value="clan">Clan (8+)</option></select></div>
-                <div><label>Style</label><select id="mapStyle"><option value="pvp">PvP Aggro</option><option value="farm">Passive Farm</option></select></div>
-            </div>
-            <button class="btn-build" onclick="calcMap()">Find Spot</button>
-            <div id="mapRes" class="result-box" style="display:none"></div>
-        </div>
-    </div>
-
     <div id="view-gene" class="view" data-theme="farm">
         <header><h2 style="color:var(--c-farm)">Gene Laboratory</h2></header>
         <div class="card">
@@ -418,17 +325,6 @@ button:active { transform: scale(0.98); }
             <label>Donor 2</label><div class="gene-row"><input class="gene-input" id="d2_1" maxlength="1"><input class="gene-input" id="d2_2" maxlength="1"><input class="gene-input" id="d2_3" maxlength="1"><input class="gene-input" id="d2_4" maxlength="1"><input class="gene-input" id="d2_5" maxlength="1"><input class="gene-input" id="d2_6" maxlength="1"></div>
             <button class="btn-farm" onclick="calcGene()">Predict Offspring</button>
             <div id="geneRes" class="result-box" style="display:none; text-align:center; font-size:24px; letter-spacing:8px; font-weight:bold;"></div>
-        </div>
-    </div>
-
-    <div id="view-berry" class="view" data-theme="farm">
-        <header><h2 style="color:var(--c-farm)">Farm Yields</h2></header>
-        <div class="card">
-            <h3>🫐 Harvest Math</h3>
-            <label>Planters</label><input type="number" id="berryPlanters" value="4">
-            <label>Conditions</label><select id="berryCond"><option value="1">100% (Full Light/Water)</option><option value="0.6">60% (No Lights)</option></select>
-            <button class="btn-farm" onclick="calcBerry()">Calculate</button>
-            <div id="berryRes" class="result-box" style="display:none"></div>
         </div>
     </div>
 
@@ -513,8 +409,6 @@ function setView(id) {
     document.getElementById('view-'+id).classList.add('active');
     document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
     document.querySelectorAll(`.nav-item[onclick="setView('${id}')"]`).forEach(e => e.classList.add('active'));
-    
-    if(id === 'footprint') renderFootprint();
 }
 
 function setEcoMode(mode) {
@@ -555,33 +449,36 @@ function calcCraft() {
     `;
 }
 
-/* --- 2. EXPLOSIVE RAIDS (WALLS) --- */
+/* --- 2. EXPLOSIVE RAIDS (LOOKUP TABLE FIX) --- */
 function calcRaid() {
     const target = document.getElementById('raidTarget').value;
     const ammo = document.getElementById('raidAmmo').value;
     const count = +document.getElementById('raidCount').value;
 
-    // Health
-    const hp = {
-        'wall.stone': 500, 'wall.metal': 1000, 'wall.armored': 2000,
-        'door.sheet': 250, 'door.garage': 600, 'door.armored': 1000, 'window.reinforced': 500
+    // Hardcoded Rust Labs Hits Table (Target -> Ammo -> Count)
+    const hitsTable = {
+        'wall.stone': { rocket: 2, c4: 1, satchel: 4, ammo: 72 },
+        'wall.metal': { rocket: 4, c4: 2, satchel: 9, ammo: 200 },
+        'wall.armored': { rocket: 8, c4: 3, satchel: 19, ammo: 400 },
+        'wall.ext_stone': { rocket: 4, c4: 2, satchel: 9, ammo: 200 },
+        'wall.ext_wood': { rocket: 2, c4: 1, satchel: 4, ammo: 72 },
+        'door.sheet': { rocket: 1, c4: 1, satchel: 2, ammo: 26 }, // 1 rocket does 350dmg vs 250hp, but sometimes splash. Safe bet is 1.
+        'door.garage': { rocket: 2, c4: 1, satchel: 5, ammo: 60 },
+        'door.armored': { rocket: 3, c4: 1, satchel: 8, ammo: 100 },
+        'window.reinforced': { rocket: 2, c4: 1, satchel: 5, ammo: 50 }
     };
-    // Damage
-    const dmg = { rocket: 350, c4: 2750, satchel: 435, ammo: 12 };
 
-    if(!hp[target]) return;
+    const ammoCost = { rocket: 1400, c4: 2200, satchel: 480, ammo: 25 };
 
-    const hitsPerTarget = Math.ceil(hp[target] / dmg[ammo]);
-    const totalAmmo = hitsPerTarget * count;
-    
-    // Sulfur Cost for Context
-    const costPerAmmo = { rocket: 1400, c4: 2200, satchel: 480, ammo: 25 };
-    const totalSulfur = totalAmmo * costPerAmmo[ammo];
+    const hitsNeeded = hitsTable[target][ammo];
+    const totalAmmo = hitsNeeded * count;
+    const totalSulfur = totalAmmo * ammoCost[ammo];
 
     document.getElementById('raidRes').style.display = 'block';
     document.getElementById('raidRes').innerHTML = `
         <div class="row"><span>Required</span> <strong style="font-size:18px; color:#ff4757">${totalAmmo} ${ammo.toUpperCase()}s</strong></div>
         <div class="row"><span>Total Sulfur Cost</span> <strong>${totalSulfur.toLocaleString()}</strong></div>
+        <p style="font-size:11px; color:#666; margin-top:5px;">Calculation works for any side (Splash damage may vary).</p>
     `;
 }
 
@@ -594,7 +491,7 @@ function updateEcoRec() {
     if(t==='wall.stone') msg = "Best: <b>7x Pickaxes</b> or <b>1.2x Jackhammers</b>.";
     if(t==='wall.metal') msg = "Best: <b>Jackhammers Only</b> (Picks are too slow).";
     if(t==='door.wood') msg = "Best: <b>19x Spears</b>.";
-    if(t==='door.sheet') msg = "Explosives only. Eco is impossible.";
+    if(t.includes('door') && !t.includes('wood')) msg = "Immune to tools. Use Explosives.";
     rec.innerHTML = `<i>💡</i> <span>${msg}</span>`;
 }
 
@@ -628,59 +525,6 @@ function calcEco() {
     document.getElementById('ecoRes').innerHTML = `
         <div class="row"><span>Quantity</span> <strong style="color:#ff4757">${totalNeeded} ${label}</strong></div>
         <div style="font-size:12px; color:#666; margin-top:5px;">Based on Soft Side Durability Meta</div>
-    `;
-}
-
-/* --- 4. FOOTPRINT (VISUALS) --- */
-function renderFootprint() {
-    const s = document.getElementById('baseShape').value;
-    const c = document.getElementById('footprintContainer');
-    let title="", visual="", desc="";
-    
-    // CSS Grid Visuals
-    const core = `<div class="bp-cell cell-core">CORE</div>`;
-    const honey = `<div class="bp-cell cell-honey"></div>`; // Triangles
-    const honeySq = `<div class="bp-cell cell-honey-sq"></div>`; // Squares
-    const air = `<div class="bp-cell cell-air">AIR</div>`;
-    const empty = `<div class="bp-cell cell-empty"></div>`;
-
-    if(s === '2x1') {
-        title = "2x1 Bunker Expansion";
-        visual = `
-            <div class="bp-grid" style="grid-template-columns: repeat(4, 50px);">
-                ${empty}${honey}${honey}${empty}
-                ${honey}${core}${core}${air}
-                ${empty}${honey}${honey}${empty}
-            </div>
-        `;
-        desc = "1. Build 2x1 Core (Blue).<br>2. Add Triangle Honeycomb (Grey).<br>3. Add Triangle Airlock (Green).<br>4. Upgrade core to Armored.";
-    } else if(s === '2x2') {
-        title = "2x2 Wide Gap";
-        visual = `
-            <div class="bp-grid" style="grid-template-columns: repeat(4, 50px);">
-                ${honey}${honey}${honey}${honey}
-                ${honey}${core}${core}${honey}
-                ${honey}${core}${core}${honey}
-                ${honey}${air}${air}${honey}
-            </div>
-        `;
-        desc = "1. Build 2x2 Core.<br>2. Full layer of Honeycomb.<br>3. Double door airlock.<br>4. On Floor 2, extend out for wide-gap peaks.";
-    } else if (s === '1x1') {
-        title = "1x1 Starter";
-        visual = `
-            <div class="bp-grid" style="grid-template-columns: repeat(3, 50px);">
-                ${empty}${empty}${empty}
-                ${empty}${core}${air}
-                ${empty}${empty}${empty}
-            </div>
-        `;
-        desc = "Extremely cheap. Core + Triangle Airlock. Use for farming or flank base only.";
-    }
-
-    c.innerHTML = `
-        <div class="row"><span>Layout</span> <strong style="color:#5352ed">${title}</strong></div>
-        <div class="bp-container">${visual} <div class="bp-legend"><span class="dot" style="background:#5352ed"></span>Core <span class="dot" style="background:#7f8c8d"></span>Honeycomb <span class="dot" style="background:#27ae60"></span>Airlock</div></div>
-        <p style="font-size:12px; color:#aaa; margin-top:5px; line-height:1.5">${desc}</p>
     `;
 }
 
@@ -757,16 +601,6 @@ function calcRecycle() {
     `;
 }
 
-function calcMap() {
-    const sz = document.getElementById('mapSize').value;
-    const st = document.getElementById('mapStyle').value;
-    let res = "";
-    if(sz==='solo') res = st==='pvp' ? "Sewer Branch / Oxums" : "Snow Edge / Ocean";
-    else res = st==='pvp' ? "Launch Site / Mili Tunnels" : "Desert Coast / Oil Rig";
-    document.getElementById('mapRes').style.display='block';
-    document.getElementById('mapRes').innerHTML=`<div class="row"><span>Best Spot</span> <strong>${res}</strong></div>`;
-}
-
 function calcGene() {
     let res = ""; const w = {G:0.6,Y:0.6,H:1,S:1,W:1,X:0};
     for(let i=1; i<=6; i++){
@@ -780,10 +614,6 @@ function calcGene() {
     box.style.color = (res.includes('W')||res.includes('X')) ? '#ff4757' : '#2ed573';
 }
 
-function calcBerry() {
-    const t = Math.floor(+document.getElementById('berryPlanters').value * 45 * +document.getElementById('berryCond').value);
-    document.getElementById('berryRes').style.display='block'; document.getElementById('berryRes').innerHTML=`<div class="row"><span>Yield</span> <strong>${t} Berries</strong></div>`;
-}
 function calcNodes() {
     document.getElementById('nodeRes').style.display='block';
     document.getElementById('nodeRes').innerHTML=`<div class="row"><span>Nodes</span> <strong>${Math.ceil(+document.getElementById('nodeNeed').value/300)}</strong></div>`;
@@ -806,7 +636,6 @@ function calcScrapGP() {
 
 // Init
 updateEcoRec();
-renderFootprint();
 </script>
 </body>
 </html>
