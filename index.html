@@ -129,6 +129,13 @@ button:active { transform: scale(0.98); }
 .row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; color: #ccc; }
 .row strong { color: #fff; }
 
+/* Comparison Table */
+.comp-table { width: 100%; border-collapse: collapse; font-size: 14px; color: #ccc; }
+.comp-table th { text-align: left; padding-bottom: 10px; color: #666; font-size: 12px; text-transform: uppercase; }
+.comp-table td { padding: 8px 0; border-bottom: 1px solid #222; }
+.diff-good { color: var(--c-farm); font-weight: bold; }
+.diff-bad { color: var(--c-raid); font-weight: bold; }
+
 /* Eco Recommendation Banner */
 .eco-rec {
     background: rgba(255, 255, 255, 0.05); border-left: 3px solid #fff;
@@ -175,7 +182,7 @@ button:active { transform: scale(0.98); }
     <div class="nav-header">Combat</div>
     <div class="nav-item active" data-theme="raid" onclick="setView('raid')">💣 Explosives Calc</div>
     <div class="nav-item" data-theme="raid" onclick="setView('eco')">🔨 Eco Raiding</div>
-    <div class="nav-item" data-theme="raid" onclick="setView('compare')">⚖️ Cost Compare</div>
+    <div class="nav-item" data-theme="raid" onclick="setView('compare')">⚖️ Full Compare</div>
 
     <div class="nav-header">Construction</div>
     <div class="nav-item" data-theme="build" onclick="setView('footprint')">📐 Footprint Guide</div>
@@ -188,8 +195,8 @@ button:active { transform: scale(0.98); }
     <div class="nav-item" data-theme="farm" onclick="setView('nodes')">⛏ Sulfur Nodes</div>
 
     <div class="nav-header">Industry</div>
+    <div class="nav-item" data-theme="ind" onclick="setView('recycle')">♻ Smart Recycler</div>
     <div class="nav-item" data-theme="ind" onclick="setView('diesel')">⛽ Diesel/Fuel</div>
-    <div class="nav-item" data-theme="ind" onclick="setView('recycle')">♻ Recycler</div>
     <div class="nav-item" data-theme="ind" onclick="setView('flight')">🚁 Flight Logistics</div>
     <div class="nav-item" data-theme="ind" onclick="setView('scrapgp')">🔩 Scrap to GP</div>
 </nav>
@@ -274,20 +281,20 @@ button:active { transform: scale(0.98); }
     </div>
 
     <div id="view-compare" class="view" data-theme="raid">
-        <header><h2 style="color:var(--c-raid)">Cost Compare</h2></header>
+        <header><h2 style="color:var(--c-raid)">Detailed Comparison</h2><p class="subtitle">Sulfur, Charcoal, Components & Time</p></header>
         <div class="grid-2">
             <div class="card">
                 <h3>Option A</h3>
-                <select id="compA"><option value="rocket">Rocket</option><option value="c4">C4</option></select>
+                <select id="compA"><option value="rocket">Rocket</option><option value="c4">C4</option><option value="satchel">Satchel</option></select>
                 <input type="number" id="amtA" value="4" style="margin-top:10px">
             </div>
             <div class="card">
                 <h3>Option B</h3>
-                <select id="compB"><option value="c4">C4</option><option value="rocket">Rocket</option></select>
+                <select id="compB"><option value="c4">C4</option><option value="rocket">Rocket</option><option value="satchel">Satchel</option></select>
                 <input type="number" id="amtB" value="2" style="margin-top:10px">
             </div>
         </div>
-        <button class="btn-raid" onclick="calcCompare()">Compare Sulfur</button>
+        <button class="btn-raid" onclick="calcCompare()">Full Breakdown</button>
         <div id="compRes" class="result-box" style="display:none"></div>
     </div>
 
@@ -380,6 +387,33 @@ button:active { transform: scale(0.98); }
         </div>
     </div>
 
+    <div id="view-recycle" class="view" data-theme="ind">
+        <header><h2 style="color:var(--c-ind)">Smart Recycler</h2><p class="subtitle">Scrap Calculator & Advisory</p></header>
+        <div class="grid-2">
+            <div class="card">
+                <h3>Inventory</h3>
+                <label>Tech Trash</label><input type="number" id="recTech" value="0">
+                <label>Rifle Body</label><input type="number" id="recRifle" value="0">
+                <label>SMG Body</label><input type="number" id="recSMG" value="0">
+                <label>Gears</label><input type="number" id="recGear" value="0">
+                <label>Springs</label><input type="number" id="recSpring" value="0">
+                <label>Sheet Metal</label><input type="number" id="recSheet" value="0">
+            </div>
+            <div class="card">
+                <h3>Settings</h3>
+                <label>Location</label>
+                <select id="recZone">
+                    <option value="unsafe">Monument (100% Yield)</option>
+                    <option value="safe">Safe Zone (80% Yield)</option>
+                </select>
+                <label>Target (Optional)</label>
+                <input type="number" id="recTarget" placeholder="I need 500 Scrap...">
+                <button class="btn-ind" onclick="calcRecycle()">Analyze Recycle</button>
+                <div id="recRes" class="result-box" style="display:none"></div>
+            </div>
+        </div>
+    </div>
+
     <div id="view-diesel" class="view" data-theme="ind">
         <header><h2 style="color:var(--c-ind)">Heavy Industry</h2></header>
         <div class="card">
@@ -391,26 +425,6 @@ button:active { transform: scale(0.98); }
             <label>Output Type</label><select id="dieselType"><option value="sulfur">Sulfur</option><option value="hqm">HQM</option><option value="metal">Metal</option><option value="stone">Stone</option></select>
             <button class="btn-ind" onclick="calcDiesel()">Run Engine</button>
             <div id="dieselRes" class="result-box" style="display:none"></div>
-        </div>
-    </div>
-
-    <div id="view-recycle" class="view" data-theme="ind">
-        <header><h2 style="color:var(--c-ind)">Recycler</h2></header>
-        <div class="grid-2">
-            <div class="card">
-                <h3>Input</h3>
-                <label>Tech Trash</label><input type="number" id="recTech" value="0">
-                <label>Rifle Body</label><input type="number" id="recRifle" value="0">
-                <label>SMG Body</label><input type="number" id="recSMG" value="0">
-                <label>Gears</label><input type="number" id="recGear" value="0">
-                <label>Sheet Metal</label><input type="number" id="recSheet" value="0">
-            </div>
-            <div class="card">
-                <h3>Location</h3>
-                <select id="recZone"><option value="unsafe">Monument (100%)</option><option value="safe">Safe Zone (80%)</option></select>
-                <button class="btn-ind" onclick="calcRecycle()">Recycle</button>
-                <div id="recRes" class="result-box" style="display:none"></div>
-            </div>
         </div>
     </div>
 
@@ -532,24 +546,85 @@ function calcEco() {
     `;
 }
 
-/* --- LOGIC: COMPARE --- */
+/* --- LOGIC: FULL COMPARE (UPDATED) --- */
 function calcCompare() {
+    // Defines raw material cost per item
     const getCost = (t, q) => {
-        if(t==='rocket') return 1400 * q;
-        if(t==='c4') return 2200 * q;
-        return 0;
+        if(t==='rocket') return {s:1400*q, c:1950*q, m:100*q, p:2*q, tech:0, fuel:0};
+        if(t==='c4') return {s:2200*q, c:3000*q, m:200*q, p:0, tech:2*q, fuel:60*q};
+        if(t==='satchel') return {s:480*q, c:720*q, m:80*q, p:0, tech:0, fuel:0};
+        return {s:0,c:0,m:0,p:0,tech:0,fuel:0};
     };
-    const sA = getCost(document.getElementById('compA').value, +document.getElementById('amtA').value);
-    const sB = getCost(document.getElementById('compB').value, +document.getElementById('amtB').value);
-    const diff = sA - sB;
+
+    const cA = getCost(document.getElementById('compA').value, +document.getElementById('amtA').value);
+    const cB = getCost(document.getElementById('compB').value, +document.getElementById('amtB').value);
     
+    // Build Table
+    let html = `<table class="comp-table"><thead><tr><th>Resource</th><th>Opt A</th><th>Opt B</th><th>Difference</th></tr></thead><tbody>`;
+    
+    const fields = [
+        {key:'s', name:'Sulfur'}, {key:'c', name:'Charcoal'}, {key:'m', name:'Metal Frags'}, 
+        {key:'fuel', name:'Low Grade'}, {key:'p', name:'Pipes'}, {key:'tech', name:'Tech Trash'}
+    ];
+
+    fields.forEach(f => {
+        if(cA[f.key] > 0 || cB[f.key] > 0) {
+            const diff = cA[f.key] - cB[f.key];
+            const diffStr = diff > 0 ? `+${diff}` : diff;
+            const diffClass = diff > 0 ? 'diff-bad' : 'diff-good'; // Positive diff means A is more expensive
+            html += `<tr><td>${f.name}</td><td>${cA[f.key]}</td><td>${cB[f.key]}</td><td class="${diffClass}">${diffStr}</td></tr>`;
+        }
+    });
+    
+    html += `</tbody></table>`;
     document.getElementById('compRes').style.display = 'block';
-    document.getElementById('compRes').innerHTML = diff > 0 
-        ? `<strong style="color:#ff4757">Option A costs ${diff} more Sulfur</strong>` 
-        : `<strong style="color:#2ed573">Option A saves ${Math.abs(diff)} Sulfur</strong>`;
+    document.getElementById('compRes').innerHTML = html;
 }
 
-/* --- LOGIC: FOOTPRINT --- */
+/* --- LOGIC: RECYCLER (UPDATED) --- */
+function calcRecycle() {
+    const zone = document.getElementById('recZone').value;
+    const mult = zone==='safe' ? 0.8 : 1.0;
+    const target = +document.getElementById('recTarget').value;
+
+    const inputs = {
+        tech: {val:+document.getElementById('recTech').value, scrap:20, hqm:3},
+        rifle: {val:+document.getElementById('recRifle').value, scrap:25, hqm:2},
+        smg: {val:+document.getElementById('recSMG').value, scrap:15, hqm:2},
+        gear: {val:+document.getElementById('recGear').value, scrap:10, hqm:13},
+        spring: {val:+document.getElementById('recSpring').value, scrap:10, hqm:1},
+        sheet: {val:+document.getElementById('recSheet').value, scrap:8, hqm:0}, // Sheet gives metal mostly, ignore for simplified view
+    };
+
+    let totalScrap = 0;
+    let totalHQM = 0;
+
+    for (const key in inputs) {
+        totalScrap += inputs[key].val * inputs[key].scrap;
+        totalHQM += inputs[key].val * inputs[key].hqm;
+    }
+    
+    totalScrap = Math.floor(totalScrap * mult);
+    totalHQM = Math.floor(totalHQM * mult);
+
+    let msg = "";
+    if(target > 0) {
+        if(totalScrap >= target) msg = `<div style="margin-top:10px; color:#2ed573">✅ You meet your goal! (+${totalScrap-target} surplus)</div>`;
+        else msg = `<div style="margin-top:10px; color:#ff4757">❌ Short by ${target-totalScrap} Scrap.</div>`;
+    }
+    
+    // Safety warning
+    if(inputs.gear.val > 0) msg += `<div style="font-size:11px; color:#ffa502; margin-top:5px">⚠️ Warning: Gears are valuable for garage doors. Ensure you want to recycle.</div>`;
+
+    document.getElementById('recRes').style.display='block'; 
+    document.getElementById('recRes').innerHTML=`
+        <div class="row"><span>Total Scrap</span> <strong style="color:#ffa502">${totalScrap}</strong></div>
+        <div class="row"><span>Total HQM</span> <strong>${totalHQM}</strong></div>
+        ${msg}
+    `;
+}
+
+/* --- LOGIC: OTHER --- */
 function calcFootprint() {
     const s = document.getElementById('baseShape').value;
     let html = "";
@@ -568,19 +643,16 @@ function calcFootprint() {
     document.getElementById('footRes').innerHTML = html;
 }
 
-/* --- LOGIC: MAP --- */
 function calcMap() {
     const sz = document.getElementById('mapSize').value;
     const st = document.getElementById('mapStyle').value;
     let res = "";
     if(sz==='solo') res = st==='pvp' ? "Sewer Branch / Oxums" : "Snow Edge / Ocean";
     else res = st==='pvp' ? "Launch Site / Mili Tunnels" : "Desert Coast / Oil Rig";
-    
     document.getElementById('mapRes').style.display='block';
     document.getElementById('mapRes').innerHTML=`<div class="row"><span>Best Spot</span> <strong>${res}</strong></div>`;
 }
 
-/* --- LOGIC: GENE --- */
 function calcGene() {
     let res = ""; const w = {G:0.6,Y:0.6,H:1,S:1,W:1,X:0};
     for(let i=1; i<=6; i++){
@@ -594,7 +666,6 @@ function calcGene() {
     box.style.color = (res.includes('W')||res.includes('X')) ? '#ff4757' : '#2ed573';
 }
 
-/* --- LOGIC: FARM/IND --- */
 function calcBerry() {
     const t = Math.floor(+document.getElementById('berryPlanters').value * 45 * +document.getElementById('berryCond').value);
     document.getElementById('berryRes').style.display='block'; document.getElementById('berryRes').innerHTML=`<div class="row"><span>Yield</span> <strong>${t} Berries</strong></div>`;
@@ -609,11 +680,6 @@ function calcDiesel() {
     const t=document.getElementById('dieselType').value;
     let r=l==='excavator'?(t==='sulfur'?2000:t==='hqm'?100:5000):(t==='sulfur'?1000:t==='hqm'?50:2500);
     document.getElementById('dieselRes').style.display='block'; document.getElementById('dieselRes').innerHTML=`<div class="row"><span>Yield</span> <strong style="color:#ffa502">${(a*r).toLocaleString()}</strong></div>`;
-}
-function calcRecycle() {
-    const z = document.getElementById('recZone').value==='safe'?0.8:1;
-    const s = (+document.getElementById('recTech').value*20 + +document.getElementById('recRifle').value*25 + +document.getElementById('recSheet').value*8)*z;
-    document.getElementById('recRes').style.display='block'; document.getElementById('recRes').innerHTML=`<div class="row"><span>Scrap</span> <strong style="color:#ffa502">${Math.floor(s)}</strong></div>`;
 }
 function calcHeli() {
     document.getElementById('heliRes').style.display='block';
