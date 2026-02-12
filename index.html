@@ -3,25 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Rust Labs: Command Center v1.7</title>
+<title>Rust Labs: Command Center v1.8</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
 <style>
 /* --- CORE VARIABLES --- */
 :root {
-    --bg-dark: #101010;
-    --bg-sidebar: #080808;
-    --bg-panel: #1a1a1a;
-    --border: #333;
-    
-    /* Theme Colors */
-    --c-raid: #ff4757;   /* Combat Red */
-    --c-build: #5352ed;  /* Blueprint Blue */
-    --c-farm: #2ed573;   /* Nature Green */
-    --c-ind: #ffa502;    /* Hazmat Orange */
-    --c-text: #e0e0e0;
+    --bg-dark: #0a0a0a;
+    --bg-sidebar: #000000;
+    --bg-panel: #161616;
+    --border: #222;
+    --c-raid: #ff4757;
+    --c-build: #5352ed;
+    --c-farm: #2ed573;
+    --c-ind: #ffa502;
+    --c-text: #ffffff;
+    --nav-w: 280px;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
 body {
     font-family: 'Inter', sans-serif;
@@ -29,151 +28,188 @@ body {
     color: var(--c-text);
     display: flex;
     height: 100vh;
+    width: 100vw;
     overflow: hidden;
 }
 
-/* --- SIDEBAR --- */
+/* --- LOGO COMPONENT --- */
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    margin-bottom: 20px;
+}
+.logo-icon {
+    width: 42px;
+    height: 42px;
+    background: #111;
+    border: 2px solid var(--c-raid);
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    box-shadow: 0 0 15px rgba(255, 71, 87, 0.2);
+}
+
+/* --- SIDEBAR (PC) --- */
 .sidebar {
-    width: 260px;
+    width: var(--nav-w);
     background: var(--bg-sidebar);
     border-right: 1px solid var(--border);
-    display: flex; flex-direction: column;
-    padding: 20px; flex-shrink: 0; overflow-y: auto;
-    /* Smooth scroll for mobile */
-    -webkit-overflow-scrolling: touch; 
+    display: flex;
+    flex-direction: column;
+    padding: 25px;
+    flex-shrink: 0;
+    z-index: 100;
 }
 
-.brand {
-    font-family: 'Oswald', sans-serif; font-size: 24px; color: #fff;
-    text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px;
-    display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+.brand-name {
+    font-family: 'Oswald', sans-serif;
+    font-size: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
-.brand span { color: var(--c-raid); }
-.version { font-size: 10px; color: #666; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px; flex-shrink: 0; }
+.brand-name span { color: var(--c-raid); font-size: 12px; display: block; margin-top: -5px; opacity: 0.6; }
 
 .nav-header {
-    font-size: 11px; font-weight: 800; text-transform: uppercase;
-    color: #666; margin: 20px 0 10px 0; letter-spacing: 1px;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #444;
+    margin: 25px 0 10px 0;
+    letter-spacing: 1.5px;
 }
 
 .nav-item {
-    padding: 12px; margin-bottom: 4px; border-radius: 6px;
-    cursor: pointer; font-size: 13px; font-weight: 600; color: #888;
-    display: flex; align-items: center; gap: 10px; transition: 0.2s;
-    white-space: nowrap;
+    padding: 14px;
+    margin-bottom: 5px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: #777;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: 0.2s;
 }
 .nav-item:hover { background: #111; color: #fff; }
-.nav-item.active { background: #222; color: #fff; border-left: 3px solid #fff; }
+.nav-item.active { background: #1a1a1a; color: #fff; box-shadow: inset 0 0 0 1px #333; }
 
-/* Active Theme Colors */
-.nav-item.active[data-theme="raid"] { border-color: var(--c-raid); color: var(--c-raid); background: rgba(255, 71, 87, 0.1); }
-.nav-item.active[data-theme="build"] { border-color: var(--c-build); color: var(--c-build); background: rgba(83, 82, 237, 0.1); }
-.nav-item.active[data-theme="farm"] { border-color: var(--c-farm); color: var(--c-farm); background: rgba(46, 213, 115, 0.1); }
-.nav-item.active[data-theme="ind"] { border-color: var(--c-ind); color: var(--c-ind); background: rgba(255, 165, 2, 0.1); }
+/* Active Indicator Colors */
+.nav-item.active[data-theme="raid"] { border-right: 4px solid var(--c-raid); color: var(--c-raid); }
+.nav-item.active[data-theme="build"] { border-right: 4px solid var(--c-build); color: var(--c-build); }
+.nav-item.active[data-theme="farm"] { border-right: 4px solid var(--c-farm); color: var(--c-farm); }
+.nav-item.active[data-theme="ind"] { border-right: 4px solid var(--c-ind); color: var(--c-ind); }
 
 /* --- MAIN CONTENT --- */
 .main {
-    flex: 1; padding: 40px; overflow-y: auto;
-    background-image: radial-gradient(circle at top right, #1a1a1a 0%, #0f0f0f 60%);
-    -webkit-overflow-scrolling: touch;
+    flex: 1;
+    padding: 40px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 }
 
-.view { display: none; max-width: 1000px; margin: 0 auto; animation: fadeUp 0.3s ease; }
+.view { display: none; width: 100%; max-width: 900px; margin: 0 auto; animation: fadeUp 0.3s ease; }
 .view.active { display: block; }
 @keyframes fadeUp { from {opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);} }
 
-header { margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
-h2 { font-family: 'Oswald'; font-size: 32px; text-transform: uppercase; margin-bottom: 5px; }
-.subtitle { color: #888; font-size: 14px; }
+header { margin-bottom: 30px; }
+h2 { font-family: 'Oswald'; font-size: 36px; text-transform: uppercase; margin-bottom: 8px; }
+.subtitle { color: #666; font-size: 15px; }
 
-/* --- CARDS & GRIDS --- */
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+/* --- CARDS --- */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
 .card {
-    background: var(--bg-panel); border: 1px solid var(--border);
-    border-radius: 12px; padding: 25px; position: relative; overflow: hidden;
-}
-
-/* Theme Accents for Cards */
-.view[data-theme="raid"] .card { border-top: 4px solid var(--c-raid); }
-.view[data-theme="build"] .card { border-top: 4px solid var(--c-build); }
-.view[data-theme="farm"] .card { border-top: 4px solid var(--c-farm); }
-.view[data-theme="ind"] .card { border-top: 4px solid var(--c-ind); }
-
-.card h3 { 
-    font-family: 'Oswald'; font-size: 18px; text-transform: uppercase; 
-    margin-bottom: 20px; color: #fff; display: flex; justify-content: space-between;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 30px;
 }
 
 /* --- FORMS --- */
-label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #666; margin: 15px 0 5px; }
+label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #555; margin: 15px 0 6px; }
 input, select {
-    width: 100%; background: #0a0a0a; border: 1px solid #333; color: #fff;
-    padding: 12px; border-radius: 6px; font-family: 'Inter'; font-size: 14px; outline: none;
-    -webkit-appearance: none; /* Mobile Fix */
+    width: 100%; background: #000; border: 1px solid #222; color: #fff;
+    padding: 14px; border-radius: 10px; font-family: 'Inter'; font-size: 15px; outline: none;
 }
-input:focus, select:focus { border-color: #666; }
+input:focus { border-color: #444; }
 
 button {
-    width: 100%; margin-top: 20px; padding: 14px; border-radius: 8px; border: none;
+    width: 100%; margin-top: 20px; padding: 16px; border-radius: 10px; border: none;
     font-weight: 800; text-transform: uppercase; cursor: pointer; font-size: 14px; color: #fff;
-    transition: transform 0.1s;
 }
-button:hover { opacity: 0.9; }
-button:active { transform: scale(0.98); }
 
-/* Theme Buttons */
-.btn-raid { background: var(--c-raid); box-shadow: 0 4px 15px rgba(255, 71, 87, 0.2); }
-.btn-build { background: var(--c-build); box-shadow: 0 4px 15px rgba(83, 82, 237, 0.2); }
-.btn-farm { background: var(--c-farm); box-shadow: 0 4px 15px rgba(46, 213, 115, 0.2); }
-.btn-ind { background: var(--c-ind); box-shadow: 0 4px 15px rgba(255, 165, 2, 0.2); }
+.btn-raid { background: var(--c-raid); }
+.btn-ind { background: var(--c-ind); }
+.btn-farm { background: var(--c-farm); }
 
-/* --- RESULTS & EXTRAS --- */
-.result-box { 
-    margin-top: 20px; background: rgba(0,0,0,0.2); border-radius: 8px; 
-    padding: 15px; border: 1px dashed #444; 
+/* --- MODAL --- */
+.modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(15px);
+    z-index: 1000; display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: 0.3s;
 }
-.row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; color: #ccc; }
-.row strong { color: #fff; }
+.modal-overlay.open { opacity: 1; pointer-events: all; }
 
-/* Comparison Table */
-.comp-table { width: 100%; border-collapse: collapse; font-size: 14px; color: #ccc; }
-.comp-table th { text-align: left; padding-bottom: 10px; color: #666; font-size: 12px; text-transform: uppercase; }
-.comp-table td { padding: 8px 0; border-bottom: 1px solid #222; }
-.diff-good { color: var(--c-farm); font-weight: bold; }
-.diff-bad { color: var(--c-raid); font-weight: bold; }
-
-/* Eco Recommendation Banner */
-.eco-rec {
-    background: rgba(255, 255, 255, 0.05); border-left: 3px solid #fff;
-    padding: 10px; margin-bottom: 15px; font-size: 13px; color: #ccc;
-    display: flex; align-items: center; gap: 10px;
+.modal-content {
+    background: #000; border: 1px solid #222; width: 550px; max-width: 90%;
+    border-radius: 20px; padding: 40px; box-shadow: 0 25px 50px rgba(0,0,0,1);
 }
-.eco-rec i { font-style: normal; font-size: 16px; }
+.patch-list { margin: 20px 0; max-height: 300px; overflow-y: auto; padding-right: 10px; }
+.patch-item { margin-bottom: 20px; border-left: 2px solid var(--c-raid); padding-left: 15px; }
+.patch-ver { font-weight: 800; font-size: 18px; margin-bottom: 5px; }
+.patch-desc { font-size: 13px; color: #888; line-height: 1.6; list-style: square; margin-left: 15px; }
 
-/* Base Design Cards (Video Integration) */
-.base-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-.base-card { background: #111; border: 1px solid #333; border-radius: 8px; overflow: hidden; }
-.base-video { 
-    height: 180px; background: #000; position: relative; 
-    border-bottom: 1px solid #333;
-}
-.base-video iframe { width: 100%; height: 100%; border: none; }
-.base-info { padding: 20px; }
-.base-title { font-family: 'Oswald'; font-size: 20px; color: #fff; margin-bottom: 5px; }
-.base-stats { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 15px; font-size: 11px; color: #888; }
-.stat-box { background: #222; padding: 4px 8px; border-radius: 4px; border: 1px solid #333; }
-.pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px; }
-.pro-list { color: var(--c-farm); list-style: none; padding: 0; }
-.con-list { color: var(--c-raid); list-style: none; padding: 0; }
-.pro-list li::before { content:'+ '; font-weight:bold; }
-.con-list li::before { content:'- '; font-weight:bold; }
+.close-btn { background: #fff; color: #000; font-weight: 900; }
 
-/* Gene Grid */
-.gene-row { display: flex; gap: 5px; margin-bottom: 10px; justify-content: center; }
-.gene-input { 
-    width: 40px; height: 40px; text-align: center; font-weight: 800; font-size: 18px; 
-    text-transform: uppercase; background: #111; border: 1px solid #444; color: #fff; border-radius: 4px;
+/* --- MOBILE SPECIFIC (BOTTOM BAR) --- */
+@media (max-width: 800px) {
+    body { flex-direction: column; }
+    .sidebar {
+        width: 100%;
+        height: 70px;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        flex-direction: row;
+        padding: 0 10px;
+        border-right: none;
+        border-top: 1px solid var(--border);
+        justify-content: space-around;
+        align-items: center;
+        overflow: visible;
+        background: rgba(0,0,0,0.9);
+        backdrop-filter: blur(10px);
+    }
+    .main { padding: 20px 20px 100px 20px; height: 100vh; overflow-y: auto; }
+    .nav-header, .brand-name, .version, .logo-container { display: none; }
+    
+    .nav-item {
+        flex-direction: column;
+        gap: 4px;
+        padding: 10px;
+        font-size: 9px;
+        margin: 0;
+        text-align: center;
+        border-radius: 0;
+        color: #555;
+    }
+    .nav-item.active { background: transparent; border-right: none; border-top: 3px solid var(--c-raid); color: #fff; }
+    .grid-2 { grid-template-columns: 1fr; }
 }
+
+/* --- RESULTS AREA --- */
+.result-box { margin-top: 25px; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px dashed #333; }
+.res-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
+.res-row b { color: var(--c-ind); }
+
+/* --- VIDEO LIBRARY --- */
+.video-card { background: #111; border-radius: 12px; overflow: hidden; margin-bottom: 20px; border: 1px solid #222; }
+.video-frame { aspect-ratio: 16/9; background: #000; width: 100%; border-bottom: 1px solid #222; }
+.video-info { padding: 20px; }
+.pro-con-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; font-size: 12px; }
 
 /* Toggle Switch */
 .toggle-row { display: flex; gap: 10px; align-items: center; margin-bottom: 15px; }
@@ -183,686 +219,244 @@ button:active { transform: scale(0.98); }
 }
 .toggle-btn.active { background: #e74c3c; color: #fff; border-color: #ff6b6b; }
 
-/* --- PATCH NOTES MODAL --- */
-.modal-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
-    z-index: 999; display: flex; justify-content: center; align-items: center;
-    opacity: 0; pointer-events: none; transition: 0.3s;
-}
-.modal-overlay.open { opacity: 1; pointer-events: all; }
-
-.patch-modal {
-    background: #111; width: 600px; max-width: 90%; max-height: 80vh;
-    border: 1px solid #333; border-radius: 12px; display: flex; flex-direction: column;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-}
-
-.patch-header {
-    padding: 25px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center;
-    background: radial-gradient(circle at top right, #1a1a1a, #111);
-}
-.patch-title h3 { font-family: 'Oswald'; font-size: 24px; color: #fff; margin: 0; text-transform: uppercase; }
-.patch-title span { color: var(--c-raid); font-size: 12px; letter-spacing: 2px; }
-
-.patch-body { padding: 25px; overflow-y: auto; }
-.update-block { margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px dashed #333; }
-.update-ver { font-size: 14px; font-weight: 800; color: #fff; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
-.tag-new { background: var(--c-raid); color: #fff; font-size: 9px; padding: 2px 6px; border-radius: 4px; }
-.update-list { list-style: none; padding: 0; margin: 0; font-size: 13px; color: #aaa; line-height: 1.6; }
-.update-list li { margin-bottom: 5px; position: relative; padding-left: 15px; }
-.update-list li::before { content: '•'; color: var(--c-ind); position: absolute; left: 0; }
-
-.patch-footer { padding: 20px; border-top: 1px solid #222; text-align: right; }
-.btn-close {
-    background: #fff; color: #000; padding: 12px 30px; font-weight: 800;
-    text-transform: uppercase; border-radius: 6px; border: none; cursor: pointer;
-    transition: 0.2s; font-size: 14px;
-}
-.btn-close:hover { transform: scale(1.02); box-shadow: 0 0 15px rgba(255,255,255,0.2); }
-
-/* --- MOBILE RESPONSIVENESS (UPDATED) --- */
-@media (max-width: 768px) {
-    body { flex-direction: column; height: auto; overflow-y: auto; }
-    
-    /* Top Scrollable Navigation */
-    .sidebar { 
-        width: 100%; height: auto; overflow-x: auto; flex-direction: row; 
-        border-right: none; border-bottom: 1px solid #333; 
-        padding: 10px; position: sticky; top: 0; z-index: 100;
-        background: rgba(8,8,8,0.95); backdrop-filter: blur(5px);
-    }
-    .brand { display: none; } /* Hide logo on mobile to save space */
-    .nav-header { display: none; }
-    .nav-item { 
-        white-space: nowrap; margin: 0; padding: 8px 16px; font-size: 12px; 
-        background: #111; border: 1px solid #333; margin-right: 5px;
-    }
-    .nav-item.active { border-left: 1px solid #fff; }
-    
-    .main { padding: 15px; }
-    .grid-2 { grid-template-columns: 1fr; }
-    
-    h2 { font-size: 24px; }
-    
-    /* Base Library Stack */
-    .base-video { height: 200px; }
-}
 </style>
 </head>
 <body>
 
-<div id="patchModal" class="modal-overlay open">
-    <div class="patch-modal">
-        <div class="patch-header">
-            <div class="brand">
-                <span>V1.7 CHANGELOG</span>
+<div id="pModal" class="modal-overlay open">
+    <div class="modal-content">
+        <div class="logo-container">
+            <div class="logo-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff4757" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
             </div>
+            <div class="brand-name">RUST<span>V1.8 PATCH NOTES</span></div>
         </div>
-        <div class="patch-body">
-            <div class="update-block">
-                <div class="update-ver">v1.7 <span class="tag-new">LATEST</span></div>
-                <ul class="update-list">
-                    <li><b>Mobile Optimization:</b> Sidebar now converts to a swipeable top menu on phones.</li>
-                    <li><b>Base Library Upgrade:</b> Added "The Frustration", "The Anvil", and "The Limitless".</li>
-                    <li><b>Working Videos:</b> Integrated YouTube players (Users must provide IDs).</li>
-                    <li><b>Eco-Raid:</b> Added Refill vs Craft toggle logic.</li>
+        <div class="patch-list">
+            <div class="patch-item">
+                <div class="patch-ver">v1.8 - The App Update</div>
+                <ul class="patch-desc">
+                    <li>Fixed UI: Bottom-tab navigation for Mobile devices.</li>
+                    <li>Brand Identity: Custom SVG Logo added to Sidebar and Popup.</li>
+                    <li>Clean Header: Removed raw text version, integrated into Logo.</li>
+                    <li>PC Experience: Professional sidebar dashboard restored.</li>
                 </ul>
             </div>
-            <div class="update-block">
-                <div class="update-ver" style="opacity:0.7">v1.6</div>
-                <ul class="update-list">
-                    <li>Added Startup Patch Notes popup.</li>
-                    <li>Added Custom "Rad-Hex" Logo.</li>
+            <div class="patch-item" style="opacity: 0.5;">
+                <div class="patch-ver">v1.7</div>
+                <ul class="patch-desc">
+                    <li>Complex Base Library added (The Frustration, The Anvil).</li>
+                    <li>Working YouTube Embeds.</li>
+                </ul>
+            </div>
+            <div class="patch-item" style="opacity: 0.5;">
+                <div class="patch-ver">v1.6</div>
+                <ul class="patch-desc">
+                    <li>Explosive Crafting split from Raid math.</li>
+                    <li>Fixed Material Resistance logic for Eco Raids.</li>
                 </ul>
             </div>
         </div>
-        <div class="patch-footer">
-            <button class="btn-close" onclick="closeModal()">Close</button>
-        </div>
+        <button class="close-btn" onclick="closeP()">Acknowledge & Close</button>
     </div>
 </div>
 
 <nav class="sidebar">
-    <div class="brand">
-        RUST<span>LABS</span>
+    <div class="logo-container">
+        <div class="logo-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff4757" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+        </div>
+        <div class="brand-name">COMMAND<span>CENTER v1.8</span></div>
     </div>
-    <div class="version">Version 1.7</div>
 
     <div class="nav-header">Combat</div>
-    <div class="nav-item active" data-theme="raid" onclick="setView('craft')">💣 Crafting Calc</div>
-    <div class="nav-item" data-theme="raid" onclick="setView('raid')">💥 Explosive Raids</div>
-    <div class="nav-item" data-theme="raid" onclick="setView('eco')">🔨 Eco Raiding</div>
-    <div class="nav-item" data-theme="raid" onclick="setView('compare')">⚖️ Full Compare</div>
+    <div class="nav-item active" data-theme="raid" onclick="setView('craft')">💎 Crafting</div>
+    <div class="nav-item" data-theme="raid" onclick="setView('raid')">💥 Raiding</div>
+    <div class="nav-item" data-theme="raid" onclick="setView('eco')">🔨 Eco</div>
 
-    <div class="nav-header">Construction</div>
-    <div class="nav-item" data-theme="build" onclick="setView('library')">🏰 Base Library</div>
+    <div class="nav-header">Base</div>
+    <div class="nav-item" data-theme="build" onclick="setView('lib')">🏰 Library</div>
+    <div class="nav-item" data-theme="farm" onclick="setView('gene')">🧬 Genes</div>
 
-    <div class="nav-header">Nature</div>
-    <div class="nav-item" data-theme="farm" onclick="setView('gene')">🧬 Gene Lab</div>
-    <div class="nav-item" data-theme="farm" onclick="setView('nodes')">⛏ Sulfur Nodes</div>
-
-    <div class="nav-header">Industry</div>
-    <div class="nav-item" data-theme="ind" onclick="setView('smelt')">🔥 Smelting</div>
-    <div class="nav-item" data-theme="ind" onclick="setView('recycle')">♻ Smart Recycler</div>
-    <div class="nav-item" data-theme="ind" onclick="setView('diesel')">⛽ Diesel/Fuel</div>
-    <div class="nav-item" data-theme="ind" onclick="setView('flight')">🚁 Flight Logistics</div>
-    <div class="nav-item" data-theme="ind" onclick="setView('scrapgp')">🔩 Scrap to GP</div>
-    
-    <div style="margin-top:auto; padding-top:20px; border-top:1px solid #222;">
-        <div class="nav-item" onclick="openModal()" style="font-size:11px; opacity:0.6;">📜 View Patch Notes</div>
-    </div>
+    <div class="nav-header">System</div>
+    <div class="nav-item" data-theme="ind" onclick="setView('smelt')">🔥 Smelt</div>
+    <div class="nav-item" data-theme="ind" onclick="setView('recycle')">♻ Recycle</div>
+    <div class="nav-item" data-theme="ind" onclick="setView('diesel')">⛽ Diesel</div>
 </nav>
 
 <main class="main">
 
-    <div id="view-craft" class="view active" data-theme="raid">
-        <header><h2 style="color:var(--c-raid)">Crafting Calculator</h2><p class="subtitle">Calculate raw resources for crafting batches.</p></header>
+    <section id="view-craft" class="view active">
+        <header><h2>Crafting Calc</h2><p class="subtitle">Raw resources for explosive batches.</p></header>
         <div class="card">
-            <h3>🏭 Production Cost</h3>
             <div class="grid-2">
-                <div>
-                    <label>Item to Craft</label>
-                    <select id="craftItem">
-                        <option value="rocket">Rocket</option>
-                        <option value="c4">C4</option>
-                        <option value="satchel">Satchel Charge</option>
-                        <option value="beancan">Beancan Grenade</option>
-                        <option value="ammo">Explosive Ammo</option>
-                    </select>
-                </div>
-                <div>
-                    <label>Quantity to Craft</label>
-                    <input type="number" id="craftQty" value="1">
-                </div>
+                <div><label>Item</label><select id="cItem"><option value="rocket">Rocket</option><option value="c4">C4</option><option value="ammo">Explosive Ammo</option></select></div>
+                <div><label>Quantity</label><input type="number" id="cQty" value="1"></div>
             </div>
-            <label>Gunpowder Method</label>
-            <select id="craftMethod">
-                <option value="mix">Mixing Table (Cheaper Charcoal)</option>
-                <option value="inv">Hand Crafted (Expensive)</option>
-            </select>
-            <button class="btn-raid" onclick="calcCraft()">Calculate Raw Materials</button>
-            <div id="craftRes" class="result-box" style="display:none"></div>
+            <label>GP Method</label><select id="cMethod"><option value="mix">Mixing Table</option><option value="inv">Inventory</option></select>
+            <button class="btn-raid" onclick="runCraft()">Calculate Resources</button>
+            <div id="cRes" class="result-box" style="display:none"></div>
         </div>
-    </div>
+    </section>
 
-    <div id="view-raid" class="view" data-theme="raid">
-        <header><h2 style="color:var(--c-raid)">Explosive Raids</h2><p class="subtitle">Calculate rockets needed to break a target.</p></header>
+    <section id="view-raid" class="view">
+        <header><h2>Explosive Raids</h2><p class="subtitle">How much boom to break a wall.</p></header>
         <div class="card">
-            <h3>💥 Raid Math</h3>
             <div class="grid-2">
-                <div>
-                    <label>Target</label>
-                    <select id="raidTarget">
-                        <option value="wall.stone">Stone Wall</option>
-                        <option value="wall.metal">Sheet Metal Wall</option>
-                        <option value="wall.armored">Armored Wall</option>
-                        <option value="wall.ext_stone">High Ext. Stone Wall</option>
-                        <option value="wall.ext_wood">High Ext. Wood Wall</option>
-                        <option value="door.sheet">Sheet Metal Door</option>
-                        <option value="door.garage">Garage Door</option>
-                        <option value="door.armored">Armored Door</option>
-                        <option value="window.reinforced">Reinforced Window</option>
-                    </select>
-                </div>
-                <div>
-                    <label>Ammo Type</label>
-                    <select id="raidAmmo">
-                        <option value="rocket">Rocket</option>
-                        <option value="c4">C4</option>
-                        <option value="satchel">Satchel</option>
-                        <option value="ammo">Explosive Ammo</option>
-                    </select>
-                </div>
+                <div><label>Target</label><select id="rTar"><option value="stone">Stone Wall</option><option value="metal">Metal Wall</option><option value="armored">Armored Wall</option></select></div>
+                <div><label>Ammo</label><select id="rAmmo"><option value="rocket">Rocket</option><option value="c4">C4</option></select></div>
             </div>
-            <label>Number of Targets</label>
-            <input type="number" id="raidCount" value="1">
-            
-            <button class="btn-raid" onclick="calcRaid()">Calculate Boom Needed</button>
-            <div id="raidRes" class="result-box" style="display:none"></div>
+            <button class="btn-raid" onclick="runRaid()">Calculate Boom</button>
+            <div id="rRes" class="result-box" style="display:none"></div>
         </div>
-    </div>
+    </section>
 
-    <div id="view-eco" class="view" data-theme="raid">
-        <header><h2 style="color:var(--c-raid)">Eco Raiding</h2><p class="subtitle">Soft-Side & Tool Calculation</p></header>
+    <section id="view-eco" class="view">
+        <header><h2>Eco Raiding</h2><p class="subtitle">Soft-side durability logic.</p></header>
         <div class="card">
-            <h3>🔨 Durability Math</h3>
-            
-            <label>Target Structure</label>
-            <select id="ecoTarget" onchange="updateEcoRec()">
-                <option value="wall.wood">Wood Wall (Soft Side)</option>
-                <option value="wall.stone">Stone Wall (Soft Side)</option>
-                <option value="wall.metal">Metal Wall (Soft Side)</option>
-                <option value="door.wood">Wood Door</option>
-                <option value="door.sheet">Sheet Metal Door</option>
-            </select>
-
-            <div id="ecoRec" class="eco-rec"><i>💡</i> <span>Select a target.</span></div>
-
+            <div id="ecoRec" class="eco-rec"><i>💡</i> <span>Soft-side stone: Use Jackhammer or Spears.</span></div>
             <div class="toggle-row">
-                <div class="toggle-btn active" id="modeFresh" onclick="setEcoMode('fresh')">Fresh Tools (Crafting)</div>
-                <div class="toggle-btn" id="modeRefill" onclick="setEcoMode('refill')">Refills (Repair Bench)</div>
+                <div class="toggle-btn active" id="eFresh" onclick="setE('fresh')">Fresh Tools</div>
+                <div class="toggle-btn" id="eRefill" onclick="setE('refill')">Refills</div>
             </div>
-
             <div class="grid-2">
-                <div>
-                    <label>Tool</label>
-                    <select id="ecoTool">
-                        <option value="spear">Wooden Spear</option>
-                        <option value="jack">Jackhammer</option>
-                        <option value="pick">Metal Pickaxe</option>
-                        <option value="sword">Salvaged Sword</option>
-                        <option value="hatchet">Hatchet</option>
-                    </select>
-                </div>
-                <div><label>Wall Count</label><input type="number" id="ecoCount" value="1"></div>
+                <div><label>Target</label><select id="eTar"><option value="stone">Stone Wall (Soft)</option><option value="wood">Wood Wall (Soft)</option></select></div>
+                <div><label>Tool</label><select id="eTool"><option value="spear">Spear</option><option value="jack">Jackhammer</option></select></div>
             </div>
-
-            <button class="btn-raid" onclick="calcEco()">Calculate</button>
-            <div id="ecoRes" class="result-box" style="display:none"></div>
+            <button class="btn-raid" onclick="runEco()">Calculate Tools</button>
+            <div id="eRes" class="result-box" style="display:none"></div>
         </div>
-    </div>
+    </section>
 
-    <div id="view-compare" class="view" data-theme="raid">
-        <header><h2 style="color:var(--c-raid)">Resource Comparison</h2></header>
+    <section id="view-lib" class="view">
+        <header><h2>Base Library</h2><p class="subtitle">Complex Meta Designs.</p></header>
         <div class="grid-2">
-            <div class="card">
-                <h3>Option A</h3>
-                <select id="compA"><option value="rocket">Rocket</option><option value="c4">C4</option><option value="satchel">Satchel</option></select>
-                <input type="number" id="amtA" value="4" style="margin-top:10px">
+            <div class="video-card">
+                <div class="video-frame"><iframe src="https://www.youtube.com/embed/YpXj0l8nOto" allowfullscreen></iframe></div>
+                <div class="video-info">
+                    <div class="base-title">The Frustration</div>
+                    <p style="font-size:11px; color:#555">The most optimized bunker for small groups.</p>
+                </div>
             </div>
-            <div class="card">
-                <h3>Option B</h3>
-                <select id="compB"><option value="c4">C4</option><option value="rocket">Rocket</option><option value="satchel">Satchel</option></select>
-                <input type="number" id="amtB" value="2" style="margin-top:10px">
+            <div class="video-card">
+                <div class="video-frame"><iframe src="https://www.youtube.com/embed/S2O48_m-Q7w" allowfullscreen></iframe></div>
+                <div class="video-info">
+                    <div class="base-title">The Anvil</div>
+                    <p style="font-size:11px; color:#555">Unraidable solo/duo heavy bunker.</p>
+                </div>
             </div>
         </div>
-        <button class="btn-raid" onclick="calcCompare()">Full Breakdown</button>
-        <div id="compRes" class="result-box" style="display:none"></div>
-    </div>
+    </section>
 
-    <div id="view-library" class="view" data-theme="build">
-        <header><h2 style="color:var(--c-build)">Base Library</h2><p class="subtitle">High-Tier Meta Builds (2026)</p></header>
-        <div class="base-grid">
-            
-            <div class="base-card">
-                <div class="base-video">
-                    <iframe src="https://www.youtube.com/embed/VIDEO_ID_HERE" title="YouTube video player" allowfullscreen></iframe>
-                </div>
-                <div class="base-info">
-                    <div class="base-title">The Frustration (Evil Wurst)</div>
-                    <div class="base-stats">
-                        <span class="stat-box">Build: ~32k Stone / 15k Frag</span>
-                        <span class="stat-box">Upkeep: 4k Stone / 1k Frag</span>
-                    </div>
-                    <div class="pros-cons">
-                        <ul class="pro-list"><li>Disconnectable TC</li><li>High Rocket Cost</li><li>Anti-Grief</li></ul>
-                        <ul class="con-list"><li>Hard to build</li><li>Tight Spaces</li></ul>
-                    </div>
-                </div>
-            </div>
-
-            <div class="base-card">
-                <div class="base-video">
-                    <iframe src="https://www.youtube.com/embed/VIDEO_ID_HERE" title="YouTube video player" allowfullscreen></iframe>
-                </div>
-                <div class="base-info">
-                    <div class="base-title">The Anvil (Heavy Bunker)</div>
-                    <div class="base-stats">
-                        <span class="stat-box">Build: ~25k Metal / 500 HQM</span>
-                        <span class="stat-box">Upkeep: 4k Metal / 50 HQM</span>
-                    </div>
-                    <div class="pros-cons">
-                        <ul class="pro-list"><li>Extremely Tanky</li><li>Small Footprint</li><li>Cheap Upkeep for strength</li></ul>
-                        <ul class="con-list"><li>High Build Cost</li><li>Requires HQM mining</li></ul>
-                    </div>
-                </div>
-            </div>
-
-            <div class="base-card">
-                <div class="base-video">
-                    <iframe src="https://www.youtube.com/embed/VIDEO_ID_HERE" title="YouTube video player" allowfullscreen></iframe>
-                </div>
-                <div class="base-info">
-                    <div class="base-title">The Limitless (Clan Base)</div>
-                    <div class="base-stats">
-                        <span class="stat-box">Build: 100k+ Stone</span>
-                        <span class="stat-box">Upkeep: 15k Stone / 5k Metal</span>
-                    </div>
-                    <div class="pros-cons">
-                        <ul class="pro-list"><li>Wide Gap Peaks</li><li>Open Core</li><li>Inner China Wall</li></ul>
-                        <ul class="con-list"><li>Impossible for Solos</li><li>Huge Target</li></ul>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <div id="view-smelt" class="view" data-theme="ind">
-        <header><h2 style="color:var(--c-ind)">Smelting Calculator</h2></header>
+    <section id="view-smelt" class="view">
+        <header><h2>Smelting</h2><p class="subtitle">Calculate wood and time.</p></header>
         <div class="card">
-            <h3>🔥 Wood Required</h3>
-            <div class="grid-2">
-                <div>
-                    <label>Sulfur Ore</label><input type="number" id="smeltSulfur" value="0">
-                    <label>Metal Ore</label><input type="number" id="smeltMetal" value="0">
-                    <label>HQM Ore</label><input type="number" id="smeltHQM" value="0">
-                </div>
-                <div>
-                    <label>Furnace Type</label>
-                    <select id="furnaceType">
-                        <option value="small">Small Furnace</option>
-                        <option value="large">Large Furnace</option>
-                    </select>
-                </div>
-            </div>
-            <button class="btn-ind" onclick="calcSmelt()">Calculate Wood</button>
-            <div id="smeltRes" class="result-box" style="display:none"></div>
+            <label>Metal Ore</label><input type="number" id="sMet" value="0">
+            <label>Sulfur Ore</label><input type="number" id="sSul" value="0">
+            <button class="btn-ind" onclick="runSmelt()">Calculate Smelt</button>
+            <div id="sRes" class="result-box" style="display:none"></div>
         </div>
-    </div>
+    </section>
 
-    <div id="view-gene" class="view" data-theme="farm">
-        <header><h2 style="color:var(--c-farm)">Gene Laboratory</h2></header>
+    <section id="view-recycle" class="view">
+        <header><h2>Smart Recycler</h2></header>
         <div class="card">
-            <h3>🧬 Crossbreeder</h3>
-            <label>Donor 1</label><div class="gene-row"><input class="gene-input" id="d1_1" maxlength="1"><input class="gene-input" id="d1_2" maxlength="1"><input class="gene-input" id="d1_3" maxlength="1"><input class="gene-input" id="d1_4" maxlength="1"><input class="gene-input" id="d1_5" maxlength="1"><input class="gene-input" id="d1_6" maxlength="1"></div>
-            <label>Donor 2</label><div class="gene-row"><input class="gene-input" id="d2_1" maxlength="1"><input class="gene-input" id="d2_2" maxlength="1"><input class="gene-input" id="d2_3" maxlength="1"><input class="gene-input" id="d2_4" maxlength="1"><input class="gene-input" id="d2_5" maxlength="1"><input class="gene-input" id="d2_6" maxlength="1"></div>
-            <button class="btn-farm" onclick="calcGene()">Predict Offspring</button>
-            <div id="geneRes" class="result-box" style="display:none; text-align:center; font-size:24px; letter-spacing:8px; font-weight:bold;"></div>
+            <label>Tech Trash</label><input type="number" id="reTech" value="0">
+            <label>Gears</label><input type="number" id="reGear" value="0">
+            <button class="btn-ind" onclick="runRecycle()">Analyze Scrap</button>
+            <div id="reRes" class="result-box" style="display:none"></div>
         </div>
-    </div>
+    </section>
 
-    <div id="view-nodes" class="view" data-theme="farm">
-        <header><h2 style="color:var(--c-farm)">Sulfur Nodes</h2></header>
+    <section id="view-diesel" class="view">
+        <header><h2>Diesel</h2></header>
         <div class="card">
-            <h3>⛏ Mining Goals</h3>
-            <label>Sulfur Needed</label><input type="number" id="nodeNeed" placeholder="e.g. 15000">
-            <button class="btn-farm" onclick="calcNodes()">Calculate</button>
-            <div id="nodeRes" class="result-box" style="display:none"></div>
+            <label>Barrels</label><input type="number" id="dBar" value="1">
+            <button class="btn-ind" onclick="runDiesel()">Calculate Output</button>
+            <div id="dRes" class="result-box" style="display:none"></div>
         </div>
-    </div>
-
-    <div id="view-recycle" class="view" data-theme="ind">
-        <header><h2 style="color:var(--c-ind)">Smart Recycler</h2></header>
-        <div class="grid-2">
-            <div class="card">
-                <h3>Inventory</h3>
-                <label>Tech Trash</label><input type="number" id="recTech" value="0">
-                <label>Rifle Body</label><input type="number" id="recRifle" value="0">
-                <label>SMG Body</label><input type="number" id="recSMG" value="0">
-                <label>Gears</label><input type="number" id="recGear" value="0">
-                <label>Springs</label><input type="number" id="recSpring" value="0">
-                <label>Sheet Metal</label><input type="number" id="recSheet" value="0">
-            </div>
-            <div class="card">
-                <h3>Settings</h3>
-                <label>Location</label>
-                <select id="recZone"><option value="unsafe">Monument (100% Yield)</option><option value="safe">Safe Zone (80% Yield)</option></select>
-                <label>Target (Optional)</label>
-                <input type="number" id="recTarget" placeholder="I need 500 Scrap...">
-                <button class="btn-ind" onclick="calcRecycle()">Analyze Recycle</button>
-                <div id="recRes" class="result-box" style="display:none"></div>
-            </div>
-        </div>
-    </div>
-
-    <div id="view-diesel" class="view" data-theme="ind">
-        <header><h2 style="color:var(--c-ind)">Heavy Industry</h2></header>
-        <div class="card">
-            <h3>⛽ Fuel Converter</h3>
-            <div class="grid-2">
-                <div><label>Diesel</label><input type="number" id="dieselAmt" value="1"></div>
-                <div><label>Machine</label><select id="dieselLoc"><option value="excavator">Excavator</option><option value="quarry">Quarry</option></select></div>
-            </div>
-            <label>Output Type</label><select id="dieselType"><option value="sulfur">Sulfur</option><option value="hqm">HQM</option><option value="metal">Metal</option><option value="stone">Stone</option></select>
-            <button class="btn-ind" onclick="calcDiesel()">Run Engine</button>
-            <div id="dieselRes" class="result-box" style="display:none"></div>
-        </div>
-    </div>
-
-    <div id="view-flight" class="view" data-theme="ind">
-        <header><h2 style="color:var(--c-ind)">Flight Logistics</h2></header>
-        <div class="card">
-            <h3>🚁 Fuel Gauge</h3>
-            <label>Low Grade Fuel</label><input type="number" id="lgfHeli" value="100">
-            <label>Vehicle</label><select id="heliType"><option value="30">Minicopter (30/min)</option><option value="45">Attack Heli (45/min)</option></select>
-            <button class="btn-ind" onclick="calcHeli()">Check Fuel</button>
-            <div id="heliRes" class="result-box" style="display:none"></div>
-        </div>
-    </div>
-
-    <div id="view-scrapgp" class="view" data-theme="ind">
-        <header><h2 style="color:var(--c-ind)">Scrap Arbitrage</h2></header>
-        <div class="card">
-            <h3>🔩 Scrap to GP</h3>
-            <label>Gunpowder Wanted</label><input type="number" id="gpWant" value="1000">
-            <button class="btn-ind" onclick="calcScrapGP()">Calculate</button>
-            <div id="gpRes" class="result-box" style="display:none"></div>
-        </div>
-    </div>
+    </section>
 
 </main>
 
 <script>
-/* --- GLOBAL STATE --- */
-let ecoMode = 'fresh'; // 'fresh' or 'refill'
+let currentEMode = 'fresh';
+function setE(m) {
+    currentEMode = m;
+    document.getElementById('eFresh').classList.toggle('active', m==='fresh');
+    document.getElementById('eRefill').classList.toggle('active', m==='refill');
+}
 
-/* --- UI NAVIGATION --- */
 function setView(id) {
-    document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.getElementById('view-'+id).classList.add('active');
-    document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
-    document.querySelectorAll(`.nav-item[onclick="setView('${id}')"]`).forEach(e => e.classList.add('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const activeNav = document.querySelector(`.nav-item[onclick*="${id}"]`);
+    if(activeNav) activeNav.classList.add('active');
 }
 
-function setEcoMode(mode) {
-    ecoMode = mode;
-    document.getElementById('modeFresh').classList.toggle('active', mode === 'fresh');
-    document.getElementById('modeRefill').classList.toggle('active', mode === 'refill');
+function closeP() { document.getElementById('pModal').classList.remove('open'); }
+function openP() { document.getElementById('pModal').classList.add('open'); }
+
+/* --- LOGIC ENGINES --- */
+function runCraft() {
+    const q = +document.getElementById('cQty').value;
+    const item = document.getElementById('cItem').value;
+    const method = document.getElementById('cMethod').value;
+    let s=0, c=0, m=0;
+    if(item==='rocket'){ s=1400*q; c=1950*q; m=100*q; }
+    if(item==='c4'){ s=2200*q; c=3000*q; m=200*q; }
+    if(method==='mix') c *= 0.7;
+    const out = document.getElementById('cRes');
+    out.style.display='block';
+    out.innerHTML = `<div class="res-row"><span>Sulfur</span><b>${s.toLocaleString()}</b></div><div class="res-row"><span>Charcoal</span><b>${Math.floor(c).toLocaleString()}</b></div>`;
 }
 
-function closeModal() { document.getElementById('patchModal').classList.remove('open'); }
-function openModal() { document.getElementById('patchModal').classList.add('open'); }
-
-/* --- 1. CRAFTING CALCULATOR (RESOURCES) --- */
-function calcCraft() {
-    const type = document.getElementById('craftItem').value;
-    const qty = +document.getElementById('craftQty').value;
-    const method = document.getElementById('craftMethod').value;
-
-    const getCostPerItem = (t) => {
-        if(t==='rocket') return {s:1400, c:1950, f:100, p:2, tech:0, fuel:30};
-        if(t==='c4') return {s:2200, c:3000, f:200, p:0, tech:2, fuel:60};
-        if(t==='satchel') return {s:480, c:720, f:80, p:0, tech:0, fuel:0};
-        if(t==='beancan') return {s:120, c:180, f:20, p:0, tech:0, fuel:0};
-        if(t==='ammo') return {s:25, c:30, f:10, p:0, tech:0, fuel:0};
-    };
-
-    const base = getCostPerItem(type);
-    let s = base.s * qty;
-    let c = base.c * qty;
-    let f = base.f * qty;
-
-    if(method === 'mix') c = c * 0.7; // Charcoal discount
-
-    document.getElementById('craftRes').style.display = 'block';
-    document.getElementById('craftRes').innerHTML = `
-        <div class="row"><span>Sulfur</span> <strong style="color:#ff4757">${s.toLocaleString()}</strong></div>
-        <div class="row"><span>Charcoal</span> <strong>${Math.floor(c).toLocaleString()}</strong></div>
-        <div class="row"><span>Metal Frags</span> <strong>${f.toLocaleString()}</strong></div>
-        ${base.p > 0 ? `<div class="row"><span>Pipes</span> <strong>${base.p * qty}</strong></div>` : ''}
-        ${base.tech > 0 ? `<div class="row"><span>Tech Trash</span> <strong>${base.tech * qty}</strong></div>` : ''}
-        ${base.fuel > 0 ? `<div class="row"><span>Low Grade</span> <strong>${base.fuel * qty}</strong></div>` : ''}
-    `;
+function runRaid() {
+    const t = document.getElementById('rTar').value;
+    const a = document.getElementById('rAmmo').value;
+    let count = 0;
+    if(t==='stone') count = a==='rocket'?2:1;
+    if(t==='metal') count = a==='rocket'?4:2;
+    if(t==='armored') count = a==='rocket'?8:3;
+    const out = document.getElementById('rRes');
+    out.style.display='block';
+    out.innerHTML = `<div class="res-row"><span>Needed</span><b>${count} ${a.toUpperCase()}s</b></div>`;
 }
 
-/* --- 2. EXPLOSIVE RAIDS (LOOKUP TABLE FIX) --- */
-function calcRaid() {
-    const target = document.getElementById('raidTarget').value;
-    const ammo = document.getElementById('raidAmmo').value;
-    const count = +document.getElementById('raidCount').value;
-
-    // Hardcoded Rust Labs Hits Table (Target -> Ammo -> Count)
-    const hitsTable = {
-        'wall.stone': { rocket: 2, c4: 1, satchel: 4, ammo: 72 },
-        'wall.metal': { rocket: 4, c4: 2, satchel: 9, ammo: 200 },
-        'wall.armored': { rocket: 8, c4: 3, satchel: 19, ammo: 400 },
-        'wall.ext_stone': { rocket: 4, c4: 2, satchel: 9, ammo: 200 },
-        'wall.ext_wood': { rocket: 2, c4: 1, satchel: 4, ammo: 72 },
-        'door.sheet': { rocket: 1, c4: 1, satchel: 2, ammo: 26 }, 
-        'door.garage': { rocket: 2, c4: 1, satchel: 5, ammo: 60 },
-        'door.armored': { rocket: 3, c4: 1, satchel: 8, ammo: 100 },
-        'window.reinforced': { rocket: 2, c4: 1, satchel: 5, ammo: 50 }
-    };
-
-    const ammoCost = { rocket: 1400, c4: 2200, satchel: 480, ammo: 25 };
-
-    const hitsNeeded = hitsTable[target][ammo];
-    const totalAmmo = hitsNeeded * count;
-    const totalSulfur = totalAmmo * ammoCost[ammo];
-
-    document.getElementById('raidRes').style.display = 'block';
-    document.getElementById('raidRes').innerHTML = `
-        <div class="row"><span>Required</span> <strong style="font-size:18px; color:#ff4757">${totalAmmo} ${ammo.toUpperCase()}s</strong></div>
-        <div class="row"><span>Total Sulfur Cost</span> <strong>${totalSulfur.toLocaleString()}</strong></div>
-    `;
+function runEco() {
+    const t = document.getElementById('eTar').value;
+    const tool = document.getElementById('eTool').value;
+    let count = (t==='stone') ? (tool==='spear'?23:1.2) : (tool==='spear'?2:0.1);
+    const out = document.getElementById('eRes');
+    out.style.display='block';
+    out.innerHTML = `<div class="res-row"><span>Quantity</span><b>${count} ${currentEMode==='fresh'?'Tools':'Refills'}</b></div>`;
 }
 
-/* --- 3. ECO RAID (META FIX) --- */
-function updateEcoRec() {
-    const t = document.getElementById('ecoTarget').value;
-    const rec = document.getElementById('ecoRec');
-    let msg = "";
-    if(t==='wall.wood') msg = "Best: <b>1x Sword</b> or <b>2x Spears</b>.";
-    if(t==='wall.stone') msg = "Best: <b>7x Pickaxes</b> or <b>1.2x Jackhammers</b>.";
-    if(t==='wall.metal') msg = "Best: <b>Jackhammers Only</b> (Picks are too slow).";
-    if(t==='door.wood') msg = "Best: <b>19x Spears</b>.";
-    if(t.includes('door') && !t.includes('wood')) msg = "Immune to tools. Use Explosives.";
-    rec.innerHTML = `<i>💡</i> <span>${msg}</span>`;
+function runSmelt() {
+    const m = +document.getElementById('sMet').value;
+    const s = +document.getElementById('sSul').value;
+    const wood = Math.ceil((m+s)*1.6);
+    const out = document.getElementById('sRes');
+    out.style.display='block';
+    out.innerHTML = `<div class="res-row"><span>Wood Needed</span><b>${wood.toLocaleString()}</b></div>`;
 }
 
-function calcEco() {
-    const t = document.getElementById('ecoTarget').value;
-    const tool = document.getElementById('ecoTool').value;
-    const qty = +document.getElementById('ecoCount').value;
-
-    // Hardcoded Meta Table (Quantities per 1 wall)
-    // -1 means impossible/immune
-    const meta = {
-        'wall.wood': { spear: 2, jack: 0.1, pick: 1, sword: 1, hatchet: 1.5 },
-        'wall.stone': { spear: 23, jack: 1.2, pick: 7, sword: 80, hatchet: 99 },
-        'wall.metal': { spear: -1, jack: 13, pick: 50, sword: -1, hatchet: -1 },
-        'door.wood': { spear: 19, jack: 0.5, pick: 2, sword: 2, hatchet: 4 },
-        'door.sheet': { spear: -1, jack: -1, pick: -1, sword: -1, hatchet: -1 },
-    };
-
-    const countPerWall = meta[t][tool];
-
-    if(countPerWall === -1 || countPerWall > 100) {
-        document.getElementById('ecoRes').style.display = 'block';
-        document.getElementById('ecoRes').innerHTML = `<strong style="color:#ff4757">NOT VIABLE / IMMUNE</strong>`;
-        return;
-    }
-
-    const totalNeeded = (countPerWall * qty).toFixed(1);
-    const label = ecoMode === 'fresh' ? 'New Tools' : 'Refills (Repair Bench)';
-
-    document.getElementById('ecoRes').style.display = 'block';
-    document.getElementById('ecoRes').innerHTML = `
-        <div class="row"><span>Quantity</span> <strong style="color:#ff4757">${totalNeeded} ${label}</strong></div>
-        <div style="font-size:12px; color:#666; margin-top:5px;">Based on Soft Side Durability Meta</div>
-    `;
+function runRecycle() {
+    const t = +document.getElementById('reTech').value;
+    const g = +document.getElementById('reGear').value;
+    const scrap = (t*20) + (g*10);
+    const out = document.getElementById('reRes');
+    out.style.display='block';
+    out.innerHTML = `<div class="res-row"><span>Yield</span><b>${scrap} Scrap</b></div>`;
 }
 
-/* --- 4. COMPARE --- */
-function calcCompare() {
-    const getCost = (t, q) => {
-        if(t==='rocket') return {s:1400*q, c:1950*q, m:100*q, p:2*q, tech:0, fuel:30*q};
-        if(t==='c4') return {s:2200*q, c:3000*q, m:200*q, p:0, tech:2*q, fuel:60*q};
-        if(t==='satchel') return {s:480*q, c:720*q, m:80*q, p:0, tech:0, fuel:0};
-        return {s:0,c:0,m:0,p:0,tech:0,fuel:0};
-    };
-
-    const cA = getCost(document.getElementById('compA').value, +document.getElementById('amtA').value);
-    const cB = getCost(document.getElementById('compB').value, +document.getElementById('amtB').value);
-    
-    let html = `<table class="comp-table"><thead><tr><th>Resource</th><th>Opt A</th><th>Opt B</th><th>Diff</th></tr></thead><tbody>`;
-    const fields = [
-        {key:'s', name:'Sulfur'}, {key:'c', name:'Charcoal'}, {key:'m', name:'Metal Frags'}, 
-        {key:'fuel', name:'Low Grade'}, {key:'p', name:'Pipes'}, {key:'tech', name:'Tech Trash'}
-    ];
-
-    fields.forEach(f => {
-        if(cA[f.key] > 0 || cB[f.key] > 0) {
-            const diff = cA[f.key] - cB[f.key];
-            const diffStr = diff > 0 ? `+${diff}` : diff;
-            const diffClass = diff > 0 ? 'diff-bad' : 'diff-good';
-            html += `<tr><td>${f.name}</td><td>${cA[f.key]}</td><td>${cB[f.key]}</td><td class="${diffClass}">${diffStr}</td></tr>`;
-        }
-    });
-    
-    html += `</tbody></table>`;
-    document.getElementById('compRes').style.display = 'block';
-    document.getElementById('compRes').innerHTML = html;
+function runDiesel() {
+    const b = +document.getElementById('dBar').value;
+    const out = document.getElementById('dRes');
+    out.style.display='block';
+    out.innerHTML = `<div class="res-row"><span>Sulfur Output</span><b>${b*2000}</b></div>`;
 }
-
-/* --- 5. SMELTING (NEW) --- */
-function calcSmelt() {
-    const s = +document.getElementById('smeltSulfur').value;
-    const m = +document.getElementById('smeltMetal').value;
-    const h = +document.getElementById('smeltHQM').value;
-    
-    // Ratios: 1000 Wood = 600 Ore Smelted (approx 1.67 Wood per Ore)
-    const totalOre = s + m + h;
-    const woodNeeded = Math.ceil(totalOre * 1.67);
-    const charcoal = Math.floor(woodNeeded * 0.75);
-    const timeSec = Math.ceil(totalOre * 2); // 2 seconds per ore
-    const mins = Math.floor(timeSec / 60);
-
-    document.getElementById('smeltRes').style.display='block';
-    document.getElementById('smeltRes').innerHTML=`
-        <div class="row"><span>Wood Needed</span> <strong style="color:#ffa502">${woodNeeded.toLocaleString()}</strong></div>
-        <div class="row"><span>Charcoal Output</span> <strong>${charcoal.toLocaleString()}</strong></div>
-        <div class="row"><span>Time (Single Furnace)</span> <strong>${mins} Mins</strong></div>
-    `;
-}
-
-/* --- LOGIC: RECYCLER --- */
-function calcRecycle() {
-    const zone = document.getElementById('recZone').value;
-    const mult = zone==='safe' ? 0.8 : 1.0;
-    const target = +document.getElementById('recTarget').value;
-
-    const inputs = {
-        tech: {val:+document.getElementById('recTech').value, scrap:20, hqm:3},
-        rifle: {val:+document.getElementById('recRifle').value, scrap:25, hqm:2},
-        smg: {val:+document.getElementById('recSMG').value, scrap:15, hqm:2},
-        gear: {val:+document.getElementById('recGear').value, scrap:10, hqm:13},
-        spring: {val:+document.getElementById('recSpring').value, scrap:10, hqm:1},
-        sheet: {val:+document.getElementById('recSheet').value, scrap:8, hqm:0},
-    };
-
-    let totalScrap = 0, totalHQM = 0;
-    for (const key in inputs) {
-        totalScrap += inputs[key].val * inputs[key].scrap;
-        totalHQM += inputs[key].val * inputs[key].hqm;
-    }
-    
-    totalScrap = Math.floor(totalScrap * mult);
-    totalHQM = Math.floor(totalHQM * mult);
-
-    let msg = "";
-    if(target > 0) {
-        if(totalScrap >= target) msg = `<div style="margin-top:10px; color:#2ed573">✅ Goal Met! (+${totalScrap-target} surplus)</div>`;
-        else msg = `<div style="margin-top:10px; color:#ff4757">❌ Short by ${target-totalScrap} Scrap.</div>`;
-    }
-    
-    if(inputs.gear.val > 0) msg += `<div style="font-size:11px; color:#ffa502; margin-top:5px">⚠️ Warning: Gears needed for Garage Doors.</div>`;
-
-    document.getElementById('recRes').style.display='block'; 
-    document.getElementById('recRes').innerHTML=`
-        <div class="row"><span>Total Scrap</span> <strong style="color:#ffa502">${totalScrap}</strong></div>
-        <div class="row"><span>Total HQM</span> <strong>${totalHQM}</strong></div>
-        ${msg}
-    `;
-}
-
-function calcGene() {
-    let res = ""; const w = {G:0.6,Y:0.6,H:1,S:1,W:1,X:0};
-    for(let i=1; i<=6; i++){
-        let sc={G:0,Y:0,H:0,S:0,W:0};
-        for(let d=1; d<=2; d++){ let v=document.getElementById(`d${d}_${i}`).value.toUpperCase(); if(w[v]) sc[v]+=w[v]; }
-        let win="?", mx=-1; for(let k in sc) if(sc[k]>mx){mx=sc[k]; win=k;}
-        res+=win;
-    }
-    const box = document.getElementById('geneRes');
-    box.style.display='block'; box.innerText=res;
-    box.style.color = (res.includes('W')||res.includes('X')) ? '#ff4757' : '#2ed573';
-}
-
-function calcNodes() {
-    document.getElementById('nodeRes').style.display='block';
-    document.getElementById('nodeRes').innerHTML=`<div class="row"><span>Nodes</span> <strong>${Math.ceil(+document.getElementById('nodeNeed').value/300)}</strong></div>`;
-}
-function calcDiesel() {
-    const a=+document.getElementById('dieselAmt').value;
-    const l=document.getElementById('dieselLoc').value;
-    const t=document.getElementById('dieselType').value;
-    let r=l==='excavator'?(t==='sulfur'?2000:t==='hqm'?100:5000):(t==='sulfur'?1000:t==='hqm'?50:2500);
-    document.getElementById('dieselRes').style.display='block'; document.getElementById('dieselRes').innerHTML=`<div class="row"><span>Yield</span> <strong style="color:#ffa502">${(a*r).toLocaleString()}</strong></div>`;
-}
-function calcHeli() {
-    document.getElementById('heliRes').style.display='block';
-    document.getElementById('heliRes').innerHTML=`<div class="row"><span>Airtime</span> <strong>${(+document.getElementById('lgfHeli').value/+document.getElementById('heliType').value).toFixed(1)} mins</strong></div>`;
-}
-function calcScrapGP() {
-    const s = Math.ceil(+document.getElementById('gpWant').value/18)*5;
-    document.getElementById('gpRes').style.display='block'; document.getElementById('gpRes').innerHTML=`<div class="row"><span>Scrap Cost</span> <strong style="color:#ffa502">${s}</strong></div>`;
-}
-
-// Init
-updateEcoRec();
 </script>
+
 </body>
 </html>
