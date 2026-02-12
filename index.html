@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rust Labs: Command Center v1.6</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Rust Labs: Command Center v1.7</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
 <style>
 /* --- CORE VARIABLES --- */
@@ -39,21 +39,17 @@ body {
     border-right: 1px solid var(--border);
     display: flex; flex-direction: column;
     padding: 20px; flex-shrink: 0; overflow-y: auto;
+    /* Smooth scroll for mobile */
+    -webkit-overflow-scrolling: touch; 
 }
 
 .brand {
-    font-family: 'Oswald', sans-serif; font-size: 22px; color: #fff;
-    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;
-    display: flex; align-items: center; gap: 12px;
+    font-family: 'Oswald', sans-serif; font-size: 24px; color: #fff;
+    text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px;
+    display: flex; align-items: center; gap: 10px; flex-shrink: 0;
 }
 .brand span { color: var(--c-raid); }
-.version { 
-    font-size: 10px; color: #666; margin-bottom: 25px; 
-    text-transform: uppercase; letter-spacing: 1px; padding-left: 48px; 
-}
-
-/* LOGO SVG STYLING */
-.logo-svg { width: 36px; height: 36px; fill: none; stroke: var(--c-raid); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.version { font-size: 10px; color: #666; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px; flex-shrink: 0; }
 
 .nav-header {
     font-size: 11px; font-weight: 800; text-transform: uppercase;
@@ -64,6 +60,7 @@ body {
     padding: 12px; margin-bottom: 4px; border-radius: 6px;
     cursor: pointer; font-size: 13px; font-weight: 600; color: #888;
     display: flex; align-items: center; gap: 10px; transition: 0.2s;
+    white-space: nowrap;
 }
 .nav-item:hover { background: #111; color: #fff; }
 .nav-item.active { background: #222; color: #fff; border-left: 3px solid #fff; }
@@ -78,6 +75,7 @@ body {
 .main {
     flex: 1; padding: 40px; overflow-y: auto;
     background-image: radial-gradient(circle at top right, #1a1a1a 0%, #0f0f0f 60%);
+    -webkit-overflow-scrolling: touch;
 }
 
 .view { display: none; max-width: 1000px; margin: 0 auto; animation: fadeUp 0.3s ease; }
@@ -111,6 +109,7 @@ label { display: block; font-size: 11px; font-weight: 700; text-transform: upper
 input, select {
     width: 100%; background: #0a0a0a; border: 1px solid #333; color: #fff;
     padding: 12px; border-radius: 6px; font-family: 'Inter'; font-size: 14px; outline: none;
+    -webkit-appearance: none; /* Mobile Fix */
 }
 input:focus, select:focus { border-color: #666; }
 
@@ -151,14 +150,17 @@ button:active { transform: scale(0.98); }
 }
 .eco-rec i { font-style: normal; font-size: 16px; }
 
-/* Base Design Cards */
+/* Base Design Cards (Video Integration) */
 .base-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
 .base-card { background: #111; border: 1px solid #333; border-radius: 8px; overflow: hidden; }
-.base-video { height: 160px; background: #000; display: flex; align-items: center; justify-content: center; position: relative; }
-.base-video::after { content: '▶'; font-size: 40px; color: rgba(255,255,255,0.5); }
+.base-video { 
+    height: 180px; background: #000; position: relative; 
+    border-bottom: 1px solid #333;
+}
+.base-video iframe { width: 100%; height: 100%; border: none; }
 .base-info { padding: 20px; }
 .base-title { font-family: 'Oswald'; font-size: 20px; color: #fff; margin-bottom: 5px; }
-.base-stats { display: flex; gap: 10px; margin-bottom: 15px; font-size: 11px; color: #888; }
+.base-stats { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 15px; font-size: 11px; color: #888; }
 .stat-box { background: #222; padding: 4px 8px; border-radius: 4px; border: 1px solid #333; }
 .pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px; }
 .pro-list { color: var(--c-farm); list-style: none; padding: 0; }
@@ -219,14 +221,32 @@ button:active { transform: scale(0.98); }
 }
 .btn-close:hover { transform: scale(1.02); box-shadow: 0 0 15px rgba(255,255,255,0.2); }
 
-/* Mobile */
+/* --- MOBILE RESPONSIVENESS (UPDATED) --- */
 @media (max-width: 768px) {
-    body { flex-direction: column; height: auto; overflow: visible; }
-    .sidebar { width: 100%; overflow-x: auto; flex-direction: row; border-right: none; border-bottom: 1px solid #333; }
-    .nav-header, .brand { display: none; }
-    .nav-item { white-space: nowrap; margin: 0; padding: 10px; }
+    body { flex-direction: column; height: auto; overflow-y: auto; }
+    
+    /* Top Scrollable Navigation */
+    .sidebar { 
+        width: 100%; height: auto; overflow-x: auto; flex-direction: row; 
+        border-right: none; border-bottom: 1px solid #333; 
+        padding: 10px; position: sticky; top: 0; z-index: 100;
+        background: rgba(8,8,8,0.95); backdrop-filter: blur(5px);
+    }
+    .brand { display: none; } /* Hide logo on mobile to save space */
+    .nav-header { display: none; }
+    .nav-item { 
+        white-space: nowrap; margin: 0; padding: 8px 16px; font-size: 12px; 
+        background: #111; border: 1px solid #333; margin-right: 5px;
+    }
+    .nav-item.active { border-left: 1px solid #fff; }
+    
+    .main { padding: 15px; }
     .grid-2 { grid-template-columns: 1fr; }
-    .main { padding: 20px; }
+    
+    h2 { font-size: 24px; }
+    
+    /* Base Library Stack */
+    .base-video { height: 200px; }
 }
 </style>
 </head>
@@ -236,45 +256,24 @@ button:active { transform: scale(0.98); }
     <div class="patch-modal">
         <div class="patch-header">
             <div class="brand">
-                <svg class="logo-svg" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zm0 9l2-10 2 10m-4 0l-2-10-2 10m4 0v10l-10-5 10-5zm0 0v10l10-5-10-5z"></path></svg>
-                <div class="patch-title">
-                    <h3>Command Center</h3>
-                    <span>Update Log</span>
-                </div>
+                <span>V1.7 CHANGELOG</span>
             </div>
         </div>
         <div class="patch-body">
             <div class="update-block">
-                <div class="update-ver">v1.6 <span class="tag-new">LATEST</span></div>
+                <div class="update-ver">v1.7 <span class="tag-new">LATEST</span></div>
                 <ul class="update-list">
-                    <li>Added Patch Notes System (Startup Popup).</li>
-                    <li>Designed Custom Vector Logo.</li>
-                    <li>Implemented Version History tracking.</li>
-                    <li>Added "Smelting Calculator" to Industry Tab.</li>
-                    <li>Added "Base Design Library" with 2026 Meta builds.</li>
+                    <li><b>Mobile Optimization:</b> Sidebar now converts to a swipeable top menu on phones.</li>
+                    <li><b>Base Library Upgrade:</b> Added "The Frustration", "The Anvil", and "The Limitless".</li>
+                    <li><b>Working Videos:</b> Integrated YouTube players (Users must provide IDs).</li>
+                    <li><b>Eco-Raid:</b> Added Refill vs Craft toggle logic.</li>
                 </ul>
             </div>
             <div class="update-block">
-                <div class="update-ver" style="opacity:0.7">v1.5</div>
+                <div class="update-ver" style="opacity:0.7">v1.6</div>
                 <ul class="update-list">
-                    <li>Fixed Raid Math: Now uses Hardcoded Lookup Tables for 100% accuracy.</li>
-                    <li>Added "Explosive Raids" tab separate from Crafting.</li>
-                    <li>Added High External Walls to Raid targets.</li>
-                </ul>
-            </div>
-            <div class="update-block">
-                <div class="update-ver" style="opacity:0.7">v1.4</div>
-                <ul class="update-list">
-                    <li>Code Cleanup: Removed non-math sections.</li>
-                    <li>Fixed Eco Raid: Spears now do 0 dmg to Metal/Armored.</li>
-                    <li>Added "Fresh vs Refill" toggle for Eco Raiding.</li>
-                </ul>
-            </div>
-            <div class="update-block">
-                <div class="update-ver" style="opacity:0.7">v1.3</div>
-                <ul class="update-list">
-                    <li>Overhauled Visual Footprint Guide (CSS Grid).</li>
-                    <li>Added Smart Recycler "Keep vs Scrap" logic.</li>
+                    <li>Added Startup Patch Notes popup.</li>
+                    <li>Added Custom "Rad-Hex" Logo.</li>
                 </ul>
             </div>
         </div>
@@ -286,17 +285,9 @@ button:active { transform: scale(0.98); }
 
 <nav class="sidebar">
     <div class="brand">
-        <svg class="logo-svg" viewBox="0 0 100 100">
-            <path d="M50 5 L93.3 30 V80 L50 105 L6.7 80 V30 Z" fill="none" stroke="#ff4757" stroke-width="4"/>
-            <circle cx="50" cy="55" r="15" fill="none" stroke="#e0e0e0" stroke-width="3"/>
-            <line x1="50" y1="20" x2="50" y2="40" stroke="#e0e0e0" stroke-width="3"/>
-            <line x1="50" y1="70" x2="50" y2="90" stroke="#e0e0e0" stroke-width="3"/>
-            <line x1="15" y1="55" x2="35" y2="55" stroke="#e0e0e0" stroke-width="3"/>
-            <line x1="65" y1="55" x2="85" y2="55" stroke="#e0e0e0" stroke-width="3"/>
-        </svg>
         RUST<span>LABS</span>
     </div>
-    <div class="version">Version 1.6</div>
+    <div class="version">Version 1.7</div>
 
     <div class="nav-header">Combat</div>
     <div class="nav-item active" data-theme="raid" onclick="setView('craft')">💣 Crafting Calc</div>
@@ -451,50 +442,56 @@ button:active { transform: scale(0.98); }
     </div>
 
     <div id="view-library" class="view" data-theme="build">
-        <header><h2 style="color:var(--c-build)">Base Library</h2><p class="subtitle">Standard Meta Builds (2026)</p></header>
+        <header><h2 style="color:var(--c-build)">Base Library</h2><p class="subtitle">High-Tier Meta Builds (2026)</p></header>
         <div class="base-grid">
             
             <div class="base-card">
-                <div class="base-video">Youtube Video</div>
+                <div class="base-video">
+                    <iframe src="https://www.youtube.com/embed/VIDEO_ID_HERE" title="YouTube video player" allowfullscreen></iframe>
+                </div>
                 <div class="base-info">
-                    <div class="base-title">The Standard 2x1</div>
+                    <div class="base-title">The Frustration (Evil Wurst)</div>
                     <div class="base-stats">
-                        <span class="stat-box">Build: ~3k Stone</span>
-                        <span class="stat-box">Upkeep: ~500 Stone</span>
+                        <span class="stat-box">Build: ~32k Stone / 15k Frag</span>
+                        <span class="stat-box">Upkeep: 4k Stone / 1k Frag</span>
                     </div>
                     <div class="pros-cons">
-                        <ul class="pro-list"><li>Cheap</li><li>Fast to build</li><li>Easy to hide</li></ul>
-                        <ul class="con-list"><li>Weak Defense</li><li>Low Storage</li></ul>
+                        <ul class="pro-list"><li>Disconnectable TC</li><li>High Rocket Cost</li><li>Anti-Grief</li></ul>
+                        <ul class="con-list"><li>Hard to build</li><li>Tight Spaces</li></ul>
                     </div>
                 </div>
             </div>
 
             <div class="base-card">
-                <div class="base-video">Youtube Video</div>
+                <div class="base-video">
+                    <iframe src="https://www.youtube.com/embed/VIDEO_ID_HERE" title="YouTube video player" allowfullscreen></iframe>
+                </div>
                 <div class="base-info">
-                    <div class="base-title">Honeycombed 2x2</div>
+                    <div class="base-title">The Anvil (Heavy Bunker)</div>
                     <div class="base-stats">
-                        <span class="stat-box">Build: ~12k Stone</span>
-                        <span class="stat-box">Upkeep: ~2k Stone</span>
+                        <span class="stat-box">Build: ~25k Metal / 500 HQM</span>
+                        <span class="stat-box">Upkeep: 4k Metal / 50 HQM</span>
                     </div>
                     <div class="pros-cons">
-                        <ul class="pro-list"><li>Good Space</li><li>12-16 Rocket Raid</li><li>Roof Access</li></ul>
-                        <ul class="con-list"><li>Generic</li><li>Target for clans</li></ul>
+                        <ul class="pro-list"><li>Extremely Tanky</li><li>Small Footprint</li><li>Cheap Upkeep for strength</li></ul>
+                        <ul class="con-list"><li>High Build Cost</li><li>Requires HQM mining</li></ul>
                     </div>
                 </div>
             </div>
 
             <div class="base-card">
-                <div class="base-video">Youtube Video</div>
+                <div class="base-video">
+                    <iframe src="https://www.youtube.com/embed/VIDEO_ID_HERE" title="YouTube video player" allowfullscreen></iframe>
+                </div>
                 <div class="base-info">
-                    <div class="base-title">The Mini-Fort Bunker</div>
+                    <div class="base-title">The Limitless (Clan Base)</div>
                     <div class="base-stats">
-                        <span class="stat-box">Build: ~15k Stone</span>
-                        <span class="stat-box">Upkeep: ~3k Stone</span>
+                        <span class="stat-box">Build: 100k+ Stone</span>
+                        <span class="stat-box">Upkeep: 15k Stone / 5k Metal</span>
                     </div>
                     <div class="pros-cons">
-                        <ul class="pro-list"><li>24+ Rocket Raid</li><li>Pixel Gaps</li><li>Offline Protection</li></ul>
-                        <ul class="con-list"><li>Complex Build</li><li>High HQM Cost</li></ul>
+                        <ul class="pro-list"><li>Wide Gap Peaks</li><li>Open Core</li><li>Inner China Wall</li></ul>
+                        <ul class="con-list"><li>Impossible for Solos</li><li>Huge Target</li></ul>
                     </div>
                 </div>
             </div>
