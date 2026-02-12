@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Rust Labs: Command Center v3.0</title>
+<title>Rust Labs: Command Center v3.2</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
 <style>
 /* --- CORE VARIABLES --- */
 :root {
     --bg-dark: #050505;
-    --bg-panel: #111;
-    --border: #222;
+    --bg-panel: #121212;
+    --border: #2a2a2a;
     --c-raid: #ff4757;
     --c-build: #5352ed;
     --c-farm: #2ed573;
@@ -29,7 +29,7 @@ body {
     overflow-x: hidden;
 }
 
-/* --- TOP BAR --- */
+/* --- HEADER --- */
 header.top-bar {
     position: fixed; top: 0; left: 0; right: 0; height: 70px;
     background: rgba(5,5,5,0.95); backdrop-filter: blur(15px);
@@ -42,7 +42,7 @@ header.top-bar {
     justify-content: center; gap: 6px; cursor: pointer; padding: 10px;
     border-radius: 8px;
 }
-.line { width: 100%; height: 2px; background: #fff; border-radius: 2px; }
+.line { width: 100%; height: 3px; background: #fff; border-radius: 2px; }
 
 .header-logo {
     display: flex; align-items: center; gap: 12px; margin-left: 15px; 
@@ -58,20 +58,22 @@ header.top-bar {
 .nav-overlay.open { display: flex; animation: fadeIn 0.2s ease; }
 
 .nav-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 12px; max-width: 1000px; margin: 30px auto; width: 100%; padding-bottom: 50px;
 }
 
 .nav-card {
-    background: #161616; border: 1px solid #222; border-radius: 12px;
-    padding: 20px; cursor: pointer; display: flex; align-items: center; gap: 15px;
-    border-top: 3px solid #333;
+    background: #1a1a1a; border: 1px solid #333; border-radius: 12px;
+    padding: 20px; cursor: pointer; display: flex; flex-direction: column; gap: 8px;
+    border-top: 3px solid #444; position: relative;
 }
-.nav-card:hover { border-color: #fff; background: #1f1f1f; }
+.nav-card:hover { border-color: #fff; background: #222; }
 .nav-card[data-cat="raid"] { border-top-color: var(--c-raid); }
 .nav-card[data-cat="ind"] { border-top-color: var(--c-ind); }
 .nav-card[data-cat="build"] { border-top-color: var(--c-build); }
 .nav-card[data-cat="farm"] { border-top-color: var(--c-farm); }
+.nav-card b { display: block; font-family: 'Oswald'; font-size: 16px; color:#fff; }
+.nav-card span { font-size: 10px; color: #888; text-transform: uppercase; }
 
 /* --- CONTENT --- */
 .content-wrapper { margin-top: 80px; padding: 20px; min-height: 100vh; }
@@ -97,12 +99,15 @@ button.action-btn {
 .btn-raid { background: var(--c-raid); }
 .btn-ind { background: var(--c-ind); }
 .btn-farm { background: var(--c-farm); }
+.btn-build { background: var(--c-build); }
 
 /* --- RESULTS & EXTRAS --- */
 .result-box { margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 10px; border: 1px dashed #333; }
 .res-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; border-bottom: 1px solid #222; padding-bottom: 4px; }
+.res-row:last-child { border: none; }
 .res-row b { color: var(--c-ind); }
-.diff-good { color: var(--c-farm); } .diff-bad { color: var(--c-raid); }
+.diff-good { color: var(--c-farm); font-weight: bold; } 
+.diff-bad { color: var(--c-raid); font-weight: bold; }
 
 /* Video Cards */
 .base-card { background: #111; border: 1px solid #222; border-radius: 16px; overflow: hidden; margin-bottom: 30px; }
@@ -111,16 +116,6 @@ button.action-btn {
 .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 20px; background: #1a1a1a; }
 .stat-item { background: #000; padding: 10px; border-radius: 8px; border: 1px solid #222; }
 .stat-item small { display: block; color: #666; font-size: 9px; text-transform: uppercase; }
-
-/* Gene Lab */
-.gene-container { display: flex; gap: 5px; justify-content: center; margin-bottom: 10px; }
-.gene-input { width: 40px; text-align: center; text-transform: uppercase; font-weight: 800; font-size: 18px; }
-
-/* Recycler Grid */
-.recycler-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.rec-item { display: flex; align-items: center; gap: 10px; background: #080808; padding: 10px; border-radius: 8px; border: 1px solid #222; }
-.rec-item input { padding: 8px; width: 60px; text-align: center; }
-.rec-icon { font-size: 20px; }
 
 /* Toggles */
 .toggle-row { display: flex; gap: 10px; margin-bottom: 15px; }
@@ -131,6 +126,16 @@ button.action-btn {
 .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; display: none; align-items: center; justify-content: center; }
 .modal.active { display: flex; }
 .modal-inner { background: #000; width: 90%; max-width: 500px; padding: 30px; border-radius: 20px; border: 1px solid #333; }
+
+/* Gene */
+.gene-container { display: flex; gap: 5px; justify-content: center; margin-bottom: 10px; }
+.gene-input { width: 40px; text-align: center; text-transform: uppercase; font-weight: 800; font-size: 18px; }
+
+/* Recycler */
+.recycler-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.rec-item { display: flex; align-items: center; gap: 10px; background: #080808; padding: 10px; border-radius: 8px; border: 1px solid #222; }
+.rec-item input { padding: 8px; width: 60px; text-align: center; }
+.rec-icon { font-size: 20px; }
 
 @media(max-width:600px){ .grid-2 { grid-template-columns: 1fr; } }
 </style>
@@ -153,16 +158,23 @@ button.action-btn {
         <button onclick="toggleMenu(false)" style="width:auto; padding:10px 20px; background:#fff; color:#000; font-weight:900; border-radius:8px;">CLOSE</button>
     </div>
     <div class="nav-grid">
-        <div class="nav-card" data-cat="raid" onclick="sv('craft')"><b>Crafting</b><span>Resources</span></div>
-        <div class="nav-card" data-cat="raid" onclick="sv('raid')"><b>Raiding</b><span>Hits to break</span></div>
-        <div class="nav-card" data-cat="raid" onclick="sv('eco')"><b>Eco Raid</b><span>Soft side</span></div>
-        <div class="nav-card" data-cat="raid" onclick="sv('compare')"><b>Compare</b><span>Vs Mode</span></div>
-        <div class="nav-card" data-cat="build" onclick="sv('lib')"><b>Base Lib</b><span>Designs</span></div>
-        <div class="nav-card" data-cat="ind" onclick="sv('scrapgp')"><b>Scrap GP</b><span>Arbitrage</span></div>
+        <div class="nav-card" data-cat="raid" onclick="sv('craft')"><b>Crafting</b><span>Deep Resource List</span></div>
+        <div class="nav-card" data-cat="raid" onclick="sv('compare')"><b>Compare</b><span>Sulfur/Fuel/Pipe</span></div>
+        <div class="nav-card" data-cat="raid" onclick="sv('raid')"><b>Raiding</b><span>Explosive Count</span></div>
+        <div class="nav-card" data-cat="raid" onclick="sv('eco')"><b>Eco Raid</b><span>Tools Required</span></div>
+        
+        <div class="nav-card" data-cat="build" onclick="sv('lib')"><b>Base Lib</b><span>Anvil & Limitless</span></div>
+        <div class="nav-card" data-cat="build" onclick="sv('upkeep')"><b>Upkeep</b><span>Decay Calc</span></div>
+        <div class="nav-card" data-cat="build" onclick="sv('mon')"><b>Monuments</b><span>Puzzle Cheat</span></div>
+
         <div class="nav-card" data-cat="ind" onclick="sv('recycle')"><b>Recycler</b><span>Components</span></div>
+        <div class="nav-card" data-cat="ind" onclick="sv('scrapgp')"><b>Scrap GP</b><span>Arbitrage</span></div>
         <div class="nav-card" data-cat="ind" onclick="sv('smelt')"><b>Smelting</b><span>Furnace</span></div>
         <div class="nav-card" data-cat="ind" onclick="sv('diesel')"><b>Diesel</b><span>Fuel</span></div>
         <div class="nav-card" data-cat="ind" onclick="sv('flight')"><b>Flight</b><span>Heli</span></div>
+        
+        <div class="nav-card" data-cat="farm" onclick="sv('nodes')"><b>Nodes</b><span>Sulfur</span></div>
+        <div class="nav-card" data-cat="farm" onclick="sv('tea')"><b>Tea Mix</b><span>Berries</span></div>
         <div class="nav-card" data-cat="farm" onclick="sv('gene')"><b>Gene Lab</b><span>Breeding</span></div>
     </div>
 </div>
@@ -171,23 +183,48 @@ button.action-btn {
     <div class="modal-inner">
         <div class="header-logo" style="margin-bottom:20px;">
             <div class="logo-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ff4757" stroke-width="3"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg></div>
-            <span>VERSION 3.0</span>
+            <span>VERSION 3.2</span>
         </div>
-        <div style="font-weight:800; font-size:14px; margin-bottom:10px;">THE OVERHAUL:</div>
+        <div style="font-weight:800; font-size:14px; margin-bottom:10px;">RESTORATION COMPLETE:</div>
         <ul style="color:#888; font-size:13px; line-height:1.6; margin-left:15px; margin-bottom:20px;">
-            <li><b>Gene Lab Fixed:</b> Input grid added.</li>
-            <li><b>Scrap to GP 2.0:</b> Added Safe Zone toggles, Custom Pricing, and Mode Switching.</li>
-            <li><b>Recycler Expansion:</b> Added Batteries, Bodies, and Icons.</li>
-            <li><b>Base Library:</b> Updated Anvil & Frustrator links & stats.</li>
-            <li><b>Raid & Compare:</b> Added Propane, Beancan, Expl. Ammo with Wall vs Door damage analysis.</li>
+            <li><b>Comparison Engine:</b> Now compares Sulfur, Charcoal, Metal, Pipes, Tech Trash, Low Grade, and Rope.</li>
+            <li><b>Raid Options:</b> Added Satchel, Beancan, HV Rocket, and Explosive Ammo.</li>
+            <li><b>Base Library:</b> Kept "The Anvil" (2nd) and restored "The Limitless" (3rd).</li>
+            <li><b>Damage Analysis:</b> Separated Wall vs Door damage in comparison.</li>
         </ul>
-        <button class="close-btn" onclick="toggleModal(false)">START</button>
+        <button class="close-btn" onclick="toggleModal(false)">LAUNCH SYSTEM</button>
     </div>
 </div>
 
 <div class="content-wrapper">
 
-    <section id="view-craft" class="view active">
+    <section id="view-compare" class="view active">
+        <h2>Cost Comparison</h2>
+        <div class="grid-2">
+            <div class="card">
+                <h3>Option A</h3>
+                <select id="compA">
+                    <option value="rocket">Rocket</option><option value="c4">C4</option>
+                    <option value="satchel">Satchel</option><option value="beancan">Beancan</option>
+                    <option value="ammo">Exp. Ammo</option><option value="hv">HV Rocket</option>
+                </select>
+                <input type="number" id="amtA" value="4" style="margin-top:10px">
+            </div>
+            <div class="card">
+                <h3>Option B</h3>
+                <select id="compB">
+                    <option value="c4">C4</option><option value="rocket">Rocket</option>
+                    <option value="satchel">Satchel</option><option value="beancan">Beancan</option>
+                    <option value="ammo">Exp. Ammo</option><option value="hv">HV Rocket</option>
+                </select>
+                <input type="number" id="amtB" value="2" style="margin-top:10px">
+            </div>
+        </div>
+        <button class="action-btn btn-raid" onclick="doCompare()">Compare All Resources</button>
+        <div id="compRes" class="result-box" style="display:none"></div>
+    </section>
+
+    <section id="view-craft" class="view">
         <h2>Crafting Calculator</h2>
         <div class="card">
             <div class="grid-2">
@@ -218,24 +255,6 @@ button.action-btn {
         </div>
     </section>
 
-    <section id="view-compare" class="view">
-        <h2>Cost Comparison</h2>
-        <div class="grid-2">
-            <div class="card">
-                <h3>Option A</h3>
-                <select id="compA"><option value="rocket">Rocket</option><option value="c4">C4</option><option value="satchel">Satchel</option><option value="ammo">Exp. Ammo</option></select>
-                <input type="number" id="amtA" value="4" style="margin-top:10px">
-            </div>
-            <div class="card">
-                <h3>Option B</h3>
-                <select id="compB"><option value="c4">C4</option><option value="rocket">Rocket</option><option value="satchel">Satchel</option><option value="ammo">Exp. Ammo</option></select>
-                <input type="number" id="amtB" value="2" style="margin-top:10px">
-            </div>
-        </div>
-        <button class="action-btn btn-raid" onclick="doCompare()">Compare Resources</button>
-        <div id="compRes" class="result-box" style="display:none"></div>
-    </section>
-
     <section id="view-eco" class="view">
         <h2>Eco Raid</h2>
         <div class="card">
@@ -255,36 +274,70 @@ button.action-btn {
     <section id="view-lib" class="view">
         <h2>Base Library</h2>
         <div class="base-card">
-            <div class="video-frame"><iframe src="https://youtu.be/PD1EL52nvk0?si=_tDs50d2Z98bBy0T" allowfullscreen></iframe></div>
-            <div class="stat-grid">
-                <div class="stat-item"><small>Design</small>The Frustrator</div>
-                <div class="stat-item"><small>Cost</small>35k Stone / 15k Metal</div>
-                <div class="stat-item"><small>Upkeep</small>4.5k Stone / 1k Metal</div>
-            </div>
-        </div>
-        <div class="base-card">
             <div class="video-frame"><iframe src="https://youtu.be/UYXDMDb9oBU?si=g2ULJYsaYhqUKYCc" allowfullscreen></iframe></div>
             <div class="stat-grid">
                 <div class="stat-item"><small>Design</small>The Anvil</div>
                 <div class="stat-item"><small>Cost</small>25k Metal / 500 HQM</div>
                 <div class="stat-item"><small>Upkeep</small>4k Metal / 60 HQM</div>
+                <div class="stat-item"><small>Raid Cost</small>15 Rockets (Bunker)</div>
             </div>
+        </div>
+        <div class="base-card">
+            <div class="video-frame"><iframe src="https://youtube.com/@midLightVibes?si=0NueTmlqatyScSCn4" allowfullscreen></iframe></div>
+            <div class="stat-grid">
+                <div class="stat-item"><small>Design</small>The Limitless</div>
+                <div class="stat-item"><small>Cost</small>150k Stone / 40k Metal</div>
+                <div class="stat-item"><small>Upkeep</small>18k Stone / 3k Metal</div>
+                <div class="stat-item"><small>Raid Cost</small>40+ Rockets (Core)</div>
+            </div>
+        </div>
+    </section>
+
+    <section id="view-upkeep" class="view">
+        <h2>Upkeep Calc</h2>
+        <div class="card">
+            <div class="grid-2">
+                <div><label>Foundations</label><input type="number" id="uFound" value="0"></div>
+                <div><label>Walls/Floors</label><input type="number" id="uWall" value="0"></div>
+            </div>
+            <label>Material Tier</label>
+            <select id="uTier"><option value="stone">Stone</option><option value="metal">Sheet Metal</option><option value="hqm">Armored</option></select>
+            <button class="action-btn btn-build" onclick="doUpkeep()">Calculate Daily Tax</button>
+            <div id="uRes" class="result-box" style="display:none"></div>
+        </div>
+    </section>
+
+    <section id="view-mon" class="view">
+        <h2>Monument Index</h2>
+        <div class="card">
+            <table class="mon-table" style="width:100%; border-collapse:collapse; color:#ccc; font-size:12px;">
+                <thead><tr><th style="text-align:left;">Monument</th><th>Rads</th><th>Cards</th></tr></thead>
+                <tbody>
+                    <tr><td>Oil Rig (Small)</td><td>10%</td><td>Blue, Red</td></tr>
+                    <tr><td>Launch Site</td><td>25%</td><td>Grn, Blu, Red</td></tr>
+                    <tr><td>Mil Tunnels</td><td>25%</td><td>Grn, Blu, Red</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section id="view-tea" class="view">
+        <h2>Tea Mixer</h2>
+        <div class="card">
+            <label>Goal</label><select id="tType"><option value="ore">Pure Ore Tea</option><option value="health">Pure Max Health Tea</option></select>
+            <label>Quantity</label><input type="number" id="tQty" value="1">
+            <button class="action-btn btn-farm" onclick="doTea()">Calculate Berries</button>
+            <div id="tRes" class="result-box" style="display:none"></div>
         </div>
     </section>
 
     <section id="view-gene" class="view">
         <h2>Gene Lab</h2>
         <div class="card">
-            <label>Plant A (6 Slots)</label>
-            <div class="gene-container">
-                <input class="gene-input" id="g1a" maxlength="1"><input class="gene-input" id="g2a" maxlength="1"><input class="gene-input" id="g3a" maxlength="1"><input class="gene-input" id="g4a" maxlength="1"><input class="gene-input" id="g5a" maxlength="1"><input class="gene-input" id="g6a" maxlength="1">
-            </div>
-            <label>Plant B (6 Slots)</label>
-            <div class="gene-container">
-                <input class="gene-input" id="g1b" maxlength="1"><input class="gene-input" id="g2b" maxlength="1"><input class="gene-input" id="g3b" maxlength="1"><input class="gene-input" id="g4b" maxlength="1"><input class="gene-input" id="g5b" maxlength="1"><input class="gene-input" id="g6b" maxlength="1">
-            </div>
-            <button class="action-btn btn-farm" onclick="doGene()">Predict Crossbreed</button>
-            <div id="geneRes" class="result-box" style="display:none; text-align:center; font-size:20px; letter-spacing:5px; font-weight:bold;"></div>
+            <div class="gene-container"><input class="gene-input" id="g1a" maxlength="1"><input class="gene-input" id="g2a" maxlength="1"><input class="gene-input" id="g3a" maxlength="1"><input class="gene-input" id="g4a" maxlength="1"><input class="gene-input" id="g5a" maxlength="1"><input class="gene-input" id="g6a" maxlength="1"></div>
+            <div class="gene-container"><input class="gene-input" id="g1b" maxlength="1"><input class="gene-input" id="g2b" maxlength="1"><input class="gene-input" id="g3b" maxlength="1"><input class="gene-input" id="g4b" maxlength="1"><input class="gene-input" id="g5b" maxlength="1"><input class="gene-input" id="g6b" maxlength="1"></div>
+            <button class="action-btn btn-farm" onclick="doGene()">Predict</button>
+            <div id="geneRes" class="result-box" style="display:none; text-align:center;"></div>
         </div>
     </section>
 
@@ -296,7 +349,7 @@ button.action-btn {
                 <div class="t-btn" id="modeGP" onclick="setSMode('gp')">I need GP</div>
             </div>
             <div class="grid-2">
-                <div><label>Safe Zone Recycler?</label><select id="sgSafe"><option value="no">No (100% Yield)</option><option value="yes">Yes (80% Yield)</option></select></div>
+                <div><label>Safe Zone</label><select id="sgSafe"><option value="no">No (100%)</option><option value="yes">Yes (80%)</option></select></div>
                 <div><label>Smoke Price</label><input type="number" id="sgPrice" value="5"></div>
             </div>
             <label id="sgLabel">Scrap Amount</label>
@@ -328,220 +381,52 @@ button.action-btn {
     <section id="view-smelt" class="view">
         <h2>Smelting</h2>
         <div class="card">
-            <label>Furnace</label>
-            <select id="sFurn"><option value="small">Small Furnace</option><option value="large">Large Furnace</option></select>
-            <div class="grid-2">
-                <div><label>Metal Ore</label><input type="number" id="sMet" value="0"></div>
-                <div><label>Sulfur Ore</label><input type="number" id="sSul" value="0"></div>
-            </div>
+            <label>Furnace</label><select id="sFurn"><option value="small">Small Furnace</option><option value="large">Large Furnace</option></select>
+            <div class="grid-2"><div><label>Metal Ore</label><input type="number" id="sMet" value="0"></div><div><label>Sulfur Ore</label><input type="number" id="sSul" value="0"></div></div>
             <button class="action-btn btn-ind" onclick="doSmelt()">Calculate Wood</button>
             <div id="sRes" class="result-box" style="display:none"></div>
         </div>
     </section>
 
-    <section id="view-diesel" class="view">
-        <h2>Diesel</h2>
-        <div class="card"><label>Barrels</label><input type="number" id="dBar" value="1"><button class="action-btn btn-ind" onclick="doDiesel()">Calc Yield</button><div id="dRes" class="result-box" style="display:none"></div></div>
-    </section>
+    <section id="view-diesel" class="view"><h2>Diesel</h2><div class="card"><label>Barrels</label><input type="number" id="dBar" value="1"><button class="action-btn btn-ind" onclick="doDiesel()">Calc Yield</button><div id="dRes" class="result-box" style="display:none"></div></div></section>
 
-    <section id="view-flight" class="view">
-        <h2>Flight</h2>
-        <div class="card"><label>Low Grade</label><input type="number" id="fFuel" value="100"><button class="action-btn btn-ind" onclick="doFlight()">Calc Time</button><div id="fRes" class="result-box" style="display:none"></div></div>
-    </section>
+    <section id="view-flight" class="view"><h2>Flight</h2><div class="card"><label>Low Grade</label><input type="number" id="fFuel" value="100"><button class="action-btn btn-ind" onclick="doFlight()">Calc Time</button><div id="fRes" class="result-box" style="display:none"></div></div></section>
+    
+    <section id="view-nodes" class="view"><h2>Nodes</h2><div class="card"><label>Goal</label><input type="number" id="nNeed" value="1000"><button class="action-btn btn-farm" onclick="doNodes()">Calc</button><div id="nRes" class="result-box" style="display:none"></div></div></section>
 
 </div>
 
 <script>
-/* GLOBAL STATE */
-let sMode = 'scrap'; 
-let eMode = 'fresh';
+let sMode='scrap', eMode='fresh';
+function setE(m){eMode=m; document.getElementById('eFresh').classList.toggle('active',m=='fresh'); document.getElementById('eRefill').classList.toggle('active',m=='refill');}
+function setSMode(m){sMode=m; document.getElementById('modeScrap').classList.toggle('active',m=='scrap'); document.getElementById('modeGP').classList.toggle('active',m=='gp'); document.getElementById('sgLabel').innerText=m=='scrap'?'Have Scrap':'Need Gunpowder';}
+function toggleModal(s){document.getElementById('patchModal').style.display=s?'flex':'none';}
+function toggleMenu(s){document.getElementById('navOverlay').style.display=s?'flex':'none';}
+function sv(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById('view-'+id).classList.add('active');toggleMenu(false);window.scrollTo(0,0);}
 
-function setE(m) { eMode=m; document.getElementById('eFresh').classList.toggle('active',m=='fresh'); document.getElementById('eRefill').classList.toggle('active',m=='refill'); }
-function setSMode(m) { sMode=m; document.getElementById('modeScrap').classList.toggle('active',m=='scrap'); document.getElementById('modeGP').classList.toggle('active',m=='gp'); document.getElementById('sgLabel').innerText = m=='scrap'?'Have Scrap':'Need Gunpowder'; }
-function toggleModal(s) { document.getElementById('patchModal').style.display=s?'flex':'none'; }
-function toggleMenu(s) { document.getElementById('navOverlay').style.display=s?'flex':'none'; }
-function sv(id) { document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); document.getElementById('view-'+id).classList.add('active'); toggleMenu(false); window.scrollTo(0,0); }
-
-/* --- LOGIC ENGINES --- */
-
-function doGene() {
-    // Logic: W and X are dominant (1.0), G, Y, H are recessive (0.6).
-    // Simple mock logic for UI demonstration
-    let res = "";
-    for(let i=1; i<=6; i++) {
-        let g1 = document.getElementById(`g${i}a`).value.toUpperCase();
-        let g2 = document.getElementById(`g${i}b`).value.toUpperCase();
-        // Priority logic (Simulated)
-        if(g1 === 'W' || g2 === 'W') res += "W";
-        else if(g1 === 'X' || g2 === 'X') res += "X";
-        else if(g1 && !g2) res += g1;
-        else if(!g1 && g2) res += g2;
-        else res += (g1 || "?");
-    }
-    document.getElementById('geneRes').style.display='block';
-    document.getElementById('geneRes').innerText = res || "ENTER GENES";
+function doTea(){const q=+document.getElementById('tQty').value; document.getElementById('tRes').style.display='block'; document.getElementById('tRes').innerHTML=`<div class="res-row"><span>Berries</span><b>${q*64}</b></div>`;}
+function doUpkeep(){const t=document.getElementById('uTier').value; const n=+document.getElementById('uFound').value+ +document.getElementById('uWall').value; document.getElementById('uRes').style.display='block'; document.getElementById('uRes').innerHTML=`<div class="res-row"><span>Daily</span><b>${Math.ceil(n*(t=='hqm'?3:50))} ${t.toUpperCase()}</b></div>`;}
+function doGene(){let r=""; for(let i=1;i<=6;i++){let g1=document.getElementById(`g${i}a`).value.toUpperCase();let g2=document.getElementById(`g${i}b`).value.toUpperCase(); r+=(g1=='W'||g2=='W'?'W':(g1=='X'||g2=='X'?'X':(g1||g2||'?'))); } document.getElementById('geneRes').style.display='block'; document.getElementById('geneRes').innerText=r;}
+function doScrapGP(){const v=+document.getElementById('sgInput').value, p=+document.getElementById('sgPrice').value, s=document.getElementById('sgSafe').value=='yes'?14:18; let h=''; if(sMode=='scrap'){h=`<div class="res-row"><span>Smokes</span><b>${Math.floor(v/p)}</b></div><div class="res-row"><span>GP</span><b>${Math.floor(v/p)*s}</b></div>`;}else{h=`<div class="res-row"><span>Smokes</span><b>${Math.ceil(v/s)}</b></div><div class="res-row"><span>Scrap</span><b>${Math.ceil(v/s)*p}</b></div>`;} document.getElementById('sgRes').style.display='block'; document.getElementById('sgRes').innerHTML=h;}
+function doRecycle(){const m=+document.getElementById('recSafe').value, v={gear:{c:10,s:13},spring:{c:10,s:1},sheet:{c:8,s:0},pipe:{c:5,s:1},semi:{c:15,s:2},tech:{c:20,s:3},smlBat:{c:3,s:1},medBat:{c:7,s:2}}; let sc=0,hq=0; sc+=(+document.getElementById('rGear').value||0)*v.gear.c; hq+=(+document.getElementById('rGear').value||0)*v.gear.s; sc+=(+document.getElementById('rSpring').value||0)*v.spring.c; sc+=(+document.getElementById('rSheet').value||0)*v.sheet.c; sc+=(+document.getElementById('rTech').value||0)*v.tech.c; hq+=(+document.getElementById('rTech').value||0)*v.tech.s; sc=Math.floor(sc*m); hq=Math.floor(hq*m); document.getElementById('recRes').style.display='block'; document.getElementById('recRes').innerHTML=`<div class="res-row"><span>Scrap</span><b>${sc}</b></div><div class="res-row"><span>HQM</span><b>${hq}</b></div>`;}
+function doCraft(){const q=+document.getElementById('cQty').value,i=document.getElementById('cItem').value,m=document.getElementById('cMethod').value; let r={s:0,c:0,m:0,lg:0,p:0,t:0,cl:0}; if(i=='rocket'){r={s:1400,c:1950,m:100,p:2,lg:30};} if(i=='c4'){r={s:2200,c:3000,m:200,t:2,lg:60,cl:5};} if(i=='satchel'){r={s:480,c:720,m:80,cl:15};} if(i=='beancan'){r={s:120,c:180,m:20};} if(i=='ammo'){r={s:25,c:30,m:10};} if(m=='mix')r.c*=0.7; let h=`<div class="res-row"><span>Sulfur</span><b>${(r.s*q).toLocaleString()}</b></div><div class="res-row"><span>Charcoal</span><b>${Math.floor(r.c*q).toLocaleString()}</b></div><div class="res-row"><span>Metal</span><b>${(r.m*q).toLocaleString()}</b></div>`; if(r.p)h+=`<div class="res-row"><span>Pipes</span><b>${r.p*q}</b></div>`; if(r.t)h+=`<div class="res-row"><span>Tech</span><b>${r.t*q}</b></div>`; if(r.lg)h+=`<div class="res-row"><span>LGF</span><b>${r.lg*q}</b></div>`; if(r.cl)h+=`<div class="res-row"><span>Cloth</span><b>${r.cl*q}</b></div>`; document.getElementById('craftRes').style.display='block'; document.getElementById('craftRes').innerHTML=h;}
+function doCompare(){
+    const getC=(i,q)=>{let x={s:0,c:0,m:0,lg:0,p:0,t:0,cl:0,w:0,d:0}; if(i=='rocket'){x={s:1400,c:1950,m:100,p:2,lg:30,w:350,d:350};} if(i=='c4'){x={s:2200,c:3000,m:200,t:2,lg:60,cl:5,w:2750,d:2750};} if(i=='satchel'){x={s:480,c:720,m:80,cl:15,w:435,d:435};} if(i=='beancan'){x={s:120,c:180,m:20,w:115,d:115};} if(i=='ammo'){x={s:25,c:30,m:10,w:13,d:25};} return {s:x.s*q, c:x.c*q, m:x.m*q, lg:x.lg*q, p:x.p*q, w:x.w*q, d:x.d*q};};
+    const A=getC(document.getElementById('compA').value,+document.getElementById('amtA').value);
+    const B=getC(document.getElementById('compB').value,+document.getElementById('amtB').value);
+    const dS=A.s-B.s, dC=A.c-B.c, dM=A.m-B.m, dL=A.lg-B.lg, dW=A.w-B.w, dD=A.d-B.d;
+    let h=`<div class="res-row"><span>Sulfur Diff</span><b class="${dS>0?'diff-bad':'diff-good'}">${dS>0?'+':''}${dS}</b></div>`;
+    h+=`<div class="res-row"><span>Charcoal Diff</span><b>${dC}</b></div><div class="res-row"><span>Metal Diff</span><b>${dM}</b></div>`;
+    if(dL!=0)h+=`<div class="res-row"><span>Fuel Diff</span><b>${dL}</b></div>`;
+    h+=`<hr style="border:0;border-top:1px dashed #333;margin:10px 0;"><div class="res-row"><span>Wall Dmg Diff</span><b>${dW}</b></div><div class="res-row"><span>Door Dmg Diff</span><b>${dD}</b></div>`;
+    document.getElementById('compRes').style.display='block'; document.getElementById('compRes').innerHTML=h;
 }
-
-function doScrapGP() {
-    const val = +document.getElementById('sgInput').value;
-    const price = +document.getElementById('sgPrice').value;
-    const safe = document.getElementById('sgSafe').value === 'yes';
-    const yieldPerSmoke = safe ? 14 : 18; // 18 GP normally, ~14 if taxed/safe zone penalty applied
-    
-    let resHtml = "";
-    if(sMode === 'scrap') {
-        // Have Scrap -> Buy Smokes -> Recycle
-        const smokes = Math.floor(val / price);
-        const gp = smokes * yieldPerSmoke;
-        resHtml = `<div class="res-row"><span>Buy Smokes</span><b>${smokes}</b></div><div class="res-row"><span>Total GP</span><b>${gp}</b></div>`;
-    } else {
-        // Need GP -> How many smokes -> How much scrap
-        const smokes = Math.ceil(val / yieldPerSmoke);
-        const scrap = smokes * price;
-        resHtml = `<div class="res-row"><span>Buy Smokes</span><b>${smokes}</b></div><div class="res-row"><span>Scrap Cost</span><b>${scrap}</b></div>`;
-    }
-    document.getElementById('sgRes').style.display='block';
-    document.getElementById('sgRes').innerHTML = resHtml;
-}
-
-function doRecycle() {
-    const multi = +document.getElementById('recSafe').value;
-    // Yields
-    const vals = {
-        gear: {c:10, s:13}, spring: {c:10, s:1}, sheet: {c:8, s:0}, pipe: {c:5, s:1},
-        semi: {c:15, s:2}, tech: {c:20, s:3}, smlBat: {c:3, s:1}, medBat: {c:7, s:2}
-    };
-    
-    let sc = 0; let hq = 0;
-    
-    sc += (+document.getElementById('rGear').value||0)*vals.gear.c;
-    hq += (+document.getElementById('rGear').value||0)*vals.gear.s;
-    sc += (+document.getElementById('rSpring').value||0)*vals.spring.c;
-    sc += (+document.getElementById('rSheet').value||0)*vals.sheet.c;
-    sc += (+document.getElementById('rTech').value||0)*vals.tech.c;
-    hq += (+document.getElementById('rTech').value||0)*vals.tech.s;
-    
-    // Apply safe zone tax
-    sc = Math.floor(sc * multi);
-    hq = Math.floor(hq * multi);
-
-    document.getElementById('recRes').style.display='block';
-    document.getElementById('recRes').innerHTML = `<div class="res-row"><span>Scrap</span><b>${sc}</b></div><div class="res-row"><span>HQM</span><b>${hq}</b></div>`;
-}
-
-function doCraft() {
-    const q = +document.getElementById('cQty').value;
-    const i = document.getElementById('cItem').value;
-    const m = document.getElementById('cMethod').value;
-    
-    let r = {s:0, c:0, m:0, lg:0, p:0, t:0};
-    if(i==='rocket') { r.s=1400; r.c=1950; r.m=100; r.p=2; r.lg=30; }
-    if(i==='c4') { r.s=2200; r.c=3000; r.m=200; r.t=2; r.lg=60; }
-    if(i==='satchel') { r.s=480; r.c=720; r.m=80; r.r=1; }
-    if(i==='beancan') { r.s=120; r.c=180; r.m=20; }
-    if(i==='ammo') { r.s=25; r.c=30; r.m=10; }
-
-    if(m==='mix') r.c *= 0.7; // Mix table
-
-    let html = `<div class="res-row"><span>Sulfur</span><b>${(r.s*q).toLocaleString()}</b></div>
-                <div class="res-row"><span>Charcoal</span><b>${Math.floor(r.c*q).toLocaleString()}</b></div>
-                <div class="res-row"><span>Metal</span><b>${(r.m*q).toLocaleString()}</b></div>`;
-    
-    if(r.p>0) html+=`<div class="res-row"><span>Pipes</span><b>${r.p*q}</b></div>`;
-    if(r.t>0) html+=`<div class="res-row"><span>Tech Trash</span><b>${r.t*q}</b></div>`;
-    if(r.lg>0) html+=`<div class="res-row"><span>Low Grade</span><b>${r.lg*q}</b></div>`;
-
-    document.getElementById('craftRes').style.display='block';
-    document.getElementById('craftRes').innerHTML = html;
-}
-
-function doCompare() {
-    // Helper to get cost obj
-    const getC = (i, q) => {
-        let x = {s:0, c:0, damageWall:0, damageDoor:0};
-        if(i=='rocket'){x.s=1400; x.damageWall=350; x.damageDoor=350;}
-        if(i=='c4'){x.s=2200; x.damageWall=2750; x.damageDoor=2750;}
-        if(i=='satchel'){x.s=480; x.damageWall=435; x.damageDoor=435;}
-        if(i=='ammo'){x.s=25; x.damageWall=13; x.damageDoor=25;} // Exp ammo varies significantly
-        return {s:x.s*q, w:x.damageWall*q, d:x.damageDoor*q};
-    };
-
-    const iA = document.getElementById('compA').value;
-    const qA = +document.getElementById('amtA').value;
-    const iB = document.getElementById('compB').value;
-    const qB = +document.getElementById('amtB').value;
-
-    const A = getC(iA, qA);
-    const B = getC(iB, qB);
-
-    const diffS = A.s - B.s;
-    const diffW = A.w - B.w;
-    
-    let html = `<div class="res-row"><span>Sulfur Diff</span><b class="${diffS>0?'diff-bad':'diff-good'}">${diffS>0?'+':''}${diffS}</b></div>
-                <div class="res-row"><span>Wall Dmg Diff</span><b>${diffW}</b></div>
-                <div style="font-size:10px; color:#666; margin-top:5px;">Comparing ${qA} ${iA} vs ${qB} ${iB}</div>`;
-    
-    document.getElementById('compRes').style.display='block';
-    document.getElementById('compRes').innerHTML = html;
-}
-
-function doRaid() {
-    const t = document.getElementById('rTar').value;
-    const a = document.getElementById('rAmmo').value;
-    
-    // Direct Hit Meta
-    const table = {
-        stone: {rocket:4, c4:2, satchel:10, beancan:46, ammo:185},
-        metal: {rocket:8, c4:4, satchel:23, beancan:112, ammo:400},
-        armored: {rocket:15, c4:8, satchel:46, beancan:223, ammo:799},
-        garage: {rocket:3, c4:1, satchel:9, beancan:42, ammo:150},
-        sheet_door: {rocket:1, c4:1, satchel:4, beancan:18, ammo:63}, // Rocket splashes usually kill sheet doors in 1-2
-        high_stone: {rocket:4, c4:2, satchel:10, beancan:46, ammo:185}
-    };
-    
-    const n = table[t][a] || "?";
-    document.getElementById('rRes').style.display='block';
-    document.getElementById('rRes').innerHTML = `<div class="res-row"><span>Required</span><b>${n} ${a.toUpperCase()}s</b></div>`;
-}
-
-function doEco() {
-    const t = document.getElementById('eTar').value;
-    const tl = document.getElementById('eTool').value;
-    
-    // Meta quantities
-    const meta = {
-        stone: {spear:23, jack:1.2, pick:7, salv_hammer:20, sword:56, hatchet:120},
-        wood: {spear:2, jack:0.1, pick:0.5, salv_hammer:0.5, sword:0.5, hatchet:1}
-    };
-    
-    let n = (meta[t] && meta[t][tl]) ? meta[t][tl] : "N/A (Immune)";
-    document.getElementById('eRes').style.display='block';
-    document.getElementById('eRes').innerHTML = `<div class="res-row"><span>Count</span><b>${n} ${eMode}</b></div>`;
-}
-
-function doSmelt() {
-    const m = +document.getElementById('sMet').value;
-    const s = +document.getElementById('sSul').value;
-    const type = document.getElementById('sFurn').value;
-    
-    const rate = (type==='large') ? 1 : 1.6; // Large furnace is more efficient on wood per ore
-    const wood = Math.ceil((m+s)*rate);
-    
-    document.getElementById('sRes').style.display='block';
-    document.getElementById('sRes').innerHTML = `<div class="res-row"><span>Wood Needed</span><b>${wood.toLocaleString()}</b></div>`;
-}
-
-function doDiesel() {
-    const b = +document.getElementById('dBar').value;
-    document.getElementById('dRes').style.display='block';
-    document.getElementById('dRes').innerHTML=`<div class="res-row"><span>Sulfur</span><b>${(b*2000).toLocaleString()}</b></div><div class="res-row"><span>HQM</span><b>${(b*100).toLocaleString()}</b></div>`;
-}
-
-function doFlight() {
-    const f = +document.getElementById('fFuel').value;
-    document.getElementById('fRes').style.display='block';
-    document.getElementById('fRes').innerHTML = `<div class="res-row"><span>Mini Airtime</span><b>${(f/30).toFixed(1)} mins</b></div>`;
-}
+function doRaid(){const t=document.getElementById('rTar').value,a=document.getElementById('rAmmo').value, tab={stone:{rocket:4,c4:2,satchel:10,beancan:46,ammo:185},metal:{rocket:8,c4:4,satchel:23,beancan:112,ammo:400},armored:{rocket:15,c4:8,satchel:46,beancan:223,ammo:799},garage:{rocket:3,c4:1,satchel:9,beancan:42,ammo:150},sheet_door:{rocket:1,c4:1,satchel:4,beancan:18,ammo:63}}; document.getElementById('rRes').style.display='block'; document.getElementById('rRes').innerHTML=`<div class="res-row"><span>Required</span><b>${tab[t][a]} ${a.toUpperCase()}s</b></div>`;}
+function doEco(){const t=document.getElementById('eTar').value,tl=document.getElementById('eTool').value, tab={stone:{spear:23,jack:1.2,pick:7,salv_hammer:20},wood:{spear:2,jack:0.1,pick:0.5,salv_hammer:0.5}}; document.getElementById('eRes').style.display='block'; document.getElementById('eRes').innerHTML=`<div class="res-row"><span>Count</span><b>${(tab[t][tl]||'N/A')} ${eMode}</b></div>`;}
+function doSmelt(){const w=Math.ceil((+document.getElementById('sMet').value+ +document.getElementById('sSul').value)*(document.getElementById('sFurn').value=='large'?1:1.6)); document.getElementById('sRes').style.display='block'; document.getElementById('sRes').innerHTML=`<div class="res-row"><span>Wood</span><b>${w}</b></div>`;}
+function doDiesel(){document.getElementById('dRes').style.display='block';document.getElementById('dRes').innerHTML=`<div class="res-row"><span>Sulfur</span><b>${+document.getElementById('dBar').value*2000}</b></div>`;}
+function doFlight(){document.getElementById('fRes').style.display='block';document.getElementById('fRes').innerHTML=`<div class="res-row"><span>Mins</span><b>${(+document.getElementById('fFuel').value/30).toFixed(1)}</b></div>`;}
+function doNodes(){document.getElementById('nRes').style.display='block';document.getElementById('nRes').innerHTML=`<div class="res-row"><span>Nodes</span><b>${Math.ceil(+document.getElementById('nNeed').value/300)}</b></div>`;}
 </script>
 </body>
 </html>
