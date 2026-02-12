@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rust Labs: Command Center 2026</title>
+<title>Rust Labs: Command Center v1.2</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
 <style>
 /* --- CORE VARIABLES --- */
@@ -43,10 +43,11 @@ body {
 
 .brand {
     font-family: 'Oswald', sans-serif; font-size: 24px; color: #fff;
-    text-transform: uppercase; letter-spacing: 2px; margin-bottom: 30px;
+    text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px;
     display: flex; align-items: center; gap: 10px;
 }
 .brand span { color: var(--c-raid); }
+.version { font-size: 10px; color: #666; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px; }
 
 .nav-header {
     font-size: 11px; font-weight: 800; text-transform: uppercase;
@@ -129,6 +130,13 @@ button:active { transform: scale(0.98); }
 .row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; color: #ccc; }
 .row strong { color: #fff; }
 
+/* Comparison Table */
+.comp-table { width: 100%; border-collapse: collapse; font-size: 14px; color: #ccc; }
+.comp-table th { text-align: left; padding-bottom: 10px; color: #666; font-size: 12px; text-transform: uppercase; }
+.comp-table td { padding: 8px 0; border-bottom: 1px solid #222; }
+.diff-good { color: var(--c-farm); font-weight: bold; }
+.diff-bad { color: var(--c-raid); font-weight: bold; }
+
 /* Eco Recommendation Banner */
 .eco-rec {
     background: rgba(255, 255, 255, 0.05); border-left: 3px solid #fff;
@@ -149,21 +157,23 @@ button:active { transform: scale(0.98); }
 .wire { flex: 1; height: 2px; background: #555; position: relative; }
 .wire::after { content: '⚡'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); font-size: 10px; }
 
-/* Blueprints (Visual Grid) */
+/* Blueprints (Visual Grid - Updated Logic) */
 .bp-container {
     background: #111; padding: 20px; border-radius: 8px; border: 1px solid #333;
     display: flex; flex-direction: column; align-items: center; gap: 10px;
 }
 .bp-grid {
-    display: grid; grid-template-columns: repeat(4, 40px); grid-template-rows: repeat(4, 40px); gap: 2px;
+    display: grid; gap: 4px; /* Space between blocks */
 }
 .bp-cell {
-    width: 40px; height: 40px; border-radius: 2px; display: grid; place-items: center;
-    font-size: 9px; font-weight: bold; color: rgba(255,255,255,0.5); text-transform: uppercase;
+    width: 50px; height: 50px; border-radius: 4px; display: grid; place-items: center;
+    font-size: 9px; font-weight: bold; text-transform: uppercase; position: relative;
 }
-.cell-core { background: #5352ed; color: #fff; border: 1px solid #7070ff; }
-.cell-honey { background: #34495e; color: #ccc; border: 1px dashed #555; }
-.cell-air { background: #27ae60; color: #fff; border: 1px solid #2ecc71; }
+/* Visual Types */
+.cell-core { background: #5352ed; color: #fff; border: 2px solid #fff; }
+.cell-honey { background: #7f8c8d; color: #000; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); width: 50px; height: 40px; margin-top: 5px; } /* Triangle approx */
+.cell-honey-sq { background: #7f8c8d; color: #000; }
+.cell-air { background: #2ecc71; color: #000; border: 1px dashed #fff; }
 .cell-empty { background: transparent; }
 
 .bp-legend { display: flex; gap: 15px; font-size: 12px; color: #888; margin-top: 10px; }
@@ -199,9 +209,11 @@ button:active { transform: scale(0.98); }
 
 <nav class="sidebar">
     <div class="brand">☢ Rust<span>Labs</span></div>
+    <div class="version">Version 1.2</div>
 
     <div class="nav-header">Combat</div>
-    <div class="nav-item active" data-theme="raid" onclick="setView('raid')">💣 Explosives Calc</div>
+    <div class="nav-item active" data-theme="raid" onclick="setView('craft')">💣 Crafting Calc</div>
+    <div class="nav-item" data-theme="raid" onclick="setView('raid')">💥 Explosive Raids</div>
     <div class="nav-item" data-theme="raid" onclick="setView('eco')">🔨 Eco Raiding</div>
     <div class="nav-item" data-theme="raid" onclick="setView('compare')">⚖️ Full Compare</div>
 
@@ -224,10 +236,40 @@ button:active { transform: scale(0.98); }
 
 <main class="main">
 
-    <div id="view-raid" class="view active" data-theme="raid">
-        <header><h2 style="color:var(--c-raid)">Explosives Calculator</h2><p class="subtitle">Accurate 2026 Mix & Craft Costs</p></header>
+    <div id="view-craft" class="view active" data-theme="raid">
+        <header><h2 style="color:var(--c-raid)">Crafting Calculator</h2><p class="subtitle">Calculate raw resources for crafting batches.</p></header>
         <div class="card">
-            <h3>💥 Raid Cost</h3>
+            <h3>🏭 Production Cost</h3>
+            <div class="grid-2">
+                <div>
+                    <label>Item to Craft</label>
+                    <select id="craftItem">
+                        <option value="rocket">Rocket</option>
+                        <option value="c4">C4</option>
+                        <option value="satchel">Satchel Charge</option>
+                        <option value="beancan">Beancan Grenade</option>
+                        <option value="ammo">Explosive Ammo</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Quantity to Craft</label>
+                    <input type="number" id="craftQty" value="1">
+                </div>
+            </div>
+            <label>Gunpowder Method</label>
+            <select id="craftMethod">
+                <option value="mix">Mixing Table (Cheaper Charcoal)</option>
+                <option value="inv">Hand Crafted (Expensive)</option>
+            </select>
+            <button class="btn-raid" onclick="calcCraft()">Calculate Raw Materials</button>
+            <div id="craftRes" class="result-box" style="display:none"></div>
+        </div>
+    </div>
+
+    <div id="view-raid" class="view" data-theme="raid">
+        <header><h2 style="color:var(--c-raid)">Explosive Raids</h2><p class="subtitle">Calculate rockets needed to break a target.</p></header>
+        <div class="card">
+            <h3>💥 Raid Math</h3>
             <div class="grid-2">
                 <div>
                     <label>Target</label>
@@ -238,10 +280,11 @@ button:active { transform: scale(0.98); }
                         <option value="door.sheet">Sheet Metal Door</option>
                         <option value="door.garage">Garage Door</option>
                         <option value="door.armored">Armored Door</option>
+                        <option value="window.reinforced">Reinforced Window</option>
                     </select>
                 </div>
                 <div>
-                    <label>Explosive</label>
+                    <label>Ammo Type</label>
                     <select id="raidAmmo">
                         <option value="rocket">Rocket</option>
                         <option value="c4">C4</option>
@@ -250,11 +293,10 @@ button:active { transform: scale(0.98); }
                     </select>
                 </div>
             </div>
-            <div class="grid-2">
-                <div><label>Quantity of Targets</label><input type="number" id="raidQty" value="1"></div>
-                <div><label>Crafting</label><select id="raidMethod"><option value="mix">Mixing Table</option><option value="inv">Hand Crafted</option></select></div>
-            </div>
-            <button class="btn-raid" onclick="calcRaid()">Calculate Sulfur</button>
+            <label>Number of Targets</label>
+            <input type="number" id="raidCount" value="1">
+            
+            <button class="btn-raid" onclick="calcRaid()">Calculate Boom Needed</button>
             <div id="raidRes" class="result-box" style="display:none"></div>
         </div>
     </div>
@@ -318,13 +360,13 @@ button:active { transform: scale(0.98); }
     </div>
 
     <div id="view-footprint" class="view" data-theme="build">
-        <header><h2 style="color:var(--c-build)">Footprint Guide</h2><p class="subtitle">Expansion Logic</p></header>
+        <header><h2 style="color:var(--c-build)">Footprint Guide</h2><p class="subtitle">Visual Expansion Diagrams</p></header>
         <div class="card">
             <h3>🏠 Select Starter</h3>
             <label>Current Base Shape</label>
             <select id="baseShape" onchange="renderFootprint()">
-                <option value="2x1">Standard 2x1</option>
-                <option value="2x2">Standard 2x2</option>
+                <option value="2x1">Standard 2x1 (Solo/Duo)</option>
+                <option value="2x2">Standard 2x2 (Group)</option>
                 <option value="1x1">1x1 Solo</option>
             </select>
             
@@ -481,48 +523,69 @@ function setEcoMode(mode) {
     document.getElementById('modeRefill').classList.toggle('active', mode === 'refill');
 }
 
-/* --- LOGIC: RAID --- */
-function calcRaid() {
-    const t = document.getElementById('raidTarget').value;
-    const a = document.getElementById('raidAmmo').value;
-    const q = +document.getElementById('raidQty').value;
-    const m = document.getElementById('raidMethod').value;
-    
-    // HP & Damage
-    const hp = {
-        'wall.stone': 500, 'wall.metal': 1000, 'wall.armored': 2000,
-        'door.sheet': 250, 'door.garage': 600, 'door.armored': 1000
-    };
-    const dmg = { rocket: 350, c4: 2750, satchel: 435, ammo: 12 }; 
-    
-    const getCostPerItem = (type) => {
-        if(type==='rocket') return {s:1400, c:1950, f:100, p:2, tech:0, fuel:30};
-        if(type==='c4') return {s:2200, c:3000, f:200, p:0, tech:2, fuel:60};
-        if(type==='satchel') return {s:480, c:720, f:80, p:0, tech:0, fuel:0};
-        if(type==='ammo') return {s:25, c:30, f:10, p:0, tech:0, fuel:0};
+/* --- 1. CRAFTING CALCULATOR (RESOURCES) --- */
+function calcCraft() {
+    const type = document.getElementById('craftItem').value;
+    const qty = +document.getElementById('craftQty').value;
+    const method = document.getElementById('craftMethod').value;
+
+    const getCostPerItem = (t) => {
+        if(t==='rocket') return {s:1400, c:1950, f:100, p:2, tech:0, fuel:30};
+        if(t==='c4') return {s:2200, c:3000, f:200, p:0, tech:2, fuel:60};
+        if(t==='satchel') return {s:480, c:720, f:80, p:0, tech:0, fuel:0};
+        if(t==='beancan') return {s:120, c:180, f:20, p:0, tech:0, fuel:0};
+        if(t==='ammo') return {s:25, c:30, f:10, p:0, tech:0, fuel:0};
     };
 
-    const hits = Math.ceil(hp[t] / dmg[a]);
-    const totalAmmo = hits * q;
-    const baseCost = getCostPerItem(a);
-    
-    let s = baseCost.s * totalAmmo;
-    let c = baseCost.c * totalAmmo;
-    let f = baseCost.f * totalAmmo;
+    const base = getCostPerItem(type);
+    let s = base.s * qty;
+    let c = base.c * qty;
+    let f = base.f * qty;
 
-    if(m === 'mix') c = c * 0.7; // Mixing table reduces charcoal need
+    if(method === 'mix') c = c * 0.7; // Charcoal discount
 
-    document.getElementById('raidRes').style.display = 'block';
-    document.getElementById('raidRes').innerHTML = `
-        <div class="row"><span>Total Ammo</span> <strong>${totalAmmo} ${a.toUpperCase()}s</strong></div>
+    document.getElementById('craftRes').style.display = 'block';
+    document.getElementById('craftRes').innerHTML = `
         <div class="row"><span>Sulfur</span> <strong style="color:#ff4757">${s.toLocaleString()}</strong></div>
         <div class="row"><span>Charcoal</span> <strong>${Math.floor(c).toLocaleString()}</strong></div>
         <div class="row"><span>Metal Frags</span> <strong>${f.toLocaleString()}</strong></div>
-        ${baseCost.p > 0 ? `<div class="row"><span>Pipes</span> <strong>${baseCost.p * totalAmmo}</strong></div>` : ''}
+        ${base.p > 0 ? `<div class="row"><span>Pipes</span> <strong>${base.p * qty}</strong></div>` : ''}
+        ${base.tech > 0 ? `<div class="row"><span>Tech Trash</span> <strong>${base.tech * qty}</strong></div>` : ''}
+        ${base.fuel > 0 ? `<div class="row"><span>Low Grade</span> <strong>${base.fuel * qty}</strong></div>` : ''}
     `;
 }
 
-/* --- LOGIC: ECO RAID (FIXED) --- */
+/* --- 2. EXPLOSIVE RAIDS (WALLS) --- */
+function calcRaid() {
+    const target = document.getElementById('raidTarget').value;
+    const ammo = document.getElementById('raidAmmo').value;
+    const count = +document.getElementById('raidCount').value;
+
+    // Health
+    const hp = {
+        'wall.stone': 500, 'wall.metal': 1000, 'wall.armored': 2000,
+        'door.sheet': 250, 'door.garage': 600, 'door.armored': 1000, 'window.reinforced': 500
+    };
+    // Damage
+    const dmg = { rocket: 350, c4: 2750, satchel: 435, ammo: 12 };
+
+    if(!hp[target]) return;
+
+    const hitsPerTarget = Math.ceil(hp[target] / dmg[ammo]);
+    const totalAmmo = hitsPerTarget * count;
+    
+    // Sulfur Cost for Context
+    const costPerAmmo = { rocket: 1400, c4: 2200, satchel: 480, ammo: 25 };
+    const totalSulfur = totalAmmo * costPerAmmo[ammo];
+
+    document.getElementById('raidRes').style.display = 'block';
+    document.getElementById('raidRes').innerHTML = `
+        <div class="row"><span>Required</span> <strong style="font-size:18px; color:#ff4757">${totalAmmo} ${ammo.toUpperCase()}s</strong></div>
+        <div class="row"><span>Total Sulfur Cost</span> <strong>${totalSulfur.toLocaleString()}</strong></div>
+    `;
+}
+
+/* --- 3. ECO RAID (META FIX) --- */
 function updateEcoRec() {
     const t = document.getElementById('ecoTarget').value;
     const rec = document.getElementById('ecoRec');
@@ -568,7 +631,7 @@ function calcEco() {
     `;
 }
 
-/* --- LOGIC: FOOTPRINT (VISUALS) --- */
+/* --- 4. FOOTPRINT (VISUALS) --- */
 function renderFootprint() {
     const s = document.getElementById('baseShape').value;
     const c = document.getElementById('footprintContainer');
@@ -576,14 +639,15 @@ function renderFootprint() {
     
     // CSS Grid Visuals
     const core = `<div class="bp-cell cell-core">CORE</div>`;
-    const honey = `<div class="bp-cell cell-honey">HNY</div>`;
+    const honey = `<div class="bp-cell cell-honey"></div>`; // Triangles
+    const honeySq = `<div class="bp-cell cell-honey-sq"></div>`; // Squares
     const air = `<div class="bp-cell cell-air">AIR</div>`;
     const empty = `<div class="bp-cell cell-empty"></div>`;
 
     if(s === '2x1') {
         title = "2x1 Bunker Expansion";
         visual = `
-            <div class="bp-grid" style="grid-template-columns: repeat(4, 40px);">
+            <div class="bp-grid" style="grid-template-columns: repeat(4, 50px);">
                 ${empty}${honey}${honey}${empty}
                 ${honey}${core}${core}${air}
                 ${empty}${honey}${honey}${empty}
@@ -593,7 +657,7 @@ function renderFootprint() {
     } else if(s === '2x2') {
         title = "2x2 Wide Gap";
         visual = `
-            <div class="bp-grid" style="grid-template-columns: repeat(4, 40px);">
+            <div class="bp-grid" style="grid-template-columns: repeat(4, 50px);">
                 ${honey}${honey}${honey}${honey}
                 ${honey}${core}${core}${honey}
                 ${honey}${core}${core}${honey}
@@ -604,7 +668,7 @@ function renderFootprint() {
     } else if (s === '1x1') {
         title = "1x1 Starter";
         visual = `
-            <div class="bp-grid" style="grid-template-columns: repeat(3, 40px);">
+            <div class="bp-grid" style="grid-template-columns: repeat(3, 50px);">
                 ${empty}${empty}${empty}
                 ${empty}${core}${air}
                 ${empty}${empty}${empty}
@@ -615,7 +679,7 @@ function renderFootprint() {
 
     c.innerHTML = `
         <div class="row"><span>Layout</span> <strong style="color:#5352ed">${title}</strong></div>
-        <div class="bp-container">${visual} <div class="bp-legend"><span class="dot" style="background:#5352ed"></span>Core <span class="dot" style="background:#34495e"></span>Honeycomb <span class="dot" style="background:#27ae60"></span>Airlock</div></div>
+        <div class="bp-container">${visual} <div class="bp-legend"><span class="dot" style="background:#5352ed"></span>Core <span class="dot" style="background:#7f8c8d"></span>Honeycomb <span class="dot" style="background:#27ae60"></span>Airlock</div></div>
         <p style="font-size:12px; color:#aaa; margin-top:5px; line-height:1.5">${desc}</p>
     `;
 }
