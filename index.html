@@ -20,23 +20,23 @@
     --color-farm: #2ecc71;
     --color-ind: #f39c12;
     --color-surv: #3498db;
+    --color-build: #9b59b6; /* New Purple for Building */
     
-    /* Sidebar width */
     --nav-width: 260px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-    font-family: 'Inter', sans-serif; /* Clean modern font for reading */
+    font-family: 'Inter', sans-serif;
     background-color: var(--bg-dark);
     color: var(--text-main);
     display: flex;
     height: 100vh;
-    overflow: hidden; /* App-like feel */
+    overflow: hidden;
 }
 
-/* --- SIDEBAR NAVIGATION --- */
+/* --- SIDEBAR --- */
 .sidebar {
     width: var(--nav-width);
     background: #000;
@@ -45,6 +45,7 @@ body {
     flex-direction: column;
     padding: 20px;
     flex-shrink: 0;
+    overflow-y: auto; /* Scrollable sidebar if too tall */
 }
 
 .brand {
@@ -54,50 +55,33 @@ body {
     text-transform: uppercase;
     letter-spacing: 2px;
     margin-bottom: 30px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    display: flex; align-items: center; gap: 10px;
 }
 .brand span { color: var(--color-raid); }
 
 .nav-group-title {
-    font-size: 11px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 10px;
-    margin-top: 20px;
-    font-weight: 700;
-    letter-spacing: 1px;
+    font-size: 11px; text-transform: uppercase; color: var(--text-muted);
+    margin-bottom: 10px; margin-top: 20px; font-weight: 700; letter-spacing: 1px;
 }
 
 .nav-item {
-    padding: 12px 15px;
-    margin-bottom: 5px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-    color: #888;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    padding: 12px 15px; margin-bottom: 5px; border-radius: 8px;
+    cursor: pointer; font-size: 14px; font-weight: 600; color: #888;
+    transition: all 0.2s; display: flex; align-items: center; gap: 10px;
 }
-
 .nav-item:hover { background: #1a1a1a; color: #fff; }
-
 .nav-item.active { background: var(--bg-card); color: #fff; border-left: 4px solid #fff; }
+
 /* Theme Specific Active States */
 .nav-item.active[data-theme="raid"] { border-color: var(--color-raid); color: var(--color-raid); background: rgba(231, 76, 60, 0.1); }
 .nav-item.active[data-theme="farm"] { border-color: var(--color-farm); color: var(--color-farm); background: rgba(46, 204, 113, 0.1); }
 .nav-item.active[data-theme="ind"] { border-color: var(--color-ind); color: var(--color-ind); background: rgba(243, 156, 18, 0.1); }
 .nav-item.active[data-theme="surv"] { border-color: var(--color-surv); color: var(--color-surv); background: rgba(52, 152, 219, 0.1); }
+.nav-item.active[data-theme="build"] { border-color: var(--color-build); color: var(--color-build); background: rgba(155, 89, 182, 0.1); }
 
-/* --- MAIN CONTENT AREA --- */
+/* --- MAIN AREA --- */
 .main-content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 40px;
+    flex: 1; overflow-y: auto; padding: 40px;
     background: radial-gradient(circle at top right, #1a1a1a, #121212);
 }
 
@@ -106,99 +90,65 @@ body {
 
 @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
 
-/* --- HEADER --- */
-header {
-    margin-bottom: 30px;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 20px;
-}
+header { margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
 h2 { font-family: 'Oswald'; font-size: 32px; text-transform: uppercase; margin-bottom: 5px; }
 p.subtitle { color: var(--text-muted); font-size: 14px; }
 
-/* --- CARDS GRID --- */
+/* --- CARDS & GRID --- */
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 .card {
-    background: var(--bg-panel);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 25px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    background: var(--bg-panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
 }
 
-/* --- THEMED HEADERS INSIDE CARDS --- */
 .card-header { 
-    font-family: 'Oswald'; 
-    font-size: 18px; 
-    text-transform: uppercase; 
-    margin-bottom: 20px; 
-    padding-bottom: 10px;
-    border-bottom: 2px solid var(--border);
-    display: flex; justify-content: space-between;
+    font-family: 'Oswald'; font-size: 18px; text-transform: uppercase; 
+    margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--border);
 }
-/* Border Colors per theme */
-.raid-view .card-header { border-color: var(--color-raid); color: var(--color-raid); }
-.farm-view .card-header { border-color: var(--color-farm); color: var(--color-farm); }
-.ind-view .card-header { border-color: var(--color-ind); color: var(--color-ind); }
+.build-view .card-header { border-color: var(--color-build); color: var(--color-build); }
 
-/* --- FORM ELEMENTS --- */
+/* --- FORMS --- */
 label { display: block; font-size: 12px; font-weight: 600; text-transform: uppercase; color: #666; margin-bottom: 8px; margin-top: 15px; }
-input, select {
-    width: 100%;
-    background: #111;
-    border: 1px solid #333;
-    color: #fff;
-    padding: 12px;
-    border-radius: 6px;
-    font-family: 'Inter';
-    font-size: 14px;
-    outline: none;
-    transition: 0.2s;
+input, select, textarea {
+    width: 100%; background: #111; border: 1px solid #333; color: #fff;
+    padding: 12px; border-radius: 6px; font-family: 'Inter'; font-size: 14px; outline: none; transition: 0.2s;
 }
 input:focus, select:focus { border-color: #666; background: #000; }
 
 .btn-primary {
-    width: 100%;
-    margin-top: 20px;
-    padding: 14px;
-    border-radius: 8px;
-    border: none;
-    font-weight: 700;
-    text-transform: uppercase;
-    cursor: pointer;
-    font-size: 14px;
-    color: #fff;
-    transition: transform 0.1s, filter 0.2s;
+    width: 100%; margin-top: 20px; padding: 14px; border-radius: 8px; border: none;
+    font-weight: 700; text-transform: uppercase; cursor: pointer; font-size: 14px; color: #fff;
+    transition: transform 0.1s;
 }
 .btn-primary:active { transform: scale(0.98); }
 
-/* Theme Buttons */
-.btn-raid { background: var(--color-raid); box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3); }
-.btn-farm { background: var(--color-farm); box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3); }
-.btn-ind { background: var(--color-ind); box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3); }
-.btn-surv { background: var(--color-surv); box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3); }
+.btn-raid { background: var(--color-raid); }
+.btn-farm { background: var(--color-farm); }
+.btn-ind { background: var(--color-ind); }
+.btn-surv { background: var(--color-surv); }
+.btn-build { background: var(--color-build); box-shadow: 0 4px 15px rgba(155, 89, 182, 0.3); }
 
-/* --- RESULTS --- */
-.result-box {
-    margin-top: 20px;
-    background: rgba(0,0,0,0.3);
-    border-radius: 8px;
-    padding: 15px;
-    border: 1px dashed #444;
-}
+/* --- RESULTS & EXTRAS --- */
+.result-box { margin-top: 20px; background: rgba(0,0,0,0.3); border-radius: 8px; padding: 15px; border: 1px dashed #444; }
 .res-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
-.res-row span { color: #888; }
-.res-row strong { color: #fff; }
-
-/* --- GENE GRID SPECIFIC --- */
 .gene-grid { display: flex; gap: 5px; justify-content: center; margin-bottom: 10px; }
 .gene-input { width: 40px; height: 40px; text-align: center; text-transform: uppercase; font-weight: bold; font-size: 18px; border-radius: 4px; }
 
-/* --- MOBILE RESPONSIVE --- */
+/* Tutorial Steps */
+.step-list { list-style: none; counter-reset: step; }
+.step-list li { position: relative; padding-left: 40px; margin-bottom: 15px; font-size: 14px; line-height: 1.5; color: #ccc; }
+.step-list li::before {
+    content: counter(step); counter-increment: step;
+    position: absolute; left: 0; top: 0; width: 25px; height: 25px;
+    background: #333; color: #fff; border-radius: 50%; text-align: center;
+    line-height: 25px; font-weight: bold; font-size: 12px;
+}
+
+/* Mobile */
 @media (max-width: 768px) {
     body { flex-direction: column; height: auto; overflow: visible; }
     .sidebar { width: 100%; padding: 10px; overflow-x: auto; flex-direction: row; gap: 10px; border-right: none; border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 100; }
-    .nav-group-title { display: none; }
-    .brand { display: none; }
+    .nav-group-title, .brand { display: none; }
     .nav-item { padding: 8px 12px; font-size: 12px; white-space: nowrap; margin: 0; }
     .grid-2 { grid-template-columns: 1fr; }
     .main-content { padding: 20px; }
@@ -211,212 +161,179 @@ input:focus, select:focus { border-color: #666; background: #000; }
     <div class="brand">☢ Rust<span>Labs</span></div>
 
     <div class="nav-group-title">Combat Operations</div>
-    <div class="nav-item active" data-theme="raid" onclick="setView('raid')">💣 Explosives Calculator</div>
-    <div class="nav-item" data-theme="raid" onclick="setView('compare')">⚖️ Cost Comparison</div>
+    <div class="nav-item active" data-theme="raid" onclick="setView('raid')">💣 Explosives Calc</div>
+    <div class="nav-item" data-theme="raid" onclick="setView('compare')">⚖️ Cost Compare</div>
     <div class="nav-item" data-theme="raid" onclick="setView('eco')">🔨 Eco Raiding</div>
 
-    <div class="nav-group-title">Nature & Genetics</div>
-    <div class="nav-item" data-theme="farm" onclick="setView('gene')">🧬 Gene Laboratory</div>
-    <div class="nav-item" data-theme="farm" onclick="setView('berry')">🫐 Farm Yields</div>
-    <div class="nav-item" data-theme="farm" onclick="setView('nodes')">⛏ Node Calculator</div>
+    <div class="nav-group-title">Construction & Map</div>
+    <div class="nav-item" data-theme="build" onclick="setView('footprint')">📐 Footprint Guide</div>
+    <div class="nav-item" data-theme="build" onclick="setView('defense')">⚡ Defense/Alarms</div>
+    <div class="nav-item" data-theme="build" onclick="setView('map')">🗺️ Map Analyst</div>
 
-    <div class="nav-group-title">Industry & Survival</div>
-    <div class="nav-item" data-theme="ind" onclick="setView('diesel')">⛽ Diesel & Fuel</div>
-    <div class="nav-item" data-theme="ind" onclick="setView('recycle')">♻ Recycler Output</div>
+    <div class="nav-group-title">Nature & Genetics</div>
+    <div class="nav-item" data-theme="farm" onclick="setView('gene')">🧬 Gene Lab</div>
+    <div class="nav-item" data-theme="farm" onclick="setView('berry')">🫐 Farm Yields</div>
+    <div class="nav-item" data-theme="farm" onclick="setView('nodes')">⛏ Nodes</div>
+
+    <div class="nav-group-title">Industry</div>
+    <div class="nav-item" data-theme="ind" onclick="setView('diesel')">⛽ Diesel/Fuel</div>
+    <div class="nav-item" data-theme="ind" onclick="setView('recycle')">♻ Recycler</div>
     <div class="nav-item" data-theme="surv" onclick="setView('flight')">🚁 Flight Logistics</div>
-    <div class="nav-item" data-theme="surv" onclick="setView('scrapgp')">🔩 Scrap to GP</div>
 </nav>
 
 <main class="main-content">
 
     <section id="view-raid" class="view-section active raid-view">
-        <header>
-            <h2 style="color:var(--color-raid)">Explosives Calculator</h2>
-            <p class="subtitle">Calculate crafting costs for raids based on 2026 mix-table meta.</p>
-        </header>
+        <header><h2 style="color:var(--color-raid)">Explosives Calculator</h2><p class="subtitle">Crafting costs (2026 Meta)</p></header>
         <div class="card">
-            <div class="card-header">Configuration</div>
             <div class="grid-2">
-                <div>
-                    <label>Explosive Type</label>
-                    <select id="raidType">
-                        <option value="rocket">Rocket</option>
-                        <option value="c4">C4 (Timed Explosive)</option>
-                        <option value="satchel">Satchel Charge</option>
-                        <option value="beancan">Beancan Grenade</option>
-                        <option value="ammo">Explosive Ammo (x1)</option>
-                    </select>
-                </div>
-                <div>
-                    <label>Quantity</label>
-                    <input type="number" id="raidAmt" value="1" placeholder="Amount">
-                </div>
+                <div><label>Explosive</label><select id="raidType"><option value="rocket">Rocket</option><option value="c4">C4</option><option value="satchel">Satchel</option><option value="beancan">Beancan</option><option value="ammo">Exp. Ammo</option></select></div>
+                <div><label>Amount</label><input type="number" id="raidAmt" value="1"></div>
             </div>
-            <label>Crafting Method</label>
-            <select id="raidMethod">
-                <option value="mix">Mixing Table (Efficient)</option>
-                <option value="inv">Hand Crafted (Expensive)</option>
-            </select>
-            <button class="btn-primary btn-raid" onclick="calcRaid()">Calculate Resources</button>
+            <label>Method</label><select id="raidMethod"><option value="mix">Mixing Table</option><option value="inv">Hand Crafted</option></select>
+            <button class="btn-primary btn-raid" onclick="calcRaid()">Calculate</button>
             <div id="raidResult" class="result-box" style="display:none"></div>
         </div>
     </section>
 
     <section id="view-compare" class="view-section raid-view">
-        <header>
-            <h2 style="color:var(--color-raid)">Efficiency Comparison</h2>
-            <p class="subtitle">Compare two different raiding paths to see which is cheaper.</p>
-        </header>
+        <header><h2 style="color:var(--color-raid)">Efficiency Comparison</h2></header>
         <div class="grid-2">
-            <div class="card">
-                <div class="card-header">Option A</div>
-                <select id="compTypeA">
-                    <option value="rocket">Rocket</option>
-                    <option value="c4">C4</option>
-                    <option value="satchel">Satchel</option>
-                </select>
-                <input type="number" id="compAmtA" value="4" style="margin-top:10px">
-            </div>
-            <div class="card">
-                <div class="card-header">Option B</div>
-                <select id="compTypeB">
-                    <option value="c4">C4</option>
-                    <option value="rocket">Rocket</option>
-                    <option value="satchel">Satchel</option>
-                </select>
-                <input type="number" id="compAmtB" value="2" style="margin-top:10px">
-            </div>
+            <div class="card"><div class="card-header">Option A</div><select id="compTypeA"><option value="rocket">Rocket</option><option value="c4">C4</option><option value="satchel">Satchel</option></select><input type="number" id="compAmtA" value="4" style="margin-top:10px"></div>
+            <div class="card"><div class="card-header">Option B</div><select id="compTypeB"><option value="c4">C4</option><option value="rocket">Rocket</option><option value="satchel">Satchel</option></select><input type="number" id="compAmtB" value="2" style="margin-top:10px"></div>
         </div>
-        <button class="btn-primary btn-raid" onclick="calcCompare()">Run Comparison</button>
+        <button class="btn-primary btn-raid" onclick="calcCompare()">Compare</button>
         <div id="compResult" class="card result-box" style="display:none; margin-top:20px; border-color:var(--color-raid)"></div>
     </section>
 
     <section id="view-eco" class="view-section raid-view">
-        <header>
-            <h2 style="color:var(--color-raid)">Eco Raiding</h2>
-            <p class="subtitle">Soft-side calculations using current tool durability.</p>
-        </header>
+        <header><h2 style="color:var(--color-raid)">Eco Raiding</h2></header>
         <div class="card">
             <div class="grid-2">
-                <div>
-                    <label>Wall Material</label>
-                    <select id="ecoWall">
-                        <option value="wood">Wood</option>
-                        <option value="stone">Stone</option>
-                        <option value="sheet">Sheet Metal</option>
-                        <option value="armored">Armored</option>
-                    </select>
-                </div>
-                <div>
-                    <label>Wall Side</label>
-                    <select id="ecoSide">
-                        <option value="soft">Soft Side (Weak)</option>
-                        <option value="hard">Hard Side (Strong)</option>
-                    </select>
-                </div>
+                <div><label>Wall</label><select id="ecoWall"><option value="wood">Wood</option><option value="stone">Stone</option><option value="sheet">Sheet Metal</option></select></div>
+                <div><label>Side</label><select id="ecoSide"><option value="soft">Soft Side</option><option value="hard">Hard Side</option></select></div>
             </div>
-            <button class="btn-primary btn-raid" onclick="calcEco()">Analyze Weakness</button>
+            <button class="btn-primary btn-raid" onclick="calcEco()">Analyze</button>
             <div id="ecoResult" class="result-box" style="display:none"></div>
         </div>
     </section>
 
-    <section id="view-gene" class="view-section farm-view">
+    <section id="view-footprint" class="view-section build-view">
         <header>
-            <h2 style="color:var(--color-farm)">Gene Laboratory</h2>
-            <p class="subtitle">Crossbreeding predictor using 2026 weighted logic (Bad genes are dominant).</p>
+            <h2 style="color:var(--color-build)">Base Expansion Guide</h2>
+            <p class="subtitle">Select your starter base to see recommended expansion paths.</p>
         </header>
         <div class="card">
-            <div class="card-header">Donor Input</div>
-            <p style="font-size:12px; color:#666; margin-bottom:15px;">Enter genes (G, Y, H, S, W) for each donor clone.</p>
-            
-            <label>Donor 1</label>
-            <div class="gene-grid">
-                <input class="gene-input" id="d1_1" maxlength="1"><input class="gene-input" id="d1_2" maxlength="1"><input class="gene-input" id="d1_3" maxlength="1"><input class="gene-input" id="d1_4" maxlength="1"><input class="gene-input" id="d1_5" maxlength="1"><input class="gene-input" id="d1_6" maxlength="1">
+            <label>Current Starter Footprint</label>
+            <select id="baseStarter">
+                <option value="2x1">Standard 2x1</option>
+                <option value="2x2">Standard 2x2</option>
+                <option value="circle">Circular (Triangle Heavy)</option>
+            </select>
+            <button class="btn-primary btn-build" onclick="calcFootprint()">Show Expansion Logic</button>
+            <div id="footprintResult" class="result-box" style="display:none"></div>
+        </div>
+    </section>
+
+    <section id="view-defense" class="view-section build-view">
+        <header>
+            <h2 style="color:var(--color-build)">Defense & Electricity</h2>
+            <p class="subtitle">Quick setup guides for common defense circuits.</p>
+        </header>
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-header">Smart Alarm Setup</div>
+                <ul class="step-list">
+                    <li>Place <b>Smart Alarm</b> on wall.</li>
+                    <li>Connect <b>Power In</b> (Requires 1 rW).</li>
+                    <li>Connect <b>Power Out</b> to a switch or HF Sensor.</li>
+                    <li>Hold 'E' on Alarm to pair with Rust+ App.</li>
+                </ul>
             </div>
-            <label>Donor 2</label>
-            <div class="gene-grid">
-                <input class="gene-input" id="d2_1" maxlength="1"><input class="gene-input" id="d2_2" maxlength="1"><input class="gene-input" id="d2_3" maxlength="1"><input class="gene-input" id="d2_4" maxlength="1"><input class="gene-input" id="d2_5" maxlength="1"><input class="gene-input" id="d2_6" maxlength="1">
+            <div class="card">
+                <div class="card-header">Auto Turret (3-Chain)</div>
+                <ul class="step-list">
+                    <li>Requires <b>31 rW</b> Total Power.</li>
+                    <li>Battery -> Switch -> Splitter (x3 Outputs).</li>
+                    <li>Connect Splitter outputs to 3 Turrets (10 rW each).</li>
+                    <li><b>Important:</b> Fill turrets with ammo before turning on.</li>
+                </ul>
             </div>
-            <label>Donor 3</label>
-            <div class="gene-grid">
-                <input class="gene-input" id="d3_1" maxlength="1"><input class="gene-input" id="d3_2" maxlength="1"><input class="gene-input" id="d3_3" maxlength="1"><input class="gene-input" id="d3_4" maxlength="1"><input class="gene-input" id="d3_5" maxlength="1"><input class="gene-input" id="d3_6" maxlength="1">
+        </div>
+    </section>
+
+    <section id="view-map" class="view-section build-view">
+        <header>
+            <h2 style="color:var(--color-build)">Map Spot Logic</h2>
+            <p class="subtitle">Find the best biome based on your group size.</p>
+        </header>
+        <div class="card">
+            <div class="grid-2">
+                <div>
+                    <label>Group Size</label>
+                    <select id="mapSize">
+                        <option value="solo">Solo / Duo</option>
+                        <option value="small">Small Group (3-5)</option>
+                        <option value="clan">Zerg / Clan (8+)</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Playstyle</label>
+                    <select id="mapStyle">
+                        <option value="pvp">Aggressive / PvP</option>
+                        <option value="farm">Passive / Farm</option>
+                        <option value="balanced">Balanced</option>
+                    </select>
+                </div>
             </div>
-            
-            <button class="btn-primary btn-farm" onclick="calcGene()">Predict Offspring</button>
+            <button class="btn-primary btn-build" onclick="calcMap()">Analyze Biomes</button>
+            <div id="mapResult" class="result-box" style="display:none"></div>
+        </div>
+    </section>
+
+    <section id="view-gene" class="view-section farm-view">
+        <header><h2 style="color:var(--color-farm)">Gene Laboratory</h2></header>
+        <div class="card">
+            <label>Donor 1</label><div class="gene-grid"><input class="gene-input" id="d1_1" maxlength="1"><input class="gene-input" id="d1_2" maxlength="1"><input class="gene-input" id="d1_3" maxlength="1"><input class="gene-input" id="d1_4" maxlength="1"><input class="gene-input" id="d1_5" maxlength="1"><input class="gene-input" id="d1_6" maxlength="1"></div>
+            <label>Donor 2</label><div class="gene-grid"><input class="gene-input" id="d2_1" maxlength="1"><input class="gene-input" id="d2_2" maxlength="1"><input class="gene-input" id="d2_3" maxlength="1"><input class="gene-input" id="d2_4" maxlength="1"><input class="gene-input" id="d2_5" maxlength="1"><input class="gene-input" id="d2_6" maxlength="1"></div>
+            <button class="btn-primary btn-farm" onclick="calcGene()">Predict</button>
             <div id="geneResult" class="result-box" style="text-align:center; letter-spacing:10px; font-size:24px; font-weight:bold; display:none"></div>
         </div>
     </section>
 
     <section id="view-berry" class="view-section farm-view">
-        <header>
-            <h2 style="color:var(--color-farm)">Agricultural Yields</h2>
-            <p class="subtitle">Estimate harvest amounts for berries and cloth.</p>
-        </header>
+        <header><h2 style="color:var(--color-farm)">Farm Yields</h2></header>
         <div class="card">
-            <label>Large Planters Count</label>
-            <input type="number" id="berryPlanters" value="4">
-            <label>Grow Conditions</label>
-            <select id="berryCond">
-                <option value="1">100% (Perfect Light/Water)</option>
-                <option value="0.6">60% (No Water/Lights)</option>
-            </select>
-            <button class="btn-primary btn-farm" onclick="calcBerry()">Calculate Yield</button>
+            <label>Planters</label><input type="number" id="berryPlanters" value="4">
+            <label>Conditions</label><select id="berryCond"><option value="1">100%</option><option value="0.6">60%</option></select>
+            <button class="btn-primary btn-farm" onclick="calcBerry()">Calculate</button>
             <div id="berryResult" class="result-box" style="display:none"></div>
         </div>
     </section>
 
     <section id="view-nodes" class="view-section farm-view">
-        <header>
-            <h2 style="color:var(--color-farm)">Node Calculator</h2>
-            <p class="subtitle">How many rocks do you need to hit?</p>
-        </header>
+        <header><h2 style="color:var(--color-farm)">Node Calculator</h2></header>
         <div class="card">
-            <label>Total Sulfur Ore Needed</label>
-            <input type="number" id="nodeNeed" placeholder="e.g. 24000">
+            <label>Sulfur Needed</label><input type="number" id="nodeNeed" placeholder="24000">
             <button class="btn-primary btn-farm" onclick="calcNodes()">Calculate</button>
             <div id="nodeResult" class="result-box" style="display:none"></div>
         </div>
     </section>
 
     <section id="view-diesel" class="view-section ind-view">
-        <header>
-            <h2 style="color:var(--color-ind)">Heavy Industry</h2>
-            <p class="subtitle">Excavator and Quarry math for clan operations.</p>
-        </header>
+        <header><h2 style="color:var(--color-ind)">Heavy Industry</h2></header>
         <div class="card">
-            <div class="grid-2">
-                <div>
-                    <label>Diesel Amount</label>
-                    <input type="number" id="dieselAmt" value="1">
-                </div>
-                <div>
-                    <label>Machine</label>
-                    <select id="dieselLoc">
-                        <option value="excavator">Giant Excavator</option>
-                        <option value="quarry">Static Quarry</option>
-                    </select>
-                </div>
-            </div>
-            <label>Resource Type</label>
-            <select id="dieselType">
-                <option value="sulfur">Sulfur Ore</option>
-                <option value="hqm">High Quality Metal</option>
-                <option value="metal">Metal Fragments</option>
-                <option value="stone">Stones</option>
-            </select>
+            <div class="grid-2"><div><label>Diesel</label><input type="number" id="dieselAmt" value="1"></div><div><label>Loc</label><select id="dieselLoc"><option value="excavator">Excavator</option><option value="quarry">Quarry</option></select></div></div>
+            <label>Output</label><select id="dieselType"><option value="sulfur">Sulfur</option><option value="hqm">HQM</option><option value="metal">Metal</option><option value="stone">Stone</option></select>
             <button class="btn-primary btn-ind" onclick="calcDiesel()">Run Engine</button>
             <div id="dieselResult" class="result-box" style="display:none"></div>
         </div>
     </section>
 
     <section id="view-recycle" class="view-section ind-view">
-        <header>
-            <h2 style="color:var(--color-ind)">Recycling Plant</h2>
-            <p class="subtitle">Calculate total scrap and HQM from components.</p>
-        </header>
+        <header><h2 style="color:var(--color-ind)">Recycling</h2></header>
         <div class="grid-2">
             <div class="card">
-                <div class="card-header">Inventory</div>
                 <div class="res-row"><span>Tech Trash</span> <input type="number" id="recTech" value="0" style="width:60px;"></div>
                 <div class="res-row"><span>Rifle Body</span> <input type="number" id="recRifle" value="0" style="width:60px;"></div>
                 <div class="res-row"><span>SMG Body</span> <input type="number" id="recSMG" value="0" style="width:60px;"></div>
@@ -424,250 +341,161 @@ input:focus, select:focus { border-color: #666; background: #000; }
                 <div class="res-row"><span>Sheet Metal</span> <input type="number" id="recSheet" value="0" style="width:60px;"></div>
             </div>
             <div class="card">
-                <div class="card-header">Output</div>
-                <label>Location Efficiency</label>
-                <select id="recZone">
-                    <option value="unsafe">Monument (100% Yield)</option>
-                    <option value="safe">Safe Zone (80% Yield)</option>
-                </select>
-                <button class="btn-primary btn-ind" onclick="calcRecycle()">Recycle All</button>
-                <div id="recycleResult" class="result-box" style="display:none; margin-top:20px;"></div>
+                <label>Zone</label><select id="recZone"><option value="unsafe">Monument</option><option value="safe">Safe Zone</option></select>
+                <button class="btn-primary btn-ind" onclick="calcRecycle()">Recycle</button>
+                <div id="recycleResult" class="result-box" style="display:none"></div>
             </div>
         </div>
     </section>
 
     <section id="view-flight" class="view-section ind-view">
-        <header>
-            <h2 style="color:var(--color-surv)">Aviation Logistics</h2>
-            <p class="subtitle">Fuel calculations for rotary wings.</p>
-        </header>
+        <header><h2 style="color:var(--color-surv)">Flight Logistics</h2></header>
         <div class="card">
-            <label>Low Grade Fuel</label>
-            <input type="number" id="lgfHeli" value="100">
-            <label>Aircraft</label>
-            <select id="heliType">
-                <option value="30">Minicopter / Scrap Heli</option>
-                <option value="45">Attack Helicopter</option>
-            </select>
-            <button class="btn-primary btn-surv" onclick="calcHeli()">Check Gauges</button>
+            <label>Fuel</label><input type="number" id="lgfHeli" value="100">
+            <label>Heli</label><select id="heliType"><option value="30">Mini/Scrap</option><option value="45">Attack</option></select>
+            <button class="btn-primary btn-surv" onclick="calcHeli()">Check Fuel</button>
             <div id="heliResult" class="result-box" style="display:none"></div>
-        </div>
-    </section>
-
-    <section id="view-scrapgp" class="view-section ind-view">
-        <header>
-            <h2 style="color:var(--color-surv)">Scrap Arbitrage</h2>
-            <p class="subtitle">Buying Smoke Grenades to recycle into Gunpowder.</p>
-        </header>
-        <div class="card">
-            <label>Gunpowder Needed</label>
-            <input type="number" id="gpWant" placeholder="e.g. 1000">
-            <button class="btn-primary btn-surv" onclick="calcScrapGP()">Calculate Cost</button>
-            <div id="gpResult" class="result-box" style="display:none"></div>
         </div>
     </section>
 
 </main>
 
 <script>
-/* --- UI LOGIC --- */
+/* UI LOGIC */
 function setView(viewId) {
-    // Hide all sections
     document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-    // Show target
     document.getElementById('view-' + viewId).classList.add('active');
-    
-    // Update Sidebar
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    // Find the button that clicked and add active. 
-    // Since we can't easily pass 'this', we match by onclick attribute text for simplicity
     const navs = document.querySelectorAll('.nav-item');
-    navs.forEach(n => {
-        if(n.getAttribute('onclick').includes(viewId)) n.classList.add('active');
-    });
+    navs.forEach(n => { if(n.getAttribute('onclick').includes(viewId)) n.classList.add('active'); });
 }
 
-/* --- MATH LOGIC --- */
+/* NEW LOGIC FOR BUILDING & MAP */
 
-// 1. Raid Calc
+// Footprint Logic
+function calcFootprint() {
+    const s = document.getElementById('baseStarter').value;
+    let html = "";
+    if(s === '2x1') {
+        html = `
+        <div style="color:#aaa; margin-bottom:10px">Recommended Path: <b>The Classic Bunker</b></div>
+        <ul class="step-list">
+            <li><b>Step 1:</b> Add Triangle foundations to all flat sides (Honeycomb).</li>
+            <li><b>Step 2:</b> Upgrade core to Armored, honeycomb to Stone/Metal.</li>
+            <li><b>Step 3:</b> Add a "Pancake" layer on the roof for top-down protection.</li>
+        </ul>`;
+    } else if(s === '2x2') {
+        html = `
+        <div style="color:#aaa; margin-bottom:10px">Recommended Path: <b>Wide Gap Peak</b></div>
+        <ul class="step-list">
+            <li><b>Step 1:</b> Build wide-gap shooting floors on the 2nd floor.</li>
+            <li><b>Step 2:</b> Add an external TC (Tool Cupboard) to prevent griefing.</li>
+            <li><b>Step 3:</b> Compound with High External Walls.</li>
+        </ul>`;
+    } else {
+        html = `<div style="color:#aaa;">Circular bases are hard to expand. Recommend building specific "China Wall" external gates.</div>`;
+    }
+    document.getElementById('footprintResult').style.display = 'block';
+    document.getElementById('footprintResult').innerHTML = html;
+}
+
+// Map Analyst Logic
+function calcMap() {
+    const size = document.getElementById('mapSize').value;
+    const style = document.getElementById('mapStyle').value;
+    let rec = "";
+    let tier = "";
+
+    if(size === 'solo') {
+        if(style === 'pvp') { rec = "Build near **Oxum's Gas Station** or **Sewer Branch**. High traffic but manageable."; tier = "Tier 1/2 Zone"; }
+        else if(style === 'farm') { rec = "Build in the **Snow Biome** edge or on the **Ocean** (Boat Base). Avoid monuments."; tier = "Remote Zone"; }
+        else { rec = "Build near a **Fishing Village** for easy Blue Card farming and water safety."; tier = "Safe Zone Edge"; }
+    } else if(size === 'small') {
+        if(style === 'pvp') { rec = "Build centrally near **Launch Site** or **Military Tunnels**."; tier = "Tier 3 Zone"; }
+        else { rec = "Build near **Large Oil Rig** coast or **Desert** for Sulfur farming."; tier = "Tier 2 Zone"; }
+    } else {
+        rec = "You are a Zerg. Build on the biggest flat area in the **Ice Lakes** or near **Excavator**."; tier = "Domination Zone";
+    }
+
+    document.getElementById('mapResult').style.display = 'block';
+    document.getElementById('mapResult').innerHTML = `
+    <div style="font-size:18px; color:#fff; margin-bottom:5px">${tier}</div>
+    <div style="color:#ccc; line-height:1.4">${rec}</div>
+    `;
+}
+
+/* EXISTING MATH LOGIC */
 function calcRaid() {
     const type = document.getElementById('raidType').value;
     const qty = +document.getElementById('raidAmt').value;
     const method = document.getElementById('raidMethod').value;
-    
-    let s=0, c=0, m=0, lg=0;
-    // Costs per 1 item (Approximate aggregate including GP/Explosives costs)
-    if(type==='rocket') { s=1400; c=1950; m=100; } // 10 expl + 150 gp + pipe
+    let s=0, c=0, m=0;
+    if(type==='rocket') { s=1400; c=1950; m=100; }
     if(type==='c4') { s=2200; c=3000; m=200; }
     if(type==='satchel') { s=480; c=720; m=80; }
     if(type==='beancan') { s=120; c=180; m=20; }
     if(type==='ammo') { s=25; c=30; m=10; }
-
-    if(method === 'mix') c = c * 0.7; // Mixing table saves charcoal
-
-    let res = `
-    <div class="res-row"><span>Sulfur Ore</span> <strong>${(s*qty).toLocaleString()}</strong></div>
-    <div class="res-row"><span>Charcoal</span> <strong>${Math.floor(c*qty).toLocaleString()}</strong></div>
-    <div class="res-row"><span>Metal Frags</span> <strong>${(m*qty).toLocaleString()}</strong></div>
-    `;
+    if(method === 'mix') c = c * 0.7;
     document.getElementById('raidResult').style.display = 'block';
-    document.getElementById('raidResult').innerHTML = res;
+    document.getElementById('raidResult').innerHTML = `<div class="res-row"><span>Sulfur</span> <strong>${(s*qty).toLocaleString()}</strong></div><div class="res-row"><span>Charcoal</span> <strong>${Math.floor(c*qty).toLocaleString()}</strong></div><div class="res-row"><span>Frags</span> <strong>${(m*qty).toLocaleString()}</strong></div>`;
 }
 
-// 2. Compare
 function calcCompare() {
-    // Simplified logic for visual demo
-    // In real app, reuse getCost function
-    const getTypeCost = (t) => {
-        if(t==='rocket') return 1400;
-        if(t==='c4') return 2200;
-        if(t==='satchel') return 480;
-        return 0;
-    };
-    
-    const sA = getTypeCost(document.getElementById('compTypeA').value) * +document.getElementById('compAmtA').value;
-    const sB = getTypeCost(document.getElementById('compTypeB').value) * +document.getElementById('compAmtB').value;
+    const cost = (t) => t==='rocket'?1400:t==='c4'?2200:480;
+    const sA = cost(document.getElementById('compTypeA').value) * +document.getElementById('compAmtA').value;
+    const sB = cost(document.getElementById('compTypeB').value) * +document.getElementById('compAmtB').value;
     const diff = sA - sB;
-    
-    let msg = diff > 0 
-        ? `<span style="color:#e74c3c">Option A costs ${diff} more Sulfur</span>` 
-        : `<span style="color:#2ecc71">Option A saves ${Math.abs(diff)} Sulfur</span>`;
-        
-    if(diff===0) msg = "Cost is identical";
-
     document.getElementById('compResult').style.display = 'block';
-    document.getElementById('compResult').innerHTML = msg;
+    document.getElementById('compResult').innerHTML = diff > 0 ? `<span style="color:#e74c3c">Option A +${diff} Sulfur</span>` : `<span style="color:#2ecc71">Option A -${Math.abs(diff)} Sulfur</span>`;
 }
 
-// 3. Eco
 function calcEco() {
     const w = document.getElementById('ecoWall').value;
     const s = document.getElementById('ecoSide').value;
-    let txt = "Invalid";
-    if(s === 'hard') txt = "Too hard. Use explosives.";
-    else {
-        if(w==='wood') txt = "1 Hatchet or 2 Spears";
-        if(w==='stone') txt = "7 Spears or 1.2 Jackhammers";
-        if(w==='sheet') txt = "23 Spears or 2.5 Jackhammers";
-        if(w==='armored') txt = "Not viable.";
-    }
-    document.getElementById('ecoResult').style.display = 'block';
-    document.getElementById('ecoResult').innerHTML = `<strong style="color:#fff">${txt}</strong>`;
+    let txt = s==='hard'?"Don't eco hard side": w==='wood'?"1 Hatchet":w==='stone'?"7 Spears/1.2 Jackhammers":"23 Spears/2.5 Jackhammers";
+    document.getElementById('ecoResult').style.display='block'; document.getElementById('ecoResult').innerHTML=`<strong>${txt}</strong>`;
 }
 
-// 4. Gene
 function calcGene() {
-    // 2026 Weighted Logic: Bad genes (H, S, W) weight 1.0, Good (G, Y) weight 0.6
-    let res = "";
-    const weights = {G:0.6, Y:0.6, H:1.0, S:1.0, W:1.0, X:0};
-    
+    let res = ""; const w = {G:0.6,Y:0.6,H:1,S:1,W:1,X:0};
     for(let i=1; i<=6; i++) {
-        let scores = {G:0, Y:0, H:0, S:0, W:0};
-        // Check 3 donors
-        for(let d=1; d<=3; d++) {
-            let val = document.getElementById(`d${d}_${i}`).value.toUpperCase();
-            if(weights[val] !== undefined) scores[val] += weights[val];
-        }
-        
-        // Find winner
-        let winner = "?";
-        let max = -1;
-        for(let key in scores) {
-            if(scores[key] > max) { max = scores[key]; winner = key; }
-        }
-        if(max === 0) winner = "-";
-        res += winner;
+        let sc = {G:0,Y:0,H:0,S:0,W:0};
+        for(let d=1; d<=2; d++) { let v=document.getElementById(`d${d}_${i}`).value.toUpperCase(); if(w[v]) sc[v]+=w[v]; }
+        let win="?", mx=-1; for(let k in sc) if(sc[k]>mx){mx=sc[k]; win=k;}
+        res+=win;
     }
-    
-    const out = document.getElementById('geneResult');
-    out.style.display = 'block';
-    out.innerText = res;
-    out.style.color = (res.includes('W') || res.includes('X')) ? '#e74c3c' : '#2ecc71';
+    document.getElementById('geneResult').style.display='block'; document.getElementById('geneResult').innerText=res;
 }
 
-// 5. Berry
 function calcBerry() {
-    const p = +document.getElementById('berryPlanters').value;
-    const c = +document.getElementById('berryCond').value;
-    // 9 slots * 5 berries avg = 45 per planter
-    const total = Math.floor(p * 45 * c);
-    document.getElementById('berryResult').style.display = 'block';
-    document.getElementById('berryResult').innerHTML = `
-    <div class="res-row"><span>Berries</span> <strong>${total}</strong></div>
-    <div class="res-row"><span>Clones</span> <strong>${Math.floor(p*9*1.5)}</strong></div>
-    `;
+    const t = Math.floor(+document.getElementById('berryPlanters').value * 45 * +document.getElementById('berryCond').value);
+    document.getElementById('berryResult').style.display='block'; document.getElementById('berryResult').innerHTML=`<strong>${t} Berries</strong>`;
 }
 
-// 6. Nodes
 function calcNodes() {
-    const n = Math.ceil(+document.getElementById('nodeNeed').value / 300);
-    document.getElementById('nodeResult').style.display = 'block';
-    document.getElementById('nodeResult').innerHTML = `<strong style="font-size:24px; color:#2ecc71">${n} Nodes</strong>`;
+    document.getElementById('nodeResult').style.display='block';
+    document.getElementById('nodeResult').innerHTML=`<strong>${Math.ceil(+document.getElementById('nodeNeed').value/300)} Nodes</strong>`;
 }
 
-// 7. Diesel
 function calcDiesel() {
-    const a = +document.getElementById('dieselAmt').value;
-    const loc = document.getElementById('dieselLoc').value;
-    const type = document.getElementById('dieselType').value;
-    
-    let rate = 0;
-    // Excavator Yields
-    if(loc === 'excavator') {
-        if(type==='sulfur') rate=2000;
-        if(type==='hqm') rate=100;
-        if(type==='metal') rate=5000;
-        if(type==='stone') rate=10000;
-    } else {
-        // Quarry Yields (~50%)
-        if(type==='sulfur') rate=1000;
-        if(type==='hqm') rate=50;
-        if(type==='metal') rate=2500;
-        if(type==='stone') rate=5000;
-    }
-    
-    document.getElementById('dieselResult').style.display = 'block';
-    document.getElementById('dieselResult').innerHTML = `<strong style="font-size:24px; color:#f39c12">${(a*rate).toLocaleString()} Resources</strong>`;
+    const a=+document.getElementById('dieselAmt').value;
+    const l=document.getElementById('dieselLoc').value;
+    const t=document.getElementById('dieselType').value;
+    let r=0;
+    if(l==='excavator') r=t==='sulfur'?2000:t==='hqm'?100:t==='metal'?5000:10000;
+    else r=t==='sulfur'?1000:t==='hqm'?50:t==='metal'?2500:5000;
+    document.getElementById('dieselResult').style.display='block'; document.getElementById('dieselResult').innerHTML=`<strong>${(a*r).toLocaleString()} Res</strong>`;
 }
 
-// 8. Recycle
 function calcRecycle() {
-    const z = document.getElementById('recZone').value === 'safe' ? 0.8 : 1.0;
-    const t = +document.getElementById('recTech').value;
-    const r = +document.getElementById('recRifle').value;
-    const s = +document.getElementById('recSMG').value;
-    const g = +document.getElementById('recGear').value;
-    const sh = +document.getElementById('recSheet').value;
-    
-    let scrap = (t*20 + r*25 + s*15 + g*10 + sh*8) * z;
-    let hqm = (t*3 + r*2 + s*2 + g*13) * z;
-    
-    document.getElementById('recycleResult').style.display = 'block';
-    document.getElementById('recycleResult').innerHTML = `
-    <div class="res-row"><span>Scrap</span> <strong style="color:#f39c12">${Math.floor(scrap)}</strong></div>
-    <div class="res-row"><span>HQM</span> <strong>${Math.floor(hqm)}</strong></div>
-    `;
+    const z = document.getElementById('recZone').value==='safe'?0.8:1;
+    const s = (+document.getElementById('recTech').value*20 + +document.getElementById('recRifle').value*25 + +document.getElementById('recSheet').value*8)*z;
+    document.getElementById('recycleResult').style.display='block'; document.getElementById('recycleResult').innerHTML=`<strong>${Math.floor(s)} Scrap</strong>`;
 }
 
-// 9. Flight
 function calcHeli() {
-    const f = +document.getElementById('lgfHeli').value;
-    const burn = +document.getElementById('heliType').value;
-    const mins = (f/burn).toFixed(1);
-    document.getElementById('heliResult').style.display = 'block';
-    document.getElementById('heliResult').innerHTML = `<strong>${mins} Minutes</strong>`;
-}
-
-// 10. Scrap GP
-function calcScrapGP() {
-    const gp = +document.getElementById('gpWant').value;
-    const smokes = Math.ceil(gp/18);
-    const scrap = smokes * 5;
-    document.getElementById('gpResult').style.display = 'block';
-    document.getElementById('gpResult').innerHTML = `
-    <div class="res-row"><span>Scrap Cost</span> <strong style="color:#3498db">${scrap}</strong></div>
-    <div class="res-row"><span>Smokes</span> <strong>${smokes}</strong></div>
-    `;
+    document.getElementById('heliResult').style.display='block';
+    document.getElementById('heliResult').innerHTML=`<strong>${(+document.getElementById('lgfHeli').value/+document.getElementById('heliType').value).toFixed(1)} Mins</strong>`;
 }
 </script>
 
